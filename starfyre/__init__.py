@@ -62,16 +62,19 @@ def main():
         "div",
         {"id": "root"},
         [
-            Component("TEXT_NODE", {}, [], data="Hello, World!"),
-            Component("p", {}, [Component("TEXT_NODE", {}, [], "bruhh")]),
+            Component("TEXT_NODE", {}, [], {}, data="Hello, World!"),
+            Component("p", {}, [Component("TEXT_NODE", {}, [], {}, "bruhh")], {}),
         ],
+        {},
     )
 
     fyre_tree = FyreTree(FyreNode(root))
     fyre_tree.build_tree()
     print("FyreTree:")
     print(fyre_tree)
-    root.render(fyre_tree)
+    js.document.body.prepend(fyre_tree.root.data[0])
+    root.children[0].data = "Hello, World!!!!"
+    root.set_state("id", "root", fyre_tree)
     print("FyreTree:")
     print(fyre_tree)
 

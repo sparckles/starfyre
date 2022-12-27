@@ -27,7 +27,7 @@ def create_element_tree(node):
 class FyreNode:
     def __create_dom_element(self, vdom_component: Component):
         if vdom_component.is_text_component:
-            return js.document.createTextNode(vdom_component)
+            return js.document.createTextNode(vdom_component.data)
 
         element = js.document.createElement(vdom_component.tag)
         return element
@@ -40,10 +40,10 @@ class FyreNode:
         self.data = (dom_element, component)
 
     def __repr__(self):
-        return f"{ self.data[0], self.data[1].tag }"
+        return f"{ self.data[0], self.data[1].tag, self.data[1].data }"
 
     def __str__(self):
-        return f"{ self.data[0], self.data[1].tag }"
+        return f"{ self.data[0], self.data[1].tag, self.data[1].data }"
 
 
 class FyreTree:
@@ -63,6 +63,10 @@ class FyreTree:
         if node.data[1].children:
             for child in node.data[1].children:
                 child_node = FyreNode(child, node)
+                if child_node.data[1].children:
+                    self.__build_tree(child_node)
+
+                node.data[0].appendChild(child_node.data[0])
                 node.children.append(child_node)
                 self.__build_tree(child_node)
 
@@ -83,15 +87,22 @@ class FyreTree:
     def rebuild_tree_from_component(self, component: Component):
         """Rebuild the tree from a given component."""
         node = self.find_component(component)
+        print("Rebuilding tree from component")
         self.__rebuild_tree_from_node(node)
 
     def __rebuild_tree_from_node(self, node: FyreNode):
         """Rebuild the tree from a given node."""
         if node.parent:
+            # need to remove the children from the parent of vdom and realdom
             node.parent.children = []
+            node.data[0].childNodes = []
+
+            # node.parent.data[0].innerHTML = ""
+            print("Yeh backchodi")
             self.__build_tree(node.parent)
         else:
             self.root = node
+            node.data[0].innerHTML = ""
             self.__build_tree(node)
 
     def __str__(self):
