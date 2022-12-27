@@ -1,0 +1,11 @@
+{
+  "name": "create-starfyre-app",
+  "version": "0.0.0",
+  "description": "Create Starfyre App",
+  "main": "index.js",
+  "scripts": {
+    "start": "poetry build && python -m http.server"
+  },
+  "author": "Sanskar Jethi",
+  "license": "MIT"
+}

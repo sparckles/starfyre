@@ -42,4 +42,3 @@ class Parser(HTMLParser):
     def parse(self):
         return self.stack
 
-
