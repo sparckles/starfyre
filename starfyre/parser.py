@@ -1,12 +1,7 @@
 from html.parser import HTMLParser
 from dataclasses import dataclass
 
-
-@dataclass
-class Node:
-    tag: str
-    props: dict
-    children: list
+from .component import Component
 
 
 class Parser(HTMLParser):
@@ -17,14 +12,14 @@ class Parser(HTMLParser):
         for attr in attrs:
             props[attr[0]] = attr[1]
 
-        self.stack.append(Node(tag, props, []))
+        self.stack.append(Component(tag, props, [], {}))
 
     def handle_endtag(self, tag):
 
         children = []
         while self.stack:
             node = self.stack[-1]
-            if type(node) == Node and node.tag == tag:
+            if isinstance(node, Component) and node.tag == tag:
                 break
 
             self.stack.pop()
@@ -37,7 +32,7 @@ class Parser(HTMLParser):
         print("Encountered an end tag :", self.stack)
 
     def handle_data(self, data):
-        self.stack.append(data)
+        self.stack.append(Component("TEXT_NODE", {}, [], {}, data=data))
 
     def parse(self):
         return self.stack

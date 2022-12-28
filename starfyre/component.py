@@ -1,3 +1,4 @@
+import js
 from dataclasses import dataclass # fyre_tree will be a global variable
 
 
@@ -21,3 +22,11 @@ class Component:
     @property
     def is_text_component(self):
         return self.tag == "TEXT_NODE"
+
+
+@dataclass
+class Instance:
+    # an element that has already been rendered to the dom
+    dom: js.Element
+    component: Component
+    children: list
