@@ -5,14 +5,18 @@ from .component import Component
 
 
 class Parser(HTMLParser):
-    stack = []
+
+    def __init__(self, state):
+        super().__init__()
+        self.stack = []
+        self.state = state
 
     def handle_starttag(self, tag, attrs):
         props = {}
         for attr in attrs:
             props[attr[0]] = attr[1]
 
-        self.stack.append(Component(tag, props, [], {}))
+        self.stack.append(Component(tag, props, [], {}, self.state))
 
     def handle_endtag(self, tag):
 
@@ -32,7 +36,7 @@ class Parser(HTMLParser):
         print("Encountered an end tag :", self.stack)
 
     def handle_data(self, data):
-        self.stack.append(Component("TEXT_NODE", {}, [], {}, data=data))
+        self.stack.append(Component("TEXT_NODE", {}, [], {}, self.state, data=data))
 
     def parse(self):
         return self.stack

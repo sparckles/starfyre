@@ -1,33 +1,38 @@
+import uuid
+from .dom_methods import render
+import js
 
-# store shall also be a global variable
-class Store:
-    def __init__(self):
-        self.store = {}
-        # every store is a dict
-        # that will contain the key to value
-        # key is the a randomly generated string
-        # value is the data
-        # then we have a list of observers
-        # for every key
-        self.observers = {}
+store = {}
+observers = {}
 
-    def add_observer(self, key, observer):
-        if key not in self.observers:
-            self.observers[key] = []
-        self.observers[key].add(observer)
 
-    def remove_observer(self, key, observer):
-        if key in self.observers:
-            self.observers[key].remove(observer)
+def create_signal(initial_state=None):
+    """Create a signal to be used in a component."""
+    global store
+    id = uuid.uuid4()
 
-    def notify_observers(self):
-        for observer in self.observers:
-            observer.update(self)
+    def getState(element):
+        print("This is the type", type(element))
+        if id in observers:
+            observers[id].append(element)
+        else:
+            observers[id] = [element]
 
-    def set_data(self, key, initial_data):
-        self.store[id] = initial_data
-        self.notify_observers()
+        return store.get(id, initial_state)
 
-    def get_data(self, key, component, default=None):
-        self.add_observer(key, component)
-        return self.store.get(key, default)
+    def setState(state):
+        store[id] = state
+
+        for component in observers[id]:
+            print("component", component)
+            if component.parentDom:
+                parentDom = component.parentDom
+                parentDom.removeChild(component.dom)
+            else:
+                parentDom = js.document.getElementById("root")
+                parentDom.innerHTML = ""
+
+            print("rendering", component)
+            render(component, parentDom)
+
+    return [getState, setState]
