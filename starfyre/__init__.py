@@ -15,7 +15,6 @@ def create_component(jsx, event_listeners=None, state=None):
     pytml_root.event_listeners = event_listeners
     pytml_root.state = state
     new_root = Component("div", {}, [pytml_root], {}, {})
-    print(new_root, state)
     return new_root
 
 

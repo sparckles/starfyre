@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starfyre"
-version = "0.1.7"
+version = "0.1.8"
 description = ""
 authors = ["Sanskar Jethi <sansyrox@gmail.com>"]
 readme = "README.md"

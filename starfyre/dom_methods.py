@@ -42,13 +42,11 @@ def render(element: Component, parentDom: js.Element):
     for event_name, action in props.items():
         if isListener(event_name):
             eventType = event_name.lower()[2:]
-
-            print(element.event_listeners)
             action = action.replace("{", "").replace("}", "")
-            event_listener = element.event_listeners[action]
 
-            # dom.addEventListener(eventType, props[name])
-            dom.addEventListener(eventType, create_proxy(event_listener))
+            if action in element.event_listeners:
+                event_listener = element.event_listeners[action]
+                dom.addEventListener(eventType, create_proxy(event_listener))
 
     # set attributes
 
