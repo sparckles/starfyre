@@ -9,7 +9,45 @@ Please note that Starfyre is still very naive and may be buggy, as it was develo
 
 ## Installation:
 
-The easiest way to get started is to use `create-starfyre-app` repo. Hosted at [create-starfyre-app](https://github.com/sansyrox/create-starfyre-app)
+The easiest way to get started is to clone `create-starfyre-app` repo. Hosted at [create-starfyre-app](https://github.com/sansyrox/create-starfyre-app)
+
+## Sample Usage
+
+
+src/__init__.py
+```python
+import starfyre
+
+from .component import Component
+
+
+def main():
+    component = Component()
+    starfyre.render(component, starfyre.js.document.getElementById("root"))
+```
+
+src/component.py
+```python
+
+from starfyre import create_component, create_signal
+
+[get_component_state, set_state] = create_signal(0)
+
+
+def updateCounter(component, *args):
+    set_state(get_component_state(component) + 1)
+
+
+def Component():
+    return create_component("""<div onClick={updateCount}>
+        This is the component state
+        <button>Click Here to increment</button> {get_component_state}
+        </div>""",
+        {"updateCount": updateCounter},
+        state={"get_component_state": get_component_state},
+    )
+
+```
 
 ## Feedback
 
