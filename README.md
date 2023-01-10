@@ -39,7 +39,7 @@ def updateCounter(component, *args):
 
 
 def Component():
-    return create_component("""<div onClick={updateCount}>
+    return create_component("""<div onClick={updateCounter}>
         This is the component state
         <button>Click Here to increment</button> {get_component_state}
         </div>""",
