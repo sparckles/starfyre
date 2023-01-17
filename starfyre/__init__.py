@@ -3,6 +3,7 @@ from .parser import Parser
 from .component import Component
 from .dom_methods import render
 from .store import create_signal
+from starfyre.starfyre import sum_as_string
 
 
 def create_component(jsx, event_listeners=None, state=None):
@@ -18,4 +19,4 @@ def create_component(jsx, event_listeners=None, state=None):
     return new_root
 
 
-__all__ = ["render", "js", "create_component", "Component", "create_signal"]
+__all__ = ["render", "js", "create_component", "Component", "create_signal", "sum_as_string"]
