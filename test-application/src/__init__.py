@@ -9,3 +9,4 @@ def main():
     display = Display()
     counter.children.append(display)
     starfyre.render(counter, starfyre.js.document.getElementById("root"))
+    print(starfyre.sum_as_string(1, 2))

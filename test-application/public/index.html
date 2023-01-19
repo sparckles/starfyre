@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.19.1/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.22.0/full/pyodide.js"></script>
   </head>
   <body>
     <div id="root">Hello world</div>
     <script type="text/javascript">
       async function main() {
         let pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.1/full/",
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.22.0/full/",
         });
 
         // await micropip
         await pyodide.loadPackage("micropip");
         const micropip = pyodide.pyimport("micropip");
         await micropip.install(
-          "http://localhost:8000/starfyre-dist/dist/starfyre-0.1.8-py3-none-any.whl"
+          "http://localhost:8000/starfyre-dist/starfyre-0.1.0-cp310-cp310-emscripten_3_1_27_wasm32.whl"
         );
         // install create-starfyre-app from micropip from our local dist
         await micropip.install(
