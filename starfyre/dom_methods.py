@@ -3,10 +3,15 @@ from .component import Component
 from pyodide import create_proxy
 from functools import partial
 import re
+from starfyre.starfyre import DomNode
 
 
 def render(element: Component, parentDom: js.Element):
     element.parentDom = parentDom
+    dom_node = DomNode(element.tag, element.props, element.children, element.event_listeners, element.state or {})
+    dom_node.set_parent_element(parentDom)
+    print(dom_node)
+
     tag = element.tag
     props = element.props
     state = element.state
