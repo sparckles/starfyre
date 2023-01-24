@@ -12,8 +12,7 @@ def Display():
         """<button onClick={set}>
             +
         </button>
-        """,
-        {"set": set},
+        """
 
     )
 

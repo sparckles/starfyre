@@ -1,11 +1,9 @@
 from html.parser import HTMLParser
-from dataclasses import dataclass
 
 from .component import Component
 
 
 class Parser(HTMLParser):
-
     def __init__(self, state):
         super().__init__()
         self.stack = []
@@ -36,8 +34,8 @@ class Parser(HTMLParser):
         print("Encountered an end tag :", self.stack)
 
     def handle_data(self, data):
+        print(data)
         self.stack.append(Component("TEXT_NODE", {}, [], {}, self.state, data=data))
 
     def parse(self):
         return self.stack
-
