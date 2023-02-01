@@ -15,7 +15,7 @@
         await pyodide.loadPackage("micropip");
         const micropip = pyodide.pyimport("micropip");
         await micropip.install(
-          "http://localhost:8000/starfyre-dist/starfyre-0.1.0-cp310-cp310-emscripten_3_1_27_wasm32.whl"
+          "http://localhost:8000/starfyre-dist/starfyre-0.2.0-cp310-cp310-emscripten_3_1_27_wasm32.whl"
         );
         // install create-starfyre-app from micropip from our local dist
         await micropip.install(

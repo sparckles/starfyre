@@ -1,10 +1,12 @@
 import inspect
 import re
+from uuid import uuid4
 
-from .parser import Parser
+from .parser import Parser, RootParser
 from .component import Component
 from .dom_methods import render
 from .store import create_signal
+from .global_components import components
 
 import js
 from starfyre.starfyre import sum_as_string, DomNode
@@ -45,7 +47,7 @@ def return_state(possible_state_names, local_functions, global_functions):
 
 def create_component(jsx):
     globals = inspect.currentframe().f_back.f_globals.copy()
-    locals = inspect.currentframe().f_back.f_locals
+    locals = inspect.currentframe().f_back.f_locals.copy()
     local_functions = extract_functions(locals)
     global_functions = extract_functions(globals)
 
@@ -78,13 +80,33 @@ def create_component(jsx):
     new_root = Component("div", {}, [pytml_root], {}, {})
     dom_node = DomNode("hello", {}, [pytml_root], {}, {})
     print("This is the dom node ", dom_node)
+
+    print("These are the components")
+    from pprint import pprint
+    pprint(components)
+
     return new_root
+
+def create_root_component(jsx):
+    locals = inspect.currentframe().f_back.f_locals.copy()
+    globals = inspect.currentframe().f_back.f_globals.copy()
+    print("These are the globals", locals)
+
+    parser = RootParser({}, globals)
+    jsx = jsx.strip("\n").strip()
+    parser.feed(jsx)
+    parser.close()
+    pytml_tree = parser.parse()
+    pytml_root = pytml_tree[0]
+    print("This is the pytml root root", pytml_root)
+    return pytml_root
 
 
 __all__ = [
     "render",
     "js",
     "create_component",
+    "create_root_component",
     "Component",
     "create_signal",
     "sum_as_string",
