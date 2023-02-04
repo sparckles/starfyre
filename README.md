@@ -16,14 +16,14 @@ The easiest way to get started is to clone `create-starfyre-app` repo. Hosted at
 
 src/__init__.py
 ```python
-import starfyre
+from starfyre import create_component, render
 
 from .component import Component
 
 
 def main():
     component = Component()
-    starfyre.render(component, starfyre.js.document.getElementById("root"))
+    render(create_component(<component></component>))
 ```
 
 src/component.py
@@ -39,12 +39,10 @@ def updateCounter(component, *args):
 
 
 def Component():
-    return create_component("""<div onClick={updateCounter}>
+    return create_component("""<div onClick=updateCounter>
         This is the component state
         <button>Click Here to increment</button> {get_component_state}
         </div>""",
-        {"updateCount": updateCounter},
-        state={"get_component_state": get_component_state},
     )
 
 ```
