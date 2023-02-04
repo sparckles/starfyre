@@ -1,9 +1,11 @@
 import uuid
+
+from starfyre.component import Component
 from .dom_methods import render
 import js
 
 store = {}
-observers = {}
+observers: dict[uuid.UUID, list[ Component ]] = {}
 
 
 def create_signal(initial_state=None):
@@ -22,10 +24,9 @@ def create_signal(initial_state=None):
 
     def setState(state):
         store[id] = state
-
         for component in observers[id]:
-            print("component", component)
-            if component.parentDom:
+            print("observer component", component)
+            if component and component.parentDom:
                 parentDom = component.parentDom
                 parentDom.removeChild(component.dom)
             else:
@@ -33,6 +34,7 @@ def create_signal(initial_state=None):
                 parentDom.innerHTML = ""
 
             print("rendering", component)
-            render(component, parentDom)
+            # should be done in batching
+            render(component)
 
     return [getState, setState]
