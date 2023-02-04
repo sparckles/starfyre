@@ -1,10 +1,12 @@
 import inspect
 import re
+from uuid import uuid4
 
-from .parser import Parser
+from .parser import Parser, RootParser
 from .component import Component
 from .dom_methods import render
 from .store import create_signal
+from .global_components import components
 
 import js
 from starfyre.starfyre import sum_as_string, DomNode
@@ -42,43 +44,18 @@ def return_state(possible_state_names, local_functions, global_functions):
             pass
     return states
 
-
 def create_component(jsx):
-    globals = inspect.currentframe().f_back.f_globals.copy()
-    locals = inspect.currentframe().f_back.f_locals
-    local_functions = extract_functions(locals)
-    global_functions = extract_functions(globals)
+    locals_variables = inspect.currentframe().f_back.f_locals.copy()
+    global_variables = inspect.currentframe().f_back.f_globals.copy()
 
-    # extract event listeners name from jsx
-
-    event_listeners_names = re.findall(r"on\w+=\{(\w+)}", jsx)
-    event_listeners = return_event_listensers(
-        event_listeners_names, local_functions, global_functions
-    )
-
-    jsx_variables = re.findall(r"\{(\w+)\}", jsx)
-    possible_states = [
-        el for el in jsx_variables if el not in event_listeners
-    ]  # this can be props or states
-    state = return_state(possible_states, local_functions, global_functions)
-
-    # print(inspect.getframeinfo(inspect.currentframe().f_back))
-    print("These are the locals", local_functions)
-    print("These are the global_functions", global_functions)
-
-    parser = Parser(state)
+    parser = RootParser(locals_variables, global_variables)
     jsx = jsx.strip("\n").strip()
     parser.feed(jsx)
     parser.close()
-
     pytml_tree = parser.parse()
     pytml_root = pytml_tree[0]
-    pytml_root.event_listeners = event_listeners
-    pytml_root.state = state
-    new_root = Component("div", {}, [pytml_root], {}, {})
-    dom_node = DomNode("hello", {}, [pytml_root], {}, {})
-    print("This is the dom node ", dom_node)
-    return new_root
+    print("This is the pytml root root", pytml_root)
+    return pytml_root
 
 
 __all__ = [

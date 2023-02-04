@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import Optional
 import js
+from uuid import uuid4
 from html.parser import HTMLParser
 
 from dataclasses import dataclass
@@ -51,6 +52,7 @@ class Component:
     data: str = ""
     parentDom: js.Element = None
     dom: js.Element = None
+    uuid = uuid4()
     # on any property change, rebuild the tree
 
     def render(self):
