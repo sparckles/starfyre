@@ -47,6 +47,13 @@ def Component():
 
 ```
 
+## Developing Locally
+
+1. Create a `venv` - `python3 -m venv venv`
+2. Source in the `venv` - `source venv/bin/activate`
+3. Install maturin - `pip3 install maturin`
+4. Run the build - `make in-dev`
+
 ## Feedback
 
 Feel free to open an issue and let me know what you think of it. 
