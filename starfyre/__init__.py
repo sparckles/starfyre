@@ -2,7 +2,7 @@ import inspect
 import re
 from uuid import uuid4
 
-from .parser import Parser, RootParser
+from .parser import  RootParser
 from .component import Component
 from .dom_methods import render
 from .store import create_signal
@@ -52,8 +52,7 @@ def create_component(jsx):
     jsx = jsx.strip("\n").strip()
     parser.feed(jsx)
     parser.close()
-    pytml_tree = parser.parse()
-    pytml_root = pytml_tree[0]
+    pytml_root = parser.get_root()
     print("This is the pytml root root", pytml_root)
     return pytml_root
 

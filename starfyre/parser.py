@@ -2,6 +2,7 @@ import inspect
 import re
 
 from html.parser import HTMLParser
+from typing import List
 from uuid import uuid4
 
 from .component import Component
@@ -16,65 +17,19 @@ def extract_functions(obj):
     return functions
 
 
-
-class Parser(HTMLParser):
-    def __init__(self, state):
-        super().__init__()
-        self.stack = []
-        self.state = state # this is initialized for every component
-
-    def handle_starttag(self, tag, attrs):
-        props = {}
-        for attr in attrs:
-            props[attr[0]] = attr[1]
-
-        # instead of creating a new component, we check if the tag is a global component
-        # then we check the uuid of the global component
-        # if the uuid is not in the stack, we create a new component
-        # if the uuid is in the stack, we use the component from the stack
-        # we are using a hack for now
-
-        if tag in components:
-            component = components[tag][0]
-        else:
-            component = Component(tag, props, [], {}, self.state)
-
-        components[tag].append(component)
-        # instead of assiging tags we assign uuids
-        self.stack.append(component)
-
-    def handle_endtag(self, tag):
-        children = []
-        while self.stack:
-            node = self.stack[-1]
-            # instead of comparing tags we compare uuids
-            if isinstance(node, Component) and node.tag == tag:
-
-                break
-
-            self.stack.pop()
-            children.append(node)
-
-        children = children[::-1]
-        if self.stack:
-            self.stack[-1].children = children
-
-    def handle_data(self, data):
-        self.stack.append(Component("TEXT_NODE", {}, [], {}, self.state, data=data))
-
-    def parse(self):
-        return self.stack
-
-
 class RootParser(HTMLParser):
     generic_tags = ["div", "p", "b", "span", "i", "button"]
     def __init__(self, component_local_variables, component_global_variables):
         super().__init__()
-        self.stack = []
+        self.stack: list[tuple[ Component, int ] ] = []
+        self.children = []
+        self.current_depth = 0
+
+        # these are the event handlers and the props
         self.local_variables = component_local_variables
         self.global_variables = component_global_variables
         self.components = self.extract_components(component_local_variables)
-        print("These are the self components", self.components, new_global_components)
+        print("These are the self components", self.components)
         # populate the dict with the components
 
     def extract_components(self, local_functions):
@@ -84,7 +39,6 @@ class RootParser(HTMLParser):
                 components[key] = value
 
         return components
-
 
 
     def is_event_listener(self, name):
@@ -99,7 +53,7 @@ class RootParser(HTMLParser):
         props = {}
         state = {}
         event_listeners = {}
-        
+        self.current_depth += 1
 
         for attr in attrs:
             print("These are the new parse attributes", attr)
@@ -132,7 +86,10 @@ class RootParser(HTMLParser):
             component.props = {**component.props, **props}
             component.state = {**component.state, **state}
             component.event_listeners = {**component.event_listeners, **event_listeners}
-            self.stack.append(component)
+            self.stack.append(( component, self.current_depth))
+            printable_stack = [element[0].tag for element in self.stack]
+            print("Encountered a start tag :", tag, printable_stack, "Current depth", self.current_depth)
+
             return
 
         # see if the attribute value is a state component
@@ -158,33 +115,36 @@ class RootParser(HTMLParser):
         component = Component(tag, props, [], event_listeners, state)
 
         # instead of assiging tags we assign uuids
-        self.stack.append(component)
+        self.stack.append(( component, self.current_depth))
+        printable_stack = [element[0].tag for element in self.stack]
+        print("Encountered a start tag :", tag, printable_stack, "Current depth", self.current_depth)
+
 
     def handle_endtag(self, tag):
-        unresolved_tag = tag
+        # we need to check if the tag is a default component or a custom component
+        # if it is a custom component, we get the element from the custom components dict
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
             tag = component.tag
 
-        children = []
-        while self.stack:
-            node = self.stack[-1]
-            # instead of comparing tags we compare uuids
-            # can also compare the values of the last component for robustness
-            # but we don't need to do that for now
-            if isinstance(node, Component) and node.tag == tag:
-                break
+        print("Encountered an end tag :", tag, "Current depth", self.current_depth, "Stack", self.stack, "Children", self.children)
+        parent_node, parent_depth = self.stack[-1] # based on the assumption that the stack is not empty
+        # need to check the if this is always true
 
-            self.stack.pop()
-            children.append(node)
+        while len( self.children ) > 0:
+            child, child_depth = self.children[0]
+            print("These are the children", child, child_depth)
+            if child_depth == parent_depth + 1:
+                self.children.pop(0)
+                self.stack[-1][0].children.insert(0, child)
+                print("Added child", child.tag, "to parent", parent_node.tag)
+            else:
+                break # we have reached the end of the children
 
-        children = children[::-1]
-        if self.stack:
-            print("These are the children", children)
-            self.stack[-1].children.extend(children)
+        self.stack.pop()
+        self.current_depth = parent_depth
+        self.children.insert(0, (parent_node, parent_depth))
 
-        if unresolved_tag == 'display':
-            print("These are the self This is the display component", self.stack[-1], self.stack, children)
 
     def handle_data(self, data):
         data = data.strip().strip("\n").strip(" ")
@@ -208,6 +168,9 @@ class RootParser(HTMLParser):
             elif self.is_state(current_data):
                 state[match] = current_data
 
+        if data == "":
+            return
+
 
         # matches can be of 4 types
         # 1. {{variable}} 2. {{function()}} 3. Props = these are all just local and global variables
@@ -215,15 +178,19 @@ class RootParser(HTMLParser):
 
         # TODO handle state in text node
 
-        self.stack.append(Component("TEXT_NODE", {}, [], {}, state=state, data=data))
+        self.current_depth += 1
+        # this should never be in the parent stack
+        # a text node is a child node as soon as it is created
+        print("Encountered some text data :", data, "Current depth", self.current_depth)
+        self.children.append(( Component("TEXT_NODE", {}, [], {}, state=state, data=data), self.current_depth ))
+        self.current_depth -= 1
 
-    def parse(self):
+
+    def get_stack(self):
         return self.stack
 
 
-
-        
-
-
+    def get_root(self):
+        return self.children[0][0]
 
 

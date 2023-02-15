@@ -32,8 +32,6 @@ class Parser(HTMLParser):
         if self.stack:
             self.stack[-1].children = children
 
-        print("Encountered an end tag :", self.stack)
-
     def handle_data(self, data):
         self.stack.append(Component("TEXT_NODE", {}, [], {}, {}, data=data))
 

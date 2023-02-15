@@ -8,7 +8,7 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-starfyre = "^0.2.0"
+starfyre = "^0.3.0"
 
 
 [build-system]

@@ -11,11 +11,11 @@ def set(component, *args):
 def Display():
     return create_component(
         """
-        <span>
+        <div>
         <button onClick=set>
             +
         </button>
-        </span>
+        </div>
         """
     )
 
