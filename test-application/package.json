@@ -4,7 +4,7 @@
   "description": "Create Starfyre App",
   "main": "index.js",
   "scripts": {
-    "start": "poetry build && python -m http.server"
+    "start": "make dev"
   },
   "author": "Sanskar Jethi",
   "license": "MIT"
