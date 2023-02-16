@@ -23,6 +23,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-darwin
+      - name: Install ems script
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install 3.1.27
+          ./emsdk activate 3.1.27
+          source ./emsdk_env.sh
+
       - name: Build wheels - x86_64
         uses: PyO3/maturin-action@v1
         with:
@@ -90,6 +98,13 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install ems script
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install 3.1.27
+          ./emsdk activate 3.1.27
+          source ./emsdk_env.sh
       - name: Build Wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -122,6 +137,13 @@ jobs:
         target: [aarch64, armv7, s390x, ppc64le]
     steps:
       - uses: actions/checkout@v3
+      - name: Install ems script
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install 3.1.27
+          ./emsdk activate 3.1.27
+          source ./emsdk_env.sh
       - name: Build Wheels
         uses: PyO3/maturin-action@v1
         env:
