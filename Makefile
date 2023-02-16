@@ -9,18 +9,45 @@ NO_COL='\033[0m'
 # cool colors!
 STARFYRE="${YEL}star${RED}fyre${NO_COL}"
 
+
 default: help
 
-# TODO
-# preinstall: # Sets up build environment.
-# install: # Prepares the build evironment, calls preinstall if you have not*.
-# clean: # Removes the preinstall environment
+
+.PHONY: dep-check
+dep-check: # Checks that you have the pre-requisite environment
+
+	@[ $(shell which python3.10) ] || (echo "python3.10 is not available. To get started, see: https://realpython.com/installing-python/"; exit 1)
+	@[ $(shell which rustup) ] || (echo "rustup is not available. To get started, see: https://doc.rust-lang.org/cargo/getting-started/installation.html"; exit 1)
+	@[ $(shell which cargo) ] || (echo "rustup is not available. To get started, see: https://doc.rust-lang.org/cargo/getting-started/installation.html"; exit 1)
+# we (maturin?) needs `emcc` at some stage in the compilation.
+# will not error for now...
+	@[ $(shell which emcc) ] || echo "${STARFYRE}: WARNING! emcc is not available. To get started, see: https://emscripten.org/docs/getting_started/downloads.html"
+
+
+.PHONY: preinstall
+preinstall: # Sets up build environment
+	@$(MAKE) dep-check
+	@$(MAKE) clean
+	@echo "${STARFYRE}: preparing python virtual environment (venv)"
+	@python3.10 -m venv .venv
+	@echo "${STARFYRE}: preinstall environment ready"
+
+
+.PHONY: install
+install: # Prepares the build environment, calls preinstall if you have not*
+	@[ -e .venv/bin/python ] || $(MAKE) preinstall
+	@echo "${STARFYRE}: installing dev dependencies"
+	@.venv/bin/python -m pip install -r requirements-dev.txt
+	@echo "${STARFYRE}: dev environment prepared"
+
 
 .PHONY: build
 build: # Builds the application to `OUTPUT_DIR`, using `RUSTUP_TOOLCHAIN`
+	@$(MAKE) dep-check
+	@[ -e .venv/bin/python ] || $(MAKE) install
 	@echo "${STARFYRE}: building to ${OUTPUT_DIR}"
 	@mkdir -p ${OUTPUT_DIR}
-	RUSTUP_TOOLCHAIN=${RUSTUP_TOOLCHAIN} maturin build --target wasm32-unknown-emscripten -i python3.10 --out ${OUTPUT_DIR}
+	@RUSTUP_TOOLCHAIN=${RUSTUP_TOOLCHAIN} .venv/bin/maturin build --target wasm32-unknown-emscripten -i python3.10 --out ${OUTPUT_DIR}
 	@echo "${STARFYRE}: build available @ ${OUTPUT_DIR}/"
 
 
@@ -38,6 +65,13 @@ in-dev: # Builds `starfyre` and injects into a running `test-application`
 # similar to `dev`, but builds first
 	@$(MAKE) build
 	@$(MAKE) dev
+
+
+.PHONY: clean
+clean: # Removes the preinstall environment
+	@echo "${STARFYRE}: removing preinstall environment"
+	@rm -rf .venv/
+	@echo "${STARFYRE}: Done. please run make install now"
 
 
 .PHONY: help
