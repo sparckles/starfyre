@@ -2,14 +2,15 @@ import inspect
 import re
 from uuid import uuid4
 
-from .parser import  RootParser
+import js
+
+from starfyre.starfyre import DomNode, sum_as_string
+
 from .component import Component
 from .dom_methods import render
-from .store import create_signal
 from .global_components import components
-
-import js
-from starfyre.starfyre import sum_as_string, DomNode
+from .parser import RootParser
+from .store import create_signal
 
 
 def extract_functions(obj):
@@ -43,6 +44,7 @@ def return_state(possible_state_names, local_functions, global_functions):
         else:
             pass
     return states
+
 
 def create_component(jsx):
     locals_variables = inspect.currentframe().f_back.f_locals.copy()

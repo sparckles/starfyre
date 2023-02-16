@@ -1,15 +1,24 @@
-from typing import Optional
-import js
-from .component import Component
-from pyodide import create_proxy
-from functools import partial
 import re
+from functools import partial
+from typing import Optional
+
+import js
+from pyodide import create_proxy
+
 from starfyre.starfyre import DomNode
+
+from .component import Component
+
 
 def assign_event_listeners(component: Component, event_listeners):
     for event_listener_name, event_listener in event_listeners.items():
         event_type = event_listener_name.lower()[2:]
-        print("Assigning event listeners to the component", component, event_type, event_listener)
+        print(
+            "Assigning event listeners to the component",
+            component,
+            event_type,
+            event_listener,
+        )
         component.dom.addEventListener(event_type, create_proxy(event_listener))
 
 
@@ -19,7 +28,6 @@ def render(component: Component):
         parentElement = js.document.createElement("div")
         parentElement.id = "root"
         js.document.body.appendChild(parentElement)
-
 
     component.parentDom = parentElement
     # we will add rust later
@@ -41,9 +49,7 @@ def render(component: Component):
             if match in state:
                 function = state[match]
                 function = partial(function, component)
-                data = component.data.replace(
-                    f"{{{ match }}}", str(function())
-                )
+                data = component.data.replace(f"{{{ match }}}", str(function()))
         dom = js.document.createTextNode(data)
         print("Text Node", component)
     else:
@@ -54,7 +60,6 @@ def render(component: Component):
     # Add event listeners
     isListener = lambda name: name.startswith("on")
     isAttribute = lambda name: not isListener(name) and name != "children"
-
 
     assign_event_listeners(component, component.event_listeners)
     # set attributes

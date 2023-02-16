@@ -1,11 +1,13 @@
 import uuid
 
-from starfyre.component import Component
-from .dom_methods import render
 import js
 
+from starfyre.component import Component
+
+from .dom_methods import render
+
 store = {}
-observers: dict[uuid.UUID, list[ Component ]] = {}
+observers: dict[uuid.UUID, list[Component]] = {}
 
 
 def create_signal(initial_state=None):

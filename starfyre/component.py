@@ -1,10 +1,10 @@
 from abc import abstractmethod
-from typing import Optional
-import js
-from uuid import uuid4
-from html.parser import HTMLParser
-
 from dataclasses import dataclass
+from html.parser import HTMLParser
+from typing import Optional
+from uuid import uuid4
+
+import js
 
 
 class Parser(HTMLParser):
@@ -18,7 +18,6 @@ class Parser(HTMLParser):
         self.stack.append(Component(tag, props, [], {}, {}))
 
     def handle_endtag(self, tag):
-
         children = []
         while self.stack:
             node = self.stack[-1]
