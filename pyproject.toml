@@ -2,8 +2,6 @@
 requires = ["maturin>=0.12"]
 build-backend = "maturin"
 
-[tool.maturin]
-python-source = "starfyre"
 
 [project]
 name = "starfyre"
