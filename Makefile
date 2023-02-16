@@ -74,6 +74,13 @@ clean: # Removes the preinstall environment
 	@echo "${STARFYRE}: Done. please run make install now"
 
 
+.PHONY: format
+format: # Formats source code
+	@echo "${STARFYRE}: Formatting source code"
+	@[ $(shell which tox) ] || (echo "tox is not available. run python3.10 -m pip install tox"; exit 1)
+# format python code
+	@tox -e format
+
 .PHONY: help
 help: # Shows `make` help commands and ARGS
 	@echo "Welcome to ${STARFYRE}!"
