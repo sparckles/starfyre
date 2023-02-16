@@ -14,7 +14,7 @@ jobs:
       RUSTUP_TOOLCHAIN: nightly
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -30,12 +30,13 @@ jobs:
           ./emsdk install 3.1.27
           ./emsdk activate 3.1.27
           source ./emsdk_env.sh
+          rustup target add wasm32-unknown-emscripten
 
       - name: Build wheels - x86_64
         uses: PyO3/maturin-action@v1
         with:
           target: x86_64
-          args: --target wasm32-unknown-emscripten -i python --release --out dist
+          args: --target wasm32-unknown-emscripten -i python${{matrix.python-version}} --release --out dist
       - name: Install build wheel - x86_64
         run: |
           pip install --force-reinstall dist/starfyre*.whl
@@ -43,7 +44,7 @@ jobs:
       - name: Build wheels - universal2
         uses: PyO3/maturin-action@v1
         with:
-          args: --target wasm32-unknown-emscripten -i python --release --out dist
+          args: --target wasm32-unknown-emscripten -i python${{matrix.python-version}} --release --out dist
       - name: Install build wheel - universal2
         run: |
           pip install --force-reinstall dist/starfyre*_universal2.whl
@@ -61,7 +62,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11"]
         target: [x64, x86]
     steps:
       - uses: actions/checkout@v3
@@ -74,7 +75,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --target wasm32-unknown-emscripten -i python --release --out dist
+          args: --target wasm32-unknown-emscripten -i python${{matrix.python-version}} --release --out dist
       - name: Install build wheel
         shell: bash
         run: |
@@ -90,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11"]
         target: [x86_64, i686]
     steps:
       - uses: actions/checkout@v3
@@ -105,6 +106,8 @@ jobs:
           ./emsdk install 3.1.27
           ./emsdk activate 3.1.27
           source ./emsdk_env.sh
+          rustup target add wasm32-unknown-emscripten
+
       - name: Build Wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -128,9 +131,6 @@ jobs:
       matrix:
         python:
           [
-            { version: "3.7", abi: "cp37-cp37m" },
-            { version: "3.8", abi: "cp38-cp38" },
-            { version: "3.9", abi: "cp39-cp39" },
             { version: "3.10", abi: "cp310-cp310" },
             { version: "3.11", abi: "cp311-cp311" },
           ]
@@ -144,6 +144,8 @@ jobs:
           ./emsdk install 3.1.27
           ./emsdk activate 3.1.27
           source ./emsdk_env.sh
+          rustup target add wasm32-unknown-emscripten
+
       - name: Build Wheels
         uses: PyO3/maturin-action@v1
         env:
@@ -176,6 +178,8 @@ jobs:
             source venv/bin/activate
             pip install --upgrade pip
             pip install --force-reinstall dist/starfyre*.whl
+            rustup target add wasm32-unknown-emscripten
+
             # cd ~ && python -c 'import starfyre'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
