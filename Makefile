@@ -74,12 +74,38 @@ clean: # Removes the preinstall environment
 	@echo "${STARFYRE}: Done. please run make install now"
 
 
+.PHONY: dep-check-ci
+dep-check-ci:
+	@[ $(shell which tox) ] || (echo "tox is not available. run python3.10 -m pip install tox"; exit 1)
+
+
 .PHONY: format
 format: # Formats source code
 	@echo "${STARFYRE}: Formatting source code"
-	@[ $(shell which tox) ] || (echo "tox is not available. run python3.10 -m pip install tox"; exit 1)
+	@$(MAKE) dep-check-ci
 # format python code
 	@tox -e format
+
+
+.PHONY: mypy
+mypy: # mypy source code
+	@$(MAKE) dep-check-ci
+	@tox -e mypy
+
+.PHONY: pylint
+pylint: # pylint source code
+	@$(MAKE) dep-check-ci
+	@tox -e pylint
+
+
+.PHONY: lint
+lint: # lint source code
+	@echo "${STARFYRE}: Performing lint check against source code"
+	@$(MAKE) dep-check-ci
+# lint python code
+	@$(MAKE) mypy
+	@$(MAKE) pylint
+
 
 .PHONY: help
 help: # Shows `make` help commands and ARGS
