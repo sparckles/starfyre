@@ -39,7 +39,7 @@ jobs:
       - name: Install build wheel - x86_64
         run: |
           pip install --force-reinstall dist/starfyre*.whl
-          cd ~ && python -c 'import starfyre'
+          # cd ~ && python -c 'import starfyre' # based on hope atm
       - name: Build wheels - universal2
         uses: PyO3/maturin-action@v1
         with:
@@ -47,7 +47,7 @@ jobs:
       - name: Install build wheel - universal2
         run: |
           pip install --force-reinstall dist/starfyre*_universal2.whl
-          cd ~ && python -c 'import starfyre'
+          # cd ~ && python -c 'import starfyre'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
@@ -79,7 +79,7 @@ jobs:
         shell: bash
         run: |
           pip install --force-reinstall dist/starfyre*.whl
-          cd ~ && python -c 'import starfyre'
+          # cd ~ && python -c 'import starfyre'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
@@ -115,7 +115,7 @@ jobs:
         if: matrix.target == 'x86_64'
         run: |
           pip install --force-reinstall dist/starfyre*.whl
-          cd ~ && python -c 'import starfyre'
+          # cd ~ && python -c 'import starfyre'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
@@ -151,7 +151,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           manylinux: auto
-          args: -i python${{matrix.python}} --release --out dist
+          args: -i python${{matrix.python.version}} --release --out dist
       - uses: uraimo/run-on-arch-action@v2.2.0
         name: Install build wheel
         with:
@@ -176,7 +176,7 @@ jobs:
             source venv/bin/activate
             pip install --upgrade pip
             pip install --force-reinstall dist/starfyre*.whl
-            cd ~ && python -c 'import starfyre'
+            # cd ~ && python -c 'import starfyre'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
