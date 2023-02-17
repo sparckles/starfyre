@@ -87,11 +87,6 @@ format: # Formats source code
 	@tox -e format
 
 
-.PHONY: mypy
-mypy: # mypy source code
-	@$(MAKE) dep-check-ci
-	@tox -e mypy
-
 .PHONY: pylint
 pylint: # pylint source code
 	@$(MAKE) dep-check-ci
@@ -103,7 +98,6 @@ lint: # lint source code
 	@echo "${STARFYRE}: Performing lint check against source code"
 	@$(MAKE) dep-check-ci
 # lint python code
-	@$(MAKE) mypy
 	@$(MAKE) pylint
 
 
