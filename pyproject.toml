@@ -27,8 +27,7 @@ sources = {toxinidir}/starfyre
 
 envlist =
     format
-    mypy
-    pylint
+    ruff
 
 
 [testenv:format]
@@ -41,25 +40,13 @@ deps =
     isort
     black
 
-[testenv:mypy]
-basepython = python3.10
-skip_install = True
-commands = mypy {[config]sources}
-deps =
-    mypy
 
-[testenv:pylint]
+[testenv:ruff]
 basepython = python3.10
 skip_install = True
-commands = pylint {[config]sources}
+commands = ruff --fix {[config]sources}
 deps =
-    pylint
+    ruff
 
 
 """
-
-########
-# mypy
-########
-[tool.mypy]
-ignore_missing_imports = true

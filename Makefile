@@ -87,10 +87,10 @@ format: # Formats source code
 	@tox -e format
 
 
-.PHONY: pylint
-pylint: # pylint source code
+.PHONY: ruff
+ruff: # ruff source code
 	@$(MAKE) dep-check-ci
-	@tox -e pylint
+	@tox -e ruff
 
 
 .PHONY: lint
@@ -98,7 +98,7 @@ lint: # lint source code
 	@echo "${STARFYRE}: Performing lint check against source code"
 	@$(MAKE) dep-check-ci
 # lint python code
-	@$(MAKE) pylint
+	@$(MAKE) ruff
 
 
 .PHONY: help
