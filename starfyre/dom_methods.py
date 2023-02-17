@@ -1,11 +1,9 @@
 import re
 from functools import partial
-from typing import Optional
 
 import js
 from pyodide import create_proxy
 
-from starfyre.starfyre import DomNode
 
 from .component import Component
 
@@ -58,8 +56,10 @@ def render(component: Component):
     component.dom = dom
 
     # Add event listeners
-    isListener = lambda name: name.startswith("on")
-    isAttribute = lambda name: not isListener(name) and name != "children"
+    def isListener(name):
+        return name.startswith("on")
+    def isAttribute(name):
+        return not isListener(name) and name != "children"
 
     assign_event_listeners(component, component.event_listeners)
     # set attributes

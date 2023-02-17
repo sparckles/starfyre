@@ -1,14 +1,11 @@
 import inspect
-import re
-from uuid import uuid4
 
 import js
 
-from starfyre.starfyre import DomNode, sum_as_string
+from starfyre.starfyre import sum_as_string
 
 from .component import Component
 from .dom_methods import render
-from .global_components import components
 from .parser import RootParser
 from .store import create_signal
 

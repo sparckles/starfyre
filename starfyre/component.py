@@ -1,7 +1,5 @@
-from abc import abstractmethod
 from dataclasses import dataclass
 from html.parser import HTMLParser
-from typing import Optional
 from uuid import uuid4
 
 import js

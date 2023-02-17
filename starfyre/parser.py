@@ -1,11 +1,7 @@
-import inspect
 import re
 from html.parser import HTMLParser
-from typing import List
-from uuid import uuid4
 
 from .component import Component
-from .global_components import components, new_global_components
 
 
 def extract_functions(obj):
