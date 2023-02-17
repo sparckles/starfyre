@@ -48,5 +48,8 @@ commands = ruff --fix {[config]sources}
 deps =
     ruff
 
-
 """
+
+[tool.ruff]
+# line-too-ling
+ignore = ["E501"]
