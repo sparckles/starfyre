@@ -12,3 +12,44 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
+
+
+#######
+# tox
+#######
+
+[tool.tox]
+legacy_tox_ini = """
+
+[config]
+sources = {toxinidir}/starfyre
+
+
+envlist =
+    format
+    ruff
+
+
+[testenv:format]
+basepython = python3.10
+skip_install = True
+commands = 
+    isort --atomic {[config]sources}
+    black {[config]sources}
+deps =
+    isort
+    black
+
+
+[testenv:ruff]
+basepython = python3.10
+skip_install = True
+commands = ruff --fix {[config]sources}
+deps =
+    ruff
+
+"""
+
+[tool.ruff]
+# line-too-ling
+ignore = ["E501"]
