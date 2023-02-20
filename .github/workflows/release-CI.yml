@@ -4,8 +4,11 @@ name: Release CI
 
 on:
   push:
-    tags:
-      - v*
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   macos:
@@ -14,183 +17,168 @@ jobs:
       RUSTUP_TOOLCHAIN: nightly
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10"] # figure out the shell part somedat
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@nightly
         with:
           targets: aarch64-apple-darwin
-      - name: Install ems script
+      - name: Install emscripten
         run: |
+          rustup target add --toolchain nightly wasm32-unknown-emscripten
+
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
           ./emsdk install 3.1.27
           ./emsdk activate 3.1.27
           source ./emsdk_env.sh
-          rustup target add wasm32-unknown-emscripten
+          cd ..
+          pip install maturin
+          maturin build --target wasm32-unknown-emscripten -i python3.10 --release --out dist
 
-      - name: Build wheels - x86_64
-        uses: PyO3/maturin-action@v1
-        with:
-          target: x86_64
-          args: --target wasm32-unknown-emscripten -i python${{matrix.python-version}} --release --out dist
-      - name: Install build wheel - x86_64
-        run: |
-          pip install --force-reinstall dist/starfyre*.whl
-          # cd ~ && python -c 'import starfyre' # based on hope atm
-      - name: Build wheels - universal2
-        uses: PyO3/maturin-action@v1
-        with:
-          args: --target wasm32-unknown-emscripten -i python${{matrix.python-version}} --release --out dist
-      - name: Install build wheel - universal2
-        run: |
-          pip install --force-reinstall dist/starfyre*_universal2.whl
-          # cd ~ && python -c 'import starfyre'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
 
-  windows:
-    runs-on: windows-latest
-    env:
-      RUSTUP_TOOLCHAIN: nightly
+  # windows:
+  #   runs-on: windows-latest
+  #   env:
+  #     RUSTUP_TOOLCHAIN: nightly
 
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11"]
-        target: [x64, x86]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: ${{ matrix.target }}
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Build wheels
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.target }}
-          args: --target wasm32-unknown-emscripten -i python${{matrix.python-version}} --release --out dist
-      - name: Install build wheel
-        shell: bash
-        run: |
-          pip install --force-reinstall dist/starfyre*.whl
-          # cd ~ && python -c 'import starfyre'
-      - name: Upload wheels
-        uses: actions/upload-artifact@v3
-        with:
-          name: wheels
-          path: dist
+  #   strategy:
+  #     matrix:
+  #       python-version: ["3.10"]
+  #       target:
+  #         [x86]
+  #         # emsdk install sdk-incoming-64bit for 64 bit
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
+  #         architecture: ${{ matrix.target }}
+  #     - uses: dtolnay/rust-toolchain@nightly
+  #     - name: Install emscripten
+  #       run: |
+  #         rustup target add --toolchain nightly wasm32-unknown-emscripten
+
+  #         git clone https://github.com/emscripten-core/emsdk.git
+  #         cd emsdk
+  #         .\emsdk.bat install 3.1.27
+  #         .\emsdk.bat activate 3.1.27
+  #         .\emsdk_env.bat
+  #         cd ..
+  #         pip install maturin
+  #         maturin build --target wasm32-unknown-emscripten -i python3.10  --release --out dist
+
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: wheels
+  #         path: dist
 
   linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10"]
         target: [x86_64, i686]
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@nightly
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install ems script
+      - name: Install emscripten
         run: |
+          rustup target add --toolchain nightly wasm32-unknown-emscripten
+
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
           ./emsdk install 3.1.27
           ./emsdk activate 3.1.27
           source ./emsdk_env.sh
-          rustup target add wasm32-unknown-emscripten
+          cd ..
+          pip install maturin
+          PYTHON=python${{ matrix.python.version }}
+          maturin build --target wasm32-unknown-emscripten -i python3.10 --release --out dist
 
-      - name: Build Wheels
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.target }}
-          manylinux: auto
-          args: -i python${{ matrix.python-version }} --release --out dist
-      - name: Install build wheel
-        if: matrix.target == 'x86_64'
-        run: |
-          pip install --force-reinstall dist/starfyre*.whl
-          # cd ~ && python -c 'import starfyre'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
 
-  linux-cross:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python:
-          [
-            { version: "3.10", abi: "cp310-cp310" },
-            { version: "3.11", abi: "cp311-cp311" },
-          ]
-        target: [aarch64, armv7, s390x, ppc64le]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install ems script
-        run: |
-          git clone https://github.com/emscripten-core/emsdk.git
-          cd emsdk
-          ./emsdk install 3.1.27
-          ./emsdk activate 3.1.27
-          source ./emsdk_env.sh
-          rustup target add wasm32-unknown-emscripten
+  # linux-cross:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       python:
+  #         [
+  #           { version: "3.10", abi: "cp310-cp310" },
+  #           { version: "3.11", abi: "cp311-cp311" },
+  #         ]
+  #       target: [aarch64, armv7, s390x, ppc64le]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Install ems script
+  #       run: |
+  #         git clone https://github.com/emscripten-core/emsdk.git
+  #         cd emsdk
+  #         ./emsdk install 3.1.27
+  #         ./emsdk activate 3.1.27
+  #         source ./emsdk_env.sh
+  #         rustup target add wasm32-unknown-emscripten
 
-      - name: Build Wheels
-        uses: PyO3/maturin-action@v1
-        env:
-          PYO3_CROSS_LIB_DIR: /opt/python/${{ matrix.python.abi }}/lib
-        with:
-          target: ${{ matrix.target }}
-          manylinux: auto
-          args: -i python${{matrix.python.version}} --release --out dist
-      - uses: uraimo/run-on-arch-action@v2.2.0
-        name: Install build wheel
-        with:
-          arch: ${{ matrix.target }}
-          distro: ubuntu20.04
-          githubToken: ${{ github.token }}
-          # Mount the dist directory as /artifacts in the container
-          dockerRunArgs: |
-            --volume "${PWD}/dist:/artifacts"
-          install: |
-            apt update -y
-            apt install -y --no-install-recommends software-properties-common
-            add-apt-repository ppa:deadsnakes/ppa
-            apt update -y
-            PYTHON=python${{ matrix.python.version }}
-            apt install -y $PYTHON $PYTHON-distutils $PYTHON-venv
-          run: |
-            ls -lrth /artifacts
-            PYTHON=python${{ matrix.python.version }}
-            $PYTHON --version
-            $PYTHON -m venv venv
-            source venv/bin/activate
-            pip install --upgrade pip
-            pip install --force-reinstall dist/starfyre*.whl
-            rustup target add wasm32-unknown-emscripten
+  #     - name: Build Wheels
+  #       uses: PyO3/maturin-action@v1
+  #       env:
+  #         PYO3_CROSS_LIB_DIR: /opt/python/${{ matrix.python.abi }}/lib
+  #       with:
+  #         target: ${{ matrix.target }}
+  #         manylinux: auto
+  #         args: -i python${{matrix.python.version}} --release --out dist
+  #     - uses: uraimo/run-on-arch-action@v2.2.0
+  #       name: Install build wheel
+  #       with:
+  #         arch: ${{ matrix.target }}
+  #         distro: ubuntu20.04
+  #         githubToken: ${{ github.token }}
+  #         # Mount the dist directory as /artifacts in the container
+  #         dockerRunArgs: |
+  #           --volume "${PWD}/dist:/artifacts"
+  #         install: |
+  #           apt update -y
+  #           apt install -y --no-install-recommends software-properties-common
+  #           add-apt-repository ppa:deadsnakes/ppa
+  #           apt update -y
+  #           PYTHON=python${{ matrix.python.version }}
+  #           apt install -y $PYTHON $PYTHON-distutils $PYTHON-venv
+  #         run: |
+  #           ls -lrth /artifacts
+  #           PYTHON=python${{ matrix.python.version }}
+  #           $PYTHON --version
+  #           $PYTHON -m venv venv
+  #           source venv/bin/activate
+  #           pip install --upgrade pip
+  #           pip install --force-reinstall dist/starfyre*.whl
+  #           rustup target add wasm32-unknown-emscripten
 
-            # cd ~ && python -c 'import starfyre'
-      - name: Upload wheels
-        uses: actions/upload-artifact@v3
-        with:
-          name: wheels
-          path: dist
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: wheels
+  #         path: dist
 
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [macos, windows, linux, linux-cross]
+    needs: [macos, windows, linux] # I will worry about linux cross later
     steps:
       - uses: actions/download-artifact@v3
         with:
