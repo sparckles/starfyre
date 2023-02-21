@@ -28,6 +28,8 @@ venv/
 *.egg-info/
 .installed.cfg
 *.egg
+*.whl
+*.tar.gz
 
 # Installer logs
 pip-log.txt
@@ -73,3 +75,8 @@ docs/_build/
 
 # dist folder
 dist
+
+
+
+test-application/__pycache__/
+test-application/dist/

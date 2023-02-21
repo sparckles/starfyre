@@ -12,7 +12,7 @@ def Display():
     return create_component(
         """
         <div>
-        <button onClick=set>
+        <button onClick={set}>
             +
         </button>
         </div>
