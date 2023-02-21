@@ -15,6 +15,6 @@ def print_mouse_over(component, *args):
 def Counter():
     # create a global store
     return create_component(
-        """<div class="main-content"><p onMouseOver=print_mouse_over>Count {get_state}</p></div>
+        """<div class="main-content"><p onMouseOver={print_mouse_over}>Count {get_state}</p></div>
         """
     )

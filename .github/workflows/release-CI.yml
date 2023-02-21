@@ -37,7 +37,8 @@ jobs:
           source ./emsdk_env.sh
           cd ..
           pip install maturin
-          maturin build --target wasm32-unknown-emscripten -i python3.10 --release --out dist
+          maturin build --target wasm32-unknown-emscripten -i python3.10 --out dist --sdist --universal2
+          rm dist/*.whl
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
@@ -106,7 +107,8 @@ jobs:
           cd ..
           pip install maturin
           PYTHON=python${{ matrix.python.version }}
-          maturin build --target wasm32-unknown-emscripten -i python3.10 --release --out dist
+          maturin build --target wasm32-unknown-emscripten -i python3.10 --out dist
+          rm dist/*.whl
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
@@ -178,7 +180,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [macos, windows, linux] # I will worry about linux cross later
+    needs: [macos, linux] # I will worry about linux cross later
     steps:
       - uses: actions/download-artifact@v3
         with:
