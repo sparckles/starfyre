@@ -37,7 +37,7 @@ jobs:
           source ./emsdk_env.sh
           cd ..
           pip install maturin
-          maturin build --target wasm32-unknown-emscripten -i python3.10 --out dist --sdist --universal2
+          maturin build --target wasm32-unknown-emscripten -i python3.10 --out dist --sdist  --universal2 --strip
           rm dist/*.whl
 
       - name: Upload wheels
@@ -107,7 +107,7 @@ jobs:
           cd ..
           pip install maturin
           PYTHON=python${{ matrix.python.version }}
-          maturin build --target wasm32-unknown-emscripten -i python3.10 --out dist
+          maturin build --target wasm32-unknown-emscripten -i python3.10 --out dist --sdist
           rm dist/*.whl
 
       - name: Upload wheels

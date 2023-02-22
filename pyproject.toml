@@ -1,3 +1,7 @@
+name = "starfyre"
+description = "A Python Framework for writing Reactive web Front-Ends"
+authors = ["Sanskar Jethi <sansyrox@gmail.com>"]
+
 [build-system]
 requires = ["maturin>=0.12"]
 build-backend = "maturin"
@@ -5,12 +9,19 @@ build-backend = "maturin"
 
 [project]
 name = "starfyre"
-requires-python = ">=3.6"
+requires-python = ">=3.10"
 dependencies=[]
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
 
 

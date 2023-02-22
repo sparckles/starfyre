@@ -79,4 +79,5 @@ dist
 
 
 test-application/__pycache__/
-test-application/dist/
+test-application/dist/*
+test-application/starfyre-dist/*
