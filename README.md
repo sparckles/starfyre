@@ -1,3 +1,6 @@
+
+<img alt="Starfyre Logo" src="https://user-images.githubusercontent.com/29942790/221331176-609e156a-3896-4c1a-9386-7bf595dfb879.png" width="350" />
+
 # Starfyre ⭐🔥
 
 ## Introduction:
