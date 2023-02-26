@@ -56,6 +56,7 @@ dev: # Runs `test-application` built with the current `OUTPUT_DIR` starfyre
 # FIXME - this works because of a hack in how ./test-application/public/index.html 
 # `micro-pip` installs the .whl's, version mismatches will lead to unexpected result.
 	@echo "${STARFYRE}: packaging dev-starfyre @ ${OUTPUT_DIR}/ into ./test-application"
+	@mkdir -p ./test-application/starfyre-dist
 	@cp -R ${OUTPUT_DIR}/* ./test-application/starfyre-dist/
 	@cd test-application && $(MAKE) dev
 

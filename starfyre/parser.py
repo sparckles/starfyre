@@ -54,15 +54,15 @@ class RootParser(HTMLParser):
         for attr in attrs:
             print("These are the new parse attributes", attr)
             if attr[1].startswith("{") and attr[1].endswith("}"):
-                attr[1] = attr[1].strip("{").strip("}").strip(" ")
+                attr_value = attr[1].strip("{").strip("}").strip(" ")
                 if self.is_event_listener(attr[0]):
                     event_handler = None
-                    if attr[1] in self.global_variables:
-                        event_handler = self.global_variables[attr[1]]
+                    if attr_value in self.global_variables:
+                        event_handler = self.global_variables[attr_value]
 
                     # we are giving the priority to local functions
-                    if attr[1] in self.local_variables:
-                        event_handler = self.local_variables[attr[1]]
+                    if attr_value in self.local_variables:
+                        event_handler = self.local_variables[attr_value]
 
                     if event_handler is None:
                         print("Event handler not found")
@@ -72,11 +72,11 @@ class RootParser(HTMLParser):
                 else:
                     # here we need to check if these are functions
                     # or state objects or just regular text
-                    if attr[1] in self.local_variables and self.is_state(
-                        self.local_variables[attr[1]]
+                    if attr_value in self.local_variables and self.is_state(
+                        self.local_variables[attr_value]
                     ):
-                        state[attr[0]] = self.local_variables[attr[1]]
-                        props[attr[0]] = self.local_variables[attr[1]]()
+                        state[attr[0]] = self.local_variables[attr_value]
+                        props[attr[0]] = self.local_variables[attr_value]()
             else:
                 props[attr[0]] = attr[1]
 
