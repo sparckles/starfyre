@@ -25,14 +25,14 @@ install: # Prepares the build environment, calls preinstall if you have not*
 	@echo "create-${STARFYRE}-app: dev environment prepared"
 
 .PHONY: build
-build: # Builds the test-application
+build: # Builds the test_application
 	@echo "create-${STARFYRE}-app: building"
 	@.venv/bin/python -m poetry build
 	@echo "create-${STARFYRE}-app: build complete"
 
 
 .PHONY: start
-start: # Starts the test-application
+start: # Starts the test_application
 	@echo  "create-${STARFYRE}-app @ ${WHITE}http://localhost:8000/public/${NO_COL}"
 	@.venv/bin/python -m http.server
 

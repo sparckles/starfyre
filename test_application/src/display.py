@@ -1,5 +1,5 @@
 from starfyre import create_component
-from .state import get_state, set_state
+from src.state import get_state, set_state
 
 
 def set(component, *args):
@@ -8,16 +8,14 @@ def set(component, *args):
     print("Hello world")
 
 
-def Display():
-    return create_component(
-        """
+
+def display():
+    return create_component("""
         <div>
         <button onClick={set}>
             +
         </button>
-        </div>
-        """
-    )
+    </div>
 
-
-
+    """)
+        

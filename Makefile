@@ -43,7 +43,12 @@ install: # Prepares the build environment, calls preinstall if you have not*
 
 .PHONY: build
 build: # Builds the application to `OUTPUT_DIR`, using `RUSTUP_TOOLCHAIN`
+	@echo "create-${STARFYRE}-app: compiling fyre files"
+	@.venv/bin/python ./scripts/pre-compile.py
+	@echo "building main project"
+
 	@$(MAKE) dep-check
+
 	@[ -e .venv/bin/python ] || $(MAKE) install
 	@echo "${STARFYRE}: building to ${OUTPUT_DIR}"
 	@mkdir -p ${OUTPUT_DIR}
@@ -52,17 +57,17 @@ build: # Builds the application to `OUTPUT_DIR`, using `RUSTUP_TOOLCHAIN`
 
 
 .PHONY: dev
-dev: # Runs `test-application` built with the current `OUTPUT_DIR` starfyre
-# FIXME - this works because of a hack in how ./test-application/public/index.html 
+dev: # Runs `test_application` built with the current `OUTPUT_DIR` starfyre
+# FIXME - this works because of a hack in how ./test_application/public/index.html 
 # `micro-pip` installs the .whl's, version mismatches will lead to unexpected result.
-	@echo "${STARFYRE}: packaging dev-starfyre @ ${OUTPUT_DIR}/ into ./test-application"
-	@mkdir -p ./test-application/starfyre-dist
-	@cp -R ${OUTPUT_DIR}/* ./test-application/starfyre-dist/
-	@cd test-application && $(MAKE) dev
+	@echo "${STARFYRE}: packaging dev-starfyre @ ${OUTPUT_DIR}/ into ./test_application"
+	@mkdir -p ./test_application/starfyre-dist
+	@cp -R ${OUTPUT_DIR}/* ./test_application/starfyre-dist/
+	@cd test_application && $(MAKE) dev
 
 
 .PHONY: in-dev
-in-dev: # Builds `starfyre` and injects into a running `test-application`
+in-dev: # Builds `starfyre` and injects into a running `test_application`
 # similar to `dev`, but builds first
 	@$(MAKE) build
 	@$(MAKE) dev

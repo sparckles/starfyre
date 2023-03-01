@@ -1,8 +1,12 @@
 import re
 from functools import partial
+import glob
+import os
+from pathlib import Path
 
 import js
 from pyodide import create_proxy
+import pyodide
 
 
 from .component import Component
@@ -20,7 +24,46 @@ def assign_event_listeners(component: Component, event_listeners):
         component.dom.addEventListener(event_type, create_proxy(event_listener))
 
 
+def pre_render():
+    """The purpose of this function is to get a list of all the files with .fyre extension in the current folder
+    """
+    current_file = Path(".")
+    parent = current_file.absolute()
+    print("This is the parent", parent)
+
+    print("This is parents parent", parent.parent)
+
+    # https://www.youtube.com/watch?v=B5bToFdBxdw
+
+    # walk in the pyodide folder
+
+
+    # for elem in pyodide.readdir(root):
+    #     print("This is the pyodide eleme", elem)
+
+
+
+    all_fire_files = glob.glob("/lib/**/*.fyre", recursive=True)
+
+    # for rood, dir, files in os.walk("/lib", topdown=True, onerror=None, followlinks=True):
+    # # # get all the files in the parent directory
+    # # files = glob.glob(str(parent) + "/*.fyre")
+    #     print("Walking the directory", rood, dir, files)
+
+    #     for file in files:
+    #         if file.endswith(".fyre"):
+    #             print("This is the file ", file)
+
+    print("This is the all fire files", all_fire_files)
+    
+
+
+
+
+
 def render(component: Component):
+    print("Calling the pre  render")
+    pre_render()
     parentElement = component.parentDom
     if parentElement is None:
         parentElement = js.document.createElement("div")
