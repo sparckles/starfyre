@@ -1,7 +1,7 @@
 import re
 from functools import partial
 
-import js
+# import js
 from pyodide import create_proxy
 
 

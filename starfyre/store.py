@@ -1,6 +1,6 @@
 import uuid
 
-import js
+# import js
 
 from starfyre.component import Component
 
