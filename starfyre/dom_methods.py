@@ -1,33 +1,43 @@
 import re
 from functools import partial
 
-# import js
-from pyodide import create_proxy
+
+# # import js
+# from pyodide import create_proxy
 
 
 from .component import Component
 
 
-def assign_event_listeners(component: Component, event_listeners):
-    for event_listener_name, event_listener in event_listeners.items():
-        event_type = event_listener_name.lower()[2:]
-        print(
-            "Assigning event listeners to the component",
-            component,
-            event_type,
-            event_listener,
-        )
-        component.dom.addEventListener(event_type, create_proxy(event_listener))
+# def assign_event_listeners(component: Component, event_listeners):
+#     for event_listener_name, event_listener in event_listeners.items():
+#         event_type = event_listener_name.lower()[2:]
+#         print(
+#             "Assigning event listeners to the component",
+#             component,
+#             event_type,
+#             event_listener,
+#         )
+#         component.dom.addEventListener(event_type, create_proxy(event_listener))
 
+def create_text_html(data: str):
+    return f"<TEXT_NODE>{ data }</TEXT_NODE>"
+    
 
-def render(component: Component):
-    parentElement = component.parentDom
+def render(component: Component) -> str:
+    parentElement = component.parentComponent
+    html = ""
     if parentElement is None:
-        parentElement = js.document.createElement("div")
-        parentElement.id = "root"
-        js.document.body.appendChild(parentElement)
+        # instead of creating an element with js
+        # we need to create a div string
 
-    component.parentDom = parentElement
+        parentElement = Component("div", {"id": "root"}, [], {}, {})
+        component.parentComponent = parentElement
+
+        # ?? 
+        # cannot use js
+        # js.document.body.appendChild(parentElement)
+
     # we will add rust later
     # dom_node = DomNode(element.tag, element.props, element.children, element.event_listeners, element.state or {})
     # dom_node.set_parent_element(parentDom)
@@ -37,7 +47,6 @@ def render(component: Component):
     props = component.props
     state = component.state
     data = component.data
-    print(data)
 
     # Create DOM element
     if component.is_text_component:
@@ -48,12 +57,11 @@ def render(component: Component):
                 function = state[match]
                 function = partial(function, component)
                 data = component.data.replace(f"{{{ match }}}", str(function()))
-        dom = js.document.createTextNode(data)
-        print("Text Node", component)
+        html += create_text_html(data)
+        component.html = html
     else:
-        dom = js.document.createElement(tag)
+        html += f"<{tag}>"
 
-    component.dom = dom
 
     # Add event listeners
     def isListener(name):
@@ -61,24 +69,44 @@ def render(component: Component):
     def isAttribute(name):
         return not isListener(name) and name != "children"
 
-    assign_event_listeners(component, component.event_listeners)
+    # TODO: add event listeners
+    # assign_event_listeners(component, component.event_listeners)
     # set attributes
 
+
+    prop_string = ""
     for name in props:
         if isAttribute(name):
-            dom.setAttribute(name, props[name])
+            prop_string += f" {name}='{props[name]}' "
+
+    html = html.replace(">", f"{prop_string}>")
+            
 
     # Render children
     children = component.children
     # childElements.forEach(childElement => render(childElement, dom));
     for childElement in children:
-        childElement.parentDom = dom
-        render(childElement)
+        childElement.parentElement = component
+        html += render(childElement)
 
+    # Close tag
+    if not component.is_text_component:
+        html += f"</{tag}>"
+
+    component.html = html
+
+    return html
     # // Append to parent
     # need to apply batch updates here
     # also create a tree of dom nodes in the first place
-    if parentElement.contains(dom):
-        parentElement.replaceChild(dom, parentElement.childNodes[0])
-    else:
-        parentElement.appendChild(dom)
+    # if parentElement.contains(dom):
+    #     parentElement.replaceChild(dom, parentElement.childNodes[0])
+    # else:
+    #     parentElement.appendChild(dom)
+
+
+
+def render_root(component: Component) -> str:
+    html = render(component)
+    return "<div id='root'>" + html + "</div>"
+

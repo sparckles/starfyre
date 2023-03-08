@@ -26,7 +26,6 @@ class RootParser(HTMLParser):
         self.local_variables = component_local_variables
         self.global_variables = component_global_variables
         self.components = self.extract_components(component_local_variables)
-        print("These are the self components", self.components)
         # populate the dict with the components
 
     def extract_components(self, local_functions):
@@ -88,13 +87,7 @@ class RootParser(HTMLParser):
             component.event_listeners = {**component.event_listeners, **event_listeners}
             self.stack.append((component, self.current_depth))
             printable_stack = [element[0].tag for element in self.stack]
-            print(
-                "Encountered a start tag :",
-                tag,
-                printable_stack,
-                "Current depth",
-                self.current_depth,
-            )
+
 
             return
 
@@ -118,14 +111,10 @@ class RootParser(HTMLParser):
 
         # instead of assiging tags we assign uuids
         self.stack.append((component, self.current_depth))
-        printable_stack = [element[0].tag for element in self.stack]
-        print(
-            "Encountered a start tag :",
-            tag,
-            printable_stack,
-            "Current depth",
-            self.current_depth,
-        )
+        printable_stack = [( element[0].tag, element[1]) for element in self.stack]
+        print("The stack is")
+        from pprint import pprint
+        pprint(printable_stack)
 
     def handle_endtag(self, tag):
         # we need to check if the tag is a default component or a custom component
@@ -134,20 +123,11 @@ class RootParser(HTMLParser):
             component = self.components[tag]
             tag = component.tag
 
-        print(
-            "Encountered an end tag :",
-            tag,
-            "Current depth",
-            self.current_depth,
-            "Stack",
-            self.stack,
-            "Children",
-            self.children,
-        )
+        # need to check the if this is always true
+        print("This is the end tag", tag)
         parent_node, parent_depth = self.stack[
             -1
         ]  # based on the assumption that the stack is not empty
-        # need to check the if this is always true
 
         while len(self.children) > 0:
             child, child_depth = self.children[0]
@@ -160,8 +140,11 @@ class RootParser(HTMLParser):
                 break  # we have reached the end of the children
 
         self.stack.pop()
-        self.current_depth = parent_depth
+        self.current_depth -= 1
         self.children.insert(0, (parent_node, parent_depth))
+        print("The updated children are")
+        from pprint import pprint
+        pprint(self.children)
 
     def handle_data(self, data):
         data = data.strip().strip("\n").strip(" ")
@@ -181,7 +164,7 @@ class RootParser(HTMLParser):
                 raise Exception("Variable not found")
 
             if not self.is_state(current_data) and not callable(current_data):
-                data = data.replace(match, current_data)
+                data = data.replace(match, str( current_data ))
             elif self.is_state(current_data):
                 state[match] = current_data
 

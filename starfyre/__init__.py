@@ -1,4 +1,5 @@
 import inspect
+from .dom_methods import render, render_root
 
 # import js
 
@@ -6,7 +7,7 @@ from starfyre.starfyre import sum_as_string, get_all_fyre_files, compile
 
 # from .component import Component
 # from .dom_methods import render
-# from .parser import RootParser
+from .parser import RootParser
 # from .store import create_signal
 
 
@@ -43,17 +44,16 @@ from starfyre.starfyre import sum_as_string, get_all_fyre_files, compile
 #     return states
 
 
-# def create_component(jsx):
-#     locals_variables = inspect.currentframe().f_back.f_locals.copy()
-#     global_variables = inspect.currentframe().f_back.f_globals.copy()
+def create_component(jsx):
+    locals_variables = inspect.currentframe().f_back.f_locals.copy()
+    global_variables = inspect.currentframe().f_back.f_globals.copy()
 
-#     parser = RootParser(locals_variables, global_variables)
-#     jsx = jsx.strip("\n").strip()
-#     parser.feed(jsx)
-#     parser.close()
-#     pytml_root = parser.get_root()
-#     print("This is the pytml root root", pytml_root)
-#     return pytml_root
+    parser = RootParser(locals_variables, global_variables)
+    jsx = jsx.strip("\n").strip()
+    parser.feed(jsx)
+    parser.close()
+    pytml_root = parser.get_root()
+    return pytml_root
 
 
 # __all__ = [
@@ -64,3 +64,4 @@ from starfyre.starfyre import sum_as_string, get_all_fyre_files, compile
 #     "create_signal",
 #     "sum_as_string",
 # ]
+

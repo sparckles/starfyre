@@ -35,7 +35,6 @@ def create_signal(initial_state=None):
                 parentDom = js.document.getElementById("root")
                 parentDom.innerHTML = ""
 
-            print("rendering", component)
             # should be done in batching
             render(component)
 

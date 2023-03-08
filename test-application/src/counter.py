@@ -4,8 +4,6 @@ from .state import set_state, get_state
 
 def hello(component, *args):
     set_state(get_state(component) + 1)
-    print(component.tag)
-    print("get_state", get_state(component))
 
 
 def print_mouse_over(component, *args):
