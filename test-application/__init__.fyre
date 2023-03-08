@@ -1,0 +1,13 @@
+from starfyre import create_component, render
+
+from .counter import Counter as counter
+from .display import Display as display
+
+<app>
+  <counter hello='world'>
+      <display>
+          <p>This is a nested child</p>
+      </display>
+  </counter>
+<app>
+

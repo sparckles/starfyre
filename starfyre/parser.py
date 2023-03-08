@@ -25,7 +25,9 @@ class RootParser(HTMLParser):
         # these are the event handlers and the props
         self.local_variables = component_local_variables
         self.global_variables = component_global_variables
-        self.components = self.extract_components(component_local_variables)
+
+        self.components = self.extract_components({**self.local_variables, **self.global_variables})
+        print("These are the components", self.components)
         # populate the dict with the components
 
     def extract_components(self, local_functions):

@@ -10,13 +10,11 @@ print("Hello bklo")
 print(counter, display)
 
 
-def test_script():
+def Test():
     return create_component("""
-<Test>
     <counter hello='world'>
         <display>
             <p>This is a nested child</p>
         </display>
     </counter>
-</Test>
         """)

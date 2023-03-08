@@ -1,7 +1,6 @@
 from starfyre import get_all_fyre_files, compile, render, create_component, render_root
 
 
-print(get_all_fyre_files(__file__))
 compile(__file__)
 
 # render should generate an html file per route
@@ -24,3 +23,9 @@ print(render(component))
 print(render_root(component))
 
 
+# main script
+
+# compile all the files
+# and then find the init.py file
+# then render root
+# then store it in a dist/index.html folder

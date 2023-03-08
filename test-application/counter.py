@@ -1,13 +1,13 @@
 from starfyre import create_component
-from .state import set_state, get_state
+# from .state import set_state, get_state
 
 
-def hello(component, *args):
-    set_state(get_state(component) + 1)
+# def hello(component, *args):
+#     set_state(get_state(component) + 1)
 
 
-def print_mouse_over(component, *args):
-    print("mouse moved over")
+# def print_mouse_over(component, *args):
+#     print("mouse moved over")
 
 
 def Counter():
