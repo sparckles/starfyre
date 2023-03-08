@@ -46,26 +46,26 @@ fn get_function_template(pyml_lines: &str, file_name: &str, root_name: &str) -> 
     if file_name.contains("__init__") {
         return format!(
             "
-def {0}():
+def fx_{0}():
     return render(create_component(\"\"\"
 {1}
         \"\"\"))
 
 
-{0}()
+{0}=fx_{0}()
     ",
             root_name, pyml_lines
         );
     } else {
         return format!(
             "
-def {0}():
+def fx_{0}():
     return create_component(\"\"\"
 {1}
         \"\"\")
 
 
-{0}()
+{0}=fx_{0}()
     ",
             root_name, pyml_lines
         );
@@ -95,6 +95,7 @@ fn compile(file_name: &str) {
             if !python_flag || is_pyml_line {
                 python_flag = false;
                 let copy_line = copy_line.clone();
+                println!("This is the copy line {:?}", copy_line.trim());
                 if root_name == "" && is_pyml_line {
                     let root_name_temp = copy_line.clone();
                     // .split_once(' ').unwrap();
@@ -107,19 +108,22 @@ fn compile(file_name: &str) {
                     }
                 };
 
-                if copy_line.contains(&root_name) {
+                if copy_line.trim().starts_with(&format!("<{0}", root_name))
+                    || copy_line.trim().starts_with(&format!("</{0}", root_name))
+                {
                     continue;
                 }
 
-                pyml_lines.push(copy_line)
+                pyml_lines.push(copy_line);
             } else if python_flag {
                 python_lines.push(copy_line.to_string());
             }
         }
 
         let template = get_function_template(&pyml_lines.join("\n"), &python_file, &root_name);
+
+        println!("Written python files {:?} {:?}", &python_file, &template);
         python_lines.push(template);
-        println!("Written python files {:?}", &python_file);
 
         let mut write_buffer = File::create(python_file).unwrap();
         write_buffer

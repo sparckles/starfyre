@@ -1,11 +1,13 @@
-from starfyre import create_component
+from starfyre import create_component, render
 
 
-def parent():
+
+def fx_parent():
     return create_component("""
-<p>This is a parent</p>
+    <div>Thsi is parent</div>
+
         """)
 
 
-parent()
+parent=fx_parent()
     

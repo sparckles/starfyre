@@ -1,5 +1,7 @@
-from starfyre import create_component
+from starfyre import create_component, render
+
 
 <parent>
-  <p>This is the parent</p>
-<parent>
+    <div>Thsi is parent</div>
+</parent>
+

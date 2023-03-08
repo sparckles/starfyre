@@ -20,8 +20,6 @@ from .component import Component
 #         )
 #         component.dom.addEventListener(event_type, create_proxy(event_listener))
 
-def create_text_html(data: str):
-    return f"<TEXT_NODE>{ data }</TEXT_NODE>"
     
 
 def render(component: Component) -> str:
@@ -57,7 +55,7 @@ def render(component: Component) -> str:
                 function = state[match]
                 function = partial(function, component)
                 data = component.data.replace(f"{{{ match }}}", str(function()))
-        html += create_text_html(data)
+        html += f"{data}"
         component.html = html
     else:
         html += f"<{tag}>"

@@ -3,7 +3,7 @@ from starfyre import create_component, render
 from .parent import parent
 
 
-def app():
+def fx_app():
     return render(create_component("""
   <parent hello='world'>
       <p>This is a nested child</p>
@@ -11,5 +11,6 @@ def app():
 
         """))
 
-app()
+
+app=fx_app()
     
