@@ -1,0 +1,5 @@
+from starfyre import create_component
+
+<parent>
+  <p>This is the parent</p>
+<parent>

@@ -1,15 +1,15 @@
 from starfyre import create_component, render
 
-from .counter import Counter as counter
-from .display import Display as display
+from .parent import parent
 
 
 def app():
     return render(create_component("""
-  <counter hello='world'>
-      <display>
-          <p>This is a nested child</p>
-      </display>
-  </counter>
+  <parent hello='world'>
+      <p>This is a nested child</p>
+  </parent>
 
         """))
+
+app()
+    

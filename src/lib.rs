@@ -49,7 +49,11 @@ fn get_function_template(pyml_lines: &str, file_name: &str, root_name: &str) -> 
 def {0}():
     return render(create_component(\"\"\"
 {1}
-        \"\"\"))",
+        \"\"\"))
+
+
+{0}()
+    ",
             root_name, pyml_lines
         );
     } else {
@@ -58,7 +62,11 @@ def {0}():
 def {0}():
     return create_component(\"\"\"
 {1}
-        \"\"\")",
+        \"\"\")
+
+
+{0}()
+    ",
             root_name, pyml_lines
         );
     }
