@@ -31,7 +31,6 @@ fn get_all_fyre_files(file_name: &str) -> Vec<String> {
         let absoltue_name = String::from(entry.path().to_string_lossy());
 
         if f_name.ends_with(".fyre") {
-            println!("{}", absoltue_name);
             filenames.push(absoltue_name);
         }
     }
@@ -41,7 +40,6 @@ fn get_all_fyre_files(file_name: &str) -> Vec<String> {
 
 fn get_function_template(pyml_lines: &str, file_name: &str, root_name: &str) -> String {
     let file_name = file_name.replace(".py", "");
-    println!("This is the file_name {:?}", file_name);
 
     if file_name.contains("__init__") {
         return format!(
@@ -79,7 +77,6 @@ fn compile(file_name: &str) {
 
     for fyre_file in fyre_files {
         let python_file = fyre_file.replace(".fyre", ".py");
-        println!("This is the python file {}", python_file);
 
         let fyre_file_pointer = File::open(fyre_file).unwrap();
         let fyre_file_reader = std::io::BufReader::new(fyre_file_pointer);
@@ -95,12 +92,10 @@ fn compile(file_name: &str) {
             if !python_flag || is_pyml_line {
                 python_flag = false;
                 let copy_line = copy_line.clone();
-                println!("This is the copy line {:?}", copy_line.trim());
                 if root_name == "" && is_pyml_line {
                     let root_name_temp = copy_line.clone();
                     // .split_once(' ').unwrap();
                     let split: Vec<&str> = root_name_temp.split(' ').into_iter().collect();
-                    println!("THis is the split {:?}", split);
                     if !split.is_empty() && split[0] != "" {
                         // check for trim
                         root_name = split[0].replace("<", "").replace(">", "").to_string();

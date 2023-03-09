@@ -150,7 +150,10 @@ class RootParser(HTMLParser):
 
     def handle_data(self, data):
         data = data.strip().strip("\n").strip(" ")
+        # regex to find all the elements that are wrapped in {}
+
         matches = re.findall(r"{(.*?)}", data)
+
 
         state = {}
         print("These are the matches in the text data", matches, data)
@@ -163,9 +166,22 @@ class RootParser(HTMLParser):
             elif match in self.global_variables:
                 current_data = self.global_variables[match]
             else:
-                raise Exception("Variable not found")
+                eval_result = eval(match, self.local_variables, self.global_variables)
+                print("BCCCCCC - The eval result is", eval_result)
+
+                if isinstance(eval_result, Component):
+                    self.stack[-1][0].children.append(eval_result)
+                    return
+                elif isinstance(eval_result, str):
+                    current_data = eval_result
+                elif isinstance(eval_result, list):
+                    current_data = " ".join([str(i) for i in eval_result])
+                else:
+                    raise Exception("Variable not found")
 
             if not self.is_state(current_data) and not callable(current_data):
+                if matches:
+                    data = data.replace("{", "").replace("}", "")
                 data = data.replace(match, str( current_data ))
             elif self.is_state(current_data):
                 state[match] = current_data

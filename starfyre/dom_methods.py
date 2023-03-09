@@ -55,6 +55,9 @@ def render(component: Component) -> str:
                 function = state[match]
                 function = partial(function, component)
                 data = component.data.replace(f"{{{ match }}}", str(function()))
+            else:
+                print("No match found for", match)
+
         html += f"{data}"
         component.html = html
     else:

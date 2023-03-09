@@ -4,7 +4,7 @@ from .parent import parent
 
 <app>
   <parent hello='world'>
-      <p>This is a nested child</p>
+      <p>{["nesting new(wrapping tags around dont work)" for i in range(4)]}</p>
   </parent>
 <app>
 

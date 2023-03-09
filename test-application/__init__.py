@@ -6,7 +6,7 @@ from .parent import parent
 def fx_app():
     return render(create_component("""
   <parent hello='world'>
-      <p>This is a nested child</p>
+      <p>{["nesting new(wrapping tags around dont work)" for i in range(4)]}</p>
   </parent>
 
         """))
