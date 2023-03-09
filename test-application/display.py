@@ -1,8 +1,10 @@
 
 def fx_():
-    return create_component("""
+    component = create_component("""
 
         """)
+
+    return component
 
 
 =fx_()

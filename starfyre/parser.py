@@ -166,6 +166,7 @@ class RootParser(HTMLParser):
             elif match in self.global_variables:
                 current_data = self.global_variables[match]
             else:
+                print("BCCCCCC - The eval result is", self.local_variables, self.global_variables)
                 eval_result = eval(match, self.local_variables, self.global_variables)
                 print("BCCCCCC - The eval result is", eval_result)
 

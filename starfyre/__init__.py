@@ -45,9 +45,11 @@ from .parser import RootParser
 
 
 def create_component(jsx):
-    locals_variables = inspect.currentframe().f_back.f_locals.copy()
-    global_variables = inspect.currentframe().f_back.f_globals.copy()
+    # locals_variables = inspect.currentframe().f_back.f_locals.copy()
+    # global_variables = inspect.currentframe().f_back.f_globals.copy()
 
+    locals_variables = inspect.currentframe().f_back.f_back.f_locals.copy()
+    global_variables = inspect.currentframe().f_back.f_back.f_globals.copy()
     parser = RootParser(locals_variables, global_variables)
     jsx = jsx.strip("\n").strip()
     parser.feed(jsx)

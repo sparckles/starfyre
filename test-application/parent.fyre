@@ -1,7 +1,9 @@
-from starfyre import create_component, render
+import requests
 
+def robyn_request():
+  return requests.get("http://localhost:8080").text + " from Robyn"
 
 <parent>
-    <div>Thsi is parent</div>
+    <div>{robyn_request() for i in range(2)}</div>
 </parent>
 

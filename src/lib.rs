@@ -44,10 +44,15 @@ fn get_function_template(pyml_lines: &str, file_name: &str, root_name: &str) -> 
     if file_name.contains("__init__") {
         return format!(
             "
+from starfyre import create_component, render
+
 def fx_{0}():
-    return render(create_component(\"\"\"
+    # not nesting the code to preserve the frames
+    component = create_component(\"\"\"
 {1}
-        \"\"\"))
+        \"\"\")
+
+    return render(component)
 
 
 {0}=fx_{0}()
@@ -57,10 +62,14 @@ def fx_{0}():
     } else {
         return format!(
             "
+from starfyre import create_component
+
 def fx_{0}():
-    return create_component(\"\"\"
+    component = create_component(\"\"\"
 {1}
         \"\"\")
+
+    return component
 
 
 {0}=fx_{0}()
