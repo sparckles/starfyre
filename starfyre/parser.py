@@ -16,11 +16,13 @@ def extract_functions(obj):
 class RootParser(HTMLParser):
     generic_tags = ["div", "p", "b", "span", "i", "button"]
 
-    def __init__(self, component_local_variables, component_global_variables):
+    def __init__(self, component_local_variables, component_global_variables, css, js):
         super().__init__()
         self.stack: list[tuple[Component, int]] = []
         self.children = []
         self.current_depth = 0
+        self.css = css
+        self.js = js
 
         # these are the event handlers and the props
         self.local_variables = component_local_variables
@@ -53,7 +55,6 @@ class RootParser(HTMLParser):
         self.current_depth += 1
 
         for attr in attrs:
-            print("These are the new parse attributes", attr)
             if attr[1].startswith("{") and attr[1].endswith("}"):
                 attr_value = attr[1].strip("{").strip("}").strip(" ")
                 if self.is_event_listener(attr[0]):
@@ -93,30 +94,13 @@ class RootParser(HTMLParser):
 
             return
 
-        # see if the attribute value is a state component
-        # if it is, we use the state component
 
-        # instead of creating a new component, we check if the tag is a global component
-        # then we check the uuid of the global component
-        # if the uuid is not in the stack, we create a new component
-        # if the uuid is in the stack, we use the component from the stack
-        # we are using a hack for now
-
-        # if the component has already been called
-        # and then we evaluate -> it will be in the store but with the wrong name
-        # but we don't care about the name
-        # we can just replace it with the new name
-        # but the issue will be the new props that we can pass
-        # lets not worry about that for now
-
-        component = Component(tag, props, [], event_listeners, state)
+        component = Component(tag, props, [], event_listeners, state, js=self.js, css=self.css)
 
         # instead of assiging tags we assign uuids
         self.stack.append((component, self.current_depth))
         printable_stack = [( element[0].tag, element[1]) for element in self.stack]
         print("The stack is")
-        from pprint import pprint
-        pprint(printable_stack)
 
     def handle_endtag(self, tag):
         # we need to check if the tag is a default component or a custom component
@@ -143,12 +127,17 @@ class RootParser(HTMLParser):
 
         self.stack.pop()
         self.current_depth -= 1
-        self.children.insert(0, (parent_node, parent_depth))
+
+        if parent_node.tag != "style" and parent_node.tag != "script":
+            self.children.insert(0, (parent_node, parent_depth))
+
         print("The updated children are")
-        from pprint import pprint
-        pprint(self.children)
 
     def handle_data(self, data):
+        # this is doing too much
+        # lexing 
+        # as well as parsing
+        # move this to rust
         data = data.strip().strip("\n").strip(" ")
         # regex to find all the elements that are wrapped in {}
 
@@ -166,7 +155,6 @@ class RootParser(HTMLParser):
             elif match in self.global_variables:
                 current_data = self.global_variables[match]
             else:
-                print("BCCCCCC - The eval result is", self.local_variables, self.global_variables)
                 eval_result = eval(match, self.local_variables, self.global_variables)
                 print("BCCCCCC - The eval result is", eval_result)
 
@@ -202,7 +190,7 @@ class RootParser(HTMLParser):
         print("Encountered some text data :", data, "Current depth", self.current_depth)
         self.children.append(
             (
-                Component("TEXT_NODE", {}, [], {}, state=state, data=data),
+                Component("TEXT_NODE", {}, [], {}, state=state, data=data, css=self.css, js=self.js),
                 self.current_depth,
             )
         )

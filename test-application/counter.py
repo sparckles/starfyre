@@ -1,11 +1,20 @@
 
-def fx_():
+
+from starfyre import create_component
+
+def fx_counter():
     component = create_component("""
 
-        """)
+        """,
+"""
 
+""",
+"""
+
+"""
+    )
     return component
 
 
-=fx_()
+counter=fx_counter()
     

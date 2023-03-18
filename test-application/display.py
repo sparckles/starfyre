@@ -1,11 +1,20 @@
 
-def fx_():
+
+from starfyre import create_component
+
+def fx_display():
     component = create_component("""
 
-        """)
+        """,
+"""
 
+""",
+"""
+
+"""
+    )
     return component
 
 
-=fx_()
+display=fx_display()
     

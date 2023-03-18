@@ -1,9 +1,11 @@
 import inspect
 from .dom_methods import render, render_root
+from .transpiler import transpile_to_js
 
 # import js
 
-from starfyre.starfyre import sum_as_string, get_all_fyre_files, compile
+# for exports
+from starfyre.starfyre import sum_as_string, compile
 
 # from .component import Component
 # from .dom_methods import render
@@ -44,15 +46,15 @@ from .parser import RootParser
 #     return states
 
 
-def create_component(jsx):
+def create_component(pyml, css="", js=""):
     # locals_variables = inspect.currentframe().f_back.f_locals.copy()
     # global_variables = inspect.currentframe().f_back.f_globals.copy()
 
     locals_variables = inspect.currentframe().f_back.f_back.f_locals.copy()
     global_variables = inspect.currentframe().f_back.f_back.f_globals.copy()
-    parser = RootParser(locals_variables, global_variables)
-    jsx = jsx.strip("\n").strip()
-    parser.feed(jsx)
+    parser = RootParser(locals_variables, global_variables, css, js)
+    pyml = pyml.strip("\n").strip()
+    parser.feed(pyml)
     parser.close()
     pytml_root = parser.get_root()
     return pytml_root

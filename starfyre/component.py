@@ -49,6 +49,8 @@ class Component:
     parentComponent: Optional[ Any ] = None
     html: str = ""
     uuid = uuid4()
+    css: str = ""
+    js: str = ""
     # on any property change, rebuild the tree
 
     def render(self):

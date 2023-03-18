@@ -1,4 +1,4 @@
-from starfyre import get_all_fyre_files, compile, render, create_component, render_root
+from starfyre import  compile, render, create_component, render_root
 
 
 compile(__file__)
