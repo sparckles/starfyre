@@ -157,7 +157,6 @@ class RootParser(HTMLParser):
             else:
                 eval_result = eval(match, self.local_variables, self.global_variables)
                 print("BCCCCCC - The eval result is", eval_result)
-
                 if isinstance(eval_result, Component):
                     self.stack[-1][0].children.append(eval_result)
                     return
