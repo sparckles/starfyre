@@ -1,64 +1,53 @@
-import libcst as cst
+import ast
 import inspect
 
-
-class PythonToJsTranspiler(cst.CSTTransformer):
+class PythonToJsTranspiler(ast.NodeVisitor):
     def __init__(self):
         self.js_code = []
 
-    def visit_FunctionDef(self, node: cst.FunctionDef) -> None:
-        function_name = node.name.value
-        parameters = [param.name.value for param in node.params.params]
+    def visit_FunctionDef(self, node):
+        function_name = node.name
+        parameters = [arg.arg for arg in node.args.args]
         param_list = ", ".join(parameters)
 
         self.js_code.append(f"function {function_name}({param_list}) {{")
-        for stmt in node.body.body:
-            if isinstance(stmt, cst.SimpleStatementLine):
-                for component in stmt.body:
-                    if isinstance(component, cst.Assign):
-                        self.visit_Assign(component)
-                    elif isinstance(component, cst.Return):
-                        self.visit_Return(component)
-                    elif isinstance(component, cst.Expr):
-                        self.visit_Expr(component)
-            elif isinstance(stmt, cst.BaseCompoundStatement):
-                # Add handling for other compound statements as needed
-                pass
-        self.js_code.append("}")
+        self.generic_visit(node)
+        self.js_code.append("}\n")
 
-    def visit_Assign(self, node: cst.Assign) -> None:
-        targets_code = " = ".join([t.target.to_code() for t in node.targets])
-        value_code = node.value.to_code()
-        self.js_code.append(f"{targets_code} = {value_code};")
+    def visit_Assign(self, node):
+        targets_code = " = ".join([ast.unparse(t) for t in node.targets])
+        value_code = ast.unparse(node.value)
+        self.js_code.append(f"  {targets_code} = {value_code};")
 
-    def visit_Return(self, node: cst.Return) -> None:
-        value_code = node.value.to_code() if node.value else ""
-        self.js_code.append(f"return {value_code};")
+    def visit_Return(self, node):
+        value_code = ast.unparse(node.value) if node.value else ""
+        self.js_code.append(f"  return {value_code};")
 
-    def visit_Expr(self, node: cst.Expr) -> None:
-        if isinstance(node.value, cst.Call):
-            if isinstance(node.value.func, cst.Name) and node.value.func.value == "print":
-                self.visit_Print(node.value)
+    def visit_Expr(self, node):
+        if isinstance(node.value, ast.Call):
+            self.visit_Call(node.value)
 
-    def visit_Print(self, node: cst.Call) -> None:
-        args_code = ", ".join([arg.to_code() for arg in node.args])
-        self.js_code.append(f"console.log({args_code});")
+    def visit_Call(self, node):
+        if isinstance(node.func, ast.Name) and node.func.id == "print":
+            args_code = ", ".join([ast.unparse(arg) for arg in node.args])
+            self.js_code.append(f"  console.log({args_code});")
+        else:
+            func_code = ast.unparse(node.func)
+            args_code = ", ".join([ast.unparse(arg) for arg in node.args])
+            self.js_code.append(f"  {func_code}({args_code});")
 
-    def transpile(self, python_code: str) -> str:
-        tree = cst.parse_module(python_code)
-        modified_tree = self.visit_Module(tree)
-        return "\n".join(self.js_code)
+
+
+
+def transpile(python_code: str) -> str:
+    tree = ast.parse(python_code)
+    transpiler = PythonToJsTranspiler()
+    transpiler.visit(tree)
+    return "".join(transpiler.js_code)
 
 def transpile_to_js(python_code):
-    """
-    Transpiles python code to javascript
-    """
-    python_code = inspect.getsource(python_code)
-    transpiler = PythonToJsTranspiler()
-    js_code = transpiler.transpile(python_code)
-
-    return js_code
-        
+    code = inspect.getsource(python_code)
+    return transpile(code)
 
 def main():
     python_code = '''
@@ -70,9 +59,9 @@ def add(a, b):
     return result
 '''
 
-    transpiler = PythonToJsTranspiler()
-    js_code = transpiler.transpile(python_code)
+    js_code = transpile(python_code)
     print(js_code)
 
 if __name__ == "__main__":
     main()
+

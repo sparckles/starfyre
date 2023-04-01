@@ -4,7 +4,7 @@ def mocked_request():
   return "fetched on the server"
 
 def handle_on_click():
-  js.alert("click rendered on client")
+  alert("click rendered on client")
   print("handles on click")
   
 
@@ -26,6 +26,8 @@ def fx_app():
 
 """,
 """
+// this is optional 
+// as I don't know why someone would need it
   alert("Just in case you need to do something special")
 """
     )
