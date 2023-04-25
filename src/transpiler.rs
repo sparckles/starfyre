@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::{collections::HashMap, io::BufRead};
 use std::{fs::File, io::Write};
 
@@ -78,6 +79,7 @@ pub fn transpile_to_python(
     css_lines: Vec<String>,
     js_lines: Vec<String>,
     output_file: &str,
+    output_directory: &Path,
 ) {
     let mut final_output = vec![];
     final_output.push(python_lines.join("\n"));
@@ -90,7 +92,11 @@ pub fn transpile_to_python(
     );
     final_output.push(main_content);
 
-    let mut write_buffer = File::create(output_file).unwrap();
+    let file_name = output_file.split("/").last().unwrap();
+    let output_file_path = output_directory.join(file_name);
+
+    println!("Output file path {:?}", output_file_path);
+    let mut write_buffer = File::create(output_file_path).unwrap();
     println!(
         "Written python files {:?} {:?}",
         &output_file, &final_output

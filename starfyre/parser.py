@@ -100,7 +100,6 @@ class RootParser(HTMLParser):
         # instead of assiging tags we assign uuids
         self.stack.append((component, self.current_depth))
         printable_stack = [( element[0].tag, element[1]) for element in self.stack]
-        print("The stack is")
 
     def handle_endtag(self, tag):
         # we need to check if the tag is a default component or a custom component

@@ -1,5 +1,6 @@
 import ast
 import inspect
+import pysnooper
 
 class PythonToJsTranspiler(ast.NodeVisitor):
     def __init__(self):
@@ -15,12 +16,17 @@ class PythonToJsTranspiler(ast.NodeVisitor):
         self.js_code.append("}\n")
 
     def visit_Assign(self, node):
+        reset = "\x1b[0m"
+        red = "\x1b[31;20m"
         targets_code = " = ".join([ast.unparse(t) for t in node.targets])
         value_code = ast.unparse(node.value)
         self.js_code.append(f"  {targets_code} = {value_code};")
+        js_code = f"  {targets_code} = {value_code};"
+        print(f"This is the assign value {red}{js_code}{reset}")
 
     def visit_Return(self, node):
         value_code = ast.unparse(node.value) if node.value else ""
+
         self.js_code.append(f"  return {value_code};")
 
     def visit_Expr(self, node):
@@ -28,6 +34,12 @@ class PythonToJsTranspiler(ast.NodeVisitor):
             self.visit_Call(node.value)
 
     def visit_Call(self, node):
+        """This is a call node
+        Call node is e.g. print("Hello, World")
+        No assignment takes place here
+        """
+        print("This is a call node: ", node.func.id)
+        
         if isinstance(node.func, ast.Name) and node.func.id == "print":
             args_code = ", ".join([ast.unparse(arg) for arg in node.args])
             self.js_code.append(f"  console.log({args_code});")
@@ -55,8 +67,11 @@ def greet(name):
     print("Hello, " + name)
 
 def add(a, b):
-    result = a + b
+    result = greet("World")
     return result
+
+def subtract(a, b):
+    return add(a, -b)
 '''
 
     js_code = transpile(python_code)

@@ -13,11 +13,6 @@ from .component import Component
 
 def assign_event_listeners(event_listener_name, event_listener):
 
-    print(
-        "Assigning event listeners to the component",
-        event_listener_name,
-        event_listener,
-    )
     # component.dom.addEventListener(event_type, create_proxy(event_listener))
     js_event_listener = transpile_to_js(event_listener)
     html = f" {event_listener_name}='{event_listener.__name__}()' "
@@ -46,10 +41,6 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
         # cannot use js
         # js.document.body.appendChild(parentElement)
 
-    # we will add rust later
-    # dom_node = DomNode(element.tag, element.props, element.children, element.event_listeners, element.state or {})
-    # dom_node.set_parent_element(parentDom)
-    # print(dom_node)
 
     tag = component.tag
     props = component.props
@@ -103,8 +94,9 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
             html += new_html
             
     if html.endswith(">"):
-        html = html.replace(">", f"{prop_string}>")
-    else:
+        html.removesuffix(">")
+
+    if not component.is_text_component:
         html += f"{prop_string} >"
             
 
@@ -128,7 +120,11 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 
     component.html = html
 
-    print(f"Rendered {component.tag} with html {html}")
+    red = "\033[1;31m" 
+    reset = "\033[0;0m"
+
+    print(f"{red}This is the html{reset}", html)
+
     return html, css, js
     # // Append to parent
     # need to apply batch updates here

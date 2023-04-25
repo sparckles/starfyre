@@ -1,13 +1,14 @@
 import requests
 
 def robyn_request():
-  text = requests.get("http://localhost:8080").text
+#  text = requests.get("https://example.com").text
+  text = "Hello"
   if text != "":
     return text + " from Robyn"
   else:
     return "No response"
 
 <pyml>
-    <div>{[ robyn_request() for i in range(2) ]}</div>
+    <div> {[ robyn_request() for i in range(2) ]} </div>
 </pyml>
 

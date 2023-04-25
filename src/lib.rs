@@ -6,8 +6,7 @@ use pyo3::{
     prelude::*,
     types::{PyDict, PyList},
 };
-use std::{collections::HashMap, io::BufRead};
-use std::{fs::File, io::Write};
+use std::path::Path;
 
 use scanner::get_all_fyre_files;
 
@@ -18,10 +17,24 @@ fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
 }
 
 #[pyfunction]
-fn compile(file_name: &str) {
+fn compile(entry_file_name: &str) {
+    // entry file name is the file that is passed in from the command line
+    // also the `__init__.fyre` file of the target application
+
     // get all the files in the directory of the file that end with .fyre
-    let fyre_files = get_all_fyre_files(file_name);
-    // root name should be file name
+    // traverse all the files and then transpile them from .fyre to .py
+    // try creating a directory that
+
+    let entry_file_path = Path::new(entry_file_name);
+    let project_directory = entry_file_path.parent().unwrap();
+
+    // create a new directory called `build` in the project directory
+    let build_directory = project_directory.join("build");
+    let build_directory_path = build_directory.as_path();
+    std::fs::create_dir_all(&build_directory).unwrap();
+
+    // get all the fyre files in the project directory
+    let fyre_files = get_all_fyre_files(project_directory);
 
     for fyre_file in fyre_files {
         let python_file = fyre_file.replace(".fyre", ".py");
@@ -38,6 +51,7 @@ fn compile(file_name: &str) {
             css_lines,
             js_lines,
             &python_file,
+            build_directory_path,
         );
     }
 }
