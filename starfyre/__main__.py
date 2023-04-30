@@ -7,7 +7,6 @@ import subprocess
 import click
 
 def create_main_file(path):
-    print("This is the main path", path)
     output_file_path = path + "/build/__main__.py"
     store_path = path + "/build/store.js"
     dist_path = Path(path) / "dist"
@@ -52,8 +51,6 @@ def main(path, dev, build):
         compile(path)
         create_main_file(os.path.dirname(path))
     if build:
-        print(red, "This is the path", path, reset)
-        print("Building the project :", path)
 
         subprocess.run([sys.executable , "-m", "build"], cwd=path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

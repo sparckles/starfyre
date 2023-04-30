@@ -1,5 +1,8 @@
 import re
 from html.parser import HTMLParser
+from uuid import uuid4
+
+from starfyre.transpiler import transpile, transpile_to_js
 
 from .component import Component
 
@@ -23,13 +26,13 @@ class RootParser(HTMLParser):
         self.current_depth = 0
         self.css = css
         self.js = js
+        self.signal = ""
 
         # these are the event handlers and the props
         self.local_variables = component_local_variables
         self.global_variables = component_global_variables
 
         self.components = self.extract_components({**self.local_variables, **self.global_variables})
-        print("These are the components", self.components)
         # populate the dict with the components
 
     def extract_components(self, local_functions):
@@ -42,9 +45,6 @@ class RootParser(HTMLParser):
 
     def is_event_listener(self, name):
         return name.startswith("on")
-
-    def is_state(self, function):
-        return "create_signal" in str(function)
 
     def handle_starttag(self, tag, attrs):
         # logic should be to just create an empty component on start
@@ -89,13 +89,12 @@ class RootParser(HTMLParser):
             component.state = {**component.state, **state}
             component.event_listeners = {**component.event_listeners, **event_listeners}
             self.stack.append((component, self.current_depth))
-            printable_stack = [element[0].tag for element in self.stack]
 
 
             return
 
 
-        component = Component(tag, props, [], event_listeners, state, js=self.js, css=self.css)
+        component = Component(tag, props, [], event_listeners, state, js=self.js, css=self.css, uuid=uuid4() )
 
         # instead of assiging tags we assign uuids
         self.stack.append((component, self.current_depth))
@@ -109,7 +108,6 @@ class RootParser(HTMLParser):
             tag = component.tag
 
         # need to check the if this is always true
-        print("This is the end tag", tag)
         parent_node, parent_depth = self.stack[
             -1
         ]  # based on the assumption that the stack is not empty
@@ -119,7 +117,6 @@ class RootParser(HTMLParser):
             if child_depth == parent_depth + 1:
                 self.children.pop(0)
                 self.stack[-1][0].children.insert(0, child)
-                print("Added child", child.tag, "to parent", parent_node.tag)
             else:
                 break  # we have reached the end of the children
 
@@ -129,7 +126,11 @@ class RootParser(HTMLParser):
         if parent_node.tag != "style" and parent_node.tag != "script":
             self.children.insert(0, (parent_node, parent_depth))
 
-        print("The updated children are")
+
+    def is_signal(self, str):
+        if not str:
+            return False
+        return "signal" in str
 
     def handle_data(self, data):
         # this is doing too much
@@ -143,7 +144,7 @@ class RootParser(HTMLParser):
 
 
         state = {}
-        print("These are the matches in the text data", matches, data)
+
 
         for match in matches:
             # match can be a sentece so we will split it
@@ -153,26 +154,31 @@ class RootParser(HTMLParser):
             elif match in self.global_variables:
                 current_data = self.global_variables[match]
             else:
-                eval_result = eval(match, self.local_variables, self.global_variables)
-                print("BCCCCCC - The eval result of ", match, " is ", eval_result)
-                if isinstance(eval_result, Component):
-                    self.stack[-1][0].children.append(eval_result)
-                    return
-                elif isinstance(eval_result, str):
-                    current_data = eval_result
-                elif isinstance(eval_result, list):
-                    current_data = " ".join([str(i) for i in eval_result])
+                # we need to handle a case where the eval result is a signal object
+                if self.is_signal(match):
+                    new_js = transpile(match)
+                    self.signal = new_js
+                    current_data = new_js
+
                 else:
-                    # we need to handle a case where the eval result is a state object
+                    eval_result = eval(match, self.local_variables, self.global_variables)
+                    if isinstance(eval_result, Component):
+                        self.stack[-1][0].children.append(eval_result)
+                        return
+                    elif isinstance(eval_result, str):
+                        current_data = eval_result
+                    elif isinstance(eval_result, list):
+                        current_data = " ".join([str(i) for i in eval_result])
+                    else:
+                        # we need to handle a case where the eval result is a state object
 
-                    raise Exception("Variable not found")
+                        raise Exception("Variable not found")
 
-            if not self.is_state(current_data) and not callable(current_data):
+            if not self.is_signal(current_data) and not callable(current_data):
+                print("current data", current_data)
                 if matches:
                     data = data.replace("{", "").replace("}", "")
                 data = data.replace(match, str( current_data ))
-            elif self.is_state(current_data):
-                state[match] = current_data
 
         if data == "":
             return
@@ -183,17 +189,27 @@ class RootParser(HTMLParser):
 
         # TODO handle state in text node
 
-        self.current_depth += 1
         # this should never be in the parent stack
         # a text node is a child node as soon as it is created
-        print("Encountered some text data :", data, "Current depth", self.current_depth)
-        self.children.append(
-            (
-                Component("TEXT_NODE", {}, [], {}, state=state, data=data, css=self.css, js=self.js),
-                self.current_depth,
-            )
+
+        parent_node, parent_depth = self.stack[-1]
+        uuid = uuid4()
+
+        # add a parent component
+         # on the wrapper div component
+
+        wrapper_div_component = Component("div", {}, [], {}, state=state, data=data, css=self.css, js=self.js, signal=self.signal, uuid=uuid)
+
+        wrapper_div_component.children.append(
+            Component("TEXT_NODE", {}, [], {}, state=state, data=data, css=self.css, js=self.js, signal=self.signal, uuid=uuid)
         )
-        self.current_depth -= 1
+
+
+        parent_node.children.insert(0, wrapper_div_component)
+    
+        print("parent node", parent_node.tag, parent_node.children, "for the text node ", data)
+        
+        
 
     def get_stack(self):
         return self.stack

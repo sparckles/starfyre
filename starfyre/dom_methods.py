@@ -1,5 +1,6 @@
 import re
 from functools import partial
+from uuid import uuid4
 
 from .transpiler import transpile_to_js
 
@@ -25,6 +26,12 @@ def assign_event_listeners(event_listener_name, event_listener):
 
 # render page and render component
 def render_helper(component: Component) -> tuple[ str, str, str ]:
+    # Add event listeners
+    def is_listener(name):
+        return name.startswith("on")
+    def is_attribute(name):
+        return not is_listener(name) and name != "children"
+
     parentElement = component.parentComponent
     html = "\n"
     css = "\n"
@@ -33,7 +40,7 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
         # instead of creating an element with js
         # we need to create a div string
 
-        parentElement = Component("div", {"id": "root"}, [], {}, {})
+        parentElement = Component("div", {"id": "root"}, [], {}, {}, uuid=uuid4())
         component.parentComponent = parentElement
 
         # ?? 
@@ -46,6 +53,7 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
     state = component.state
     data = component.data
     event_listeners = component.event_listeners
+    
 
     # Create DOM element
     if component.is_text_component:
@@ -59,27 +67,28 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
             else:
                 print("No match found for", match)
 
-        html += f"{data}"
+        component.parentComponent.uuid = component.uuid
+        html += f"{data}\n"
         component.html = html
-    else:
 
-        if component.css:
-            css += f"{ component.css }\n"
-        html += f"<{tag} "
+        if component.signal:
+            print("Adding signal", component.signal, "to component", component.uuid, "with tag", component.tag)
+            js += f"""
+                 const component = document.getElementById('{component.uuid}');
+                if (component) {{
+                   component.innerText = `${{use_parent_signal()}}`;
+                }}
+            """
 
+        return html, css, js 
 
-    # Add event listeners
-    def is_listener(name):
-        print("This is the event listener name", component.event_listeners, name)
-        return name.startswith("on")
-    def is_attribute(name):
-        return not is_listener(name) and name != "children"
-
-    # TODO: add event listeners
-    # assign_event_listeners(component, component.event_listeners)
-    # set attributes
+    if component.css:
+        css += f"{ component.css }\n"
+    html += f"<{tag} id='{component.uuid}' "
 
 
+
+    # this is not when the component is a text component
     prop_string = ""
     for name in props:
         if is_attribute(name):
@@ -87,7 +96,6 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
         
     for name, function in event_listeners.items():
         if is_listener(name):
-            print("Assigning event listeners to the component", component, name, function)
             new_html, new_js = assign_event_listeners(name, function)
             js += new_js
             html += new_html
@@ -109,20 +117,17 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
         css += new_css
         js += new_js
 
-    # Close tag
-    if not component.is_text_component:
-        html += f"</{tag}>\n"
+    html += f"</{tag}>\n"
 
 
-    if component.js and not component.is_text_component:
+    if component.js:
         js += f"{component.js}\n"
 
     component.html = html
 
-    red = "\033[1;31m" 
-    reset = "\033[0;0m"
+                # component.innerText = `${{{ component.signal }}}`;
 
-    print(f"{red}This is the html{reset}", html, js)
+
 
     return html, css, js
     # // Append to parent
@@ -136,11 +141,13 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 def render(component: Component) -> str:
     html, css, js = render_helper(component)
     final_html = f"<style>{css}</style>{html}<script>{js}</script>"
-    print("This is the final html", final_html)
+    print("Rendering sub html", final_html)
     return final_html
 
 def render_root(component: Component) -> str:
-    html = render(component)
-    return "<div id='root'>" + html + "</div>"
+    html,css,js = render_helper(component)
+    final_html = f"<style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
+    print("Rendering final html", final_html)
+    return final_html
 
 
