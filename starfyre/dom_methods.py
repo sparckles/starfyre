@@ -72,11 +72,10 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
         component.html = html
 
         if component.signal:
-            print("Adding signal", component.signal, "to component", component.uuid, "with tag", component.tag)
             js += f"""
-                 const component = document.getElementById('{component.uuid}');
+                const component = document.getElementById('{component.uuid}');
                 if (component) {{
-                   component.innerText = `${{use_parent_signal()}}`;
+                   component.innerText = `${{{ component.signal }}}`;
                 }}
             """
 
@@ -124,11 +123,6 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
         js += f"{component.js}\n"
 
     component.html = html
-
-                # component.innerText = `${{{ component.signal }}}`;
-
-
-
     return html, css, js
     # // Append to parent
     # need to apply batch updates here
@@ -141,13 +135,11 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 def render(component: Component) -> str:
     html, css, js = render_helper(component)
     final_html = f"<style>{css}</style>{html}<script>{js}</script>"
-    print("Rendering sub html", final_html)
     return final_html
 
 def render_root(component: Component) -> str:
     html,css,js = render_helper(component)
     final_html = f"<style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
-    print("Rendering final html", final_html)
     return final_html
 
 

@@ -38,16 +38,15 @@ class PythonToJsTranspiler(ast.NodeVisitor):
 
     def visit_Return(self, node):
         value_code = ast.unparse(node.value) if node.value else ""
-
         self.js_code.append(f"  return {value_code};")
 
     def visit_Expr(self, node):
-        value_code = ast.unparse(node.value) if node.value else ""
-        value_code = value_code.replace("print", "console.log")
-        self.js_code.append(f"  {value_code};")
-
         if isinstance(node.value, ast.Call):
             self.visit_Call(node.value)
+        else:
+            value_code = ast.unparse(node.value) if node.value else ""
+            value_code = value_code.replace("print", "console.log")
+            self.js_code.append(f"  {value_code};")
 
     def visit_If(self, node):
         test_code = ast.unparse(node.test)
@@ -67,19 +66,6 @@ class PythonToJsTranspiler(ast.NodeVisitor):
         self.js_code.append(f"  while ({test_code}) {{")
         self.generic_visit(node)
         self.js_code.append("  }\n")
-
-    def visit_ListComp(self, node):
-        reset = "\x1b[0m"
-        red = "\x1b[31;20m"
-        print(f"This is the list comp {red}{ast.unparse(node)}{reset}")
-        elt_code = ast.unparse(node.elt)
-        generators_code = " ".join([ast.unparse(gen) for gen in node.generators])
-        self.js_code.append(f"  [{elt_code} {generators_code}]")
-
-    def visit_GeneratorExp(self, node):
-        elt_code = ast.unparse(node.elt)
-        generators_code = " ".join([ast.unparse(gen) for gen in node.generators])
-        self.js_code.append(f"  ({elt_code} {generators_code})")
 
 
 
@@ -124,6 +110,8 @@ def subtract(a, b):
 '''
 
     js_code = transpile(python_code)
+
+    # get ast of code
     print(js_code)
 
 if __name__ == "__main__":

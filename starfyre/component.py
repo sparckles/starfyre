@@ -14,13 +14,13 @@ class Component:
     event_listeners: dict
     state: dict
     uuid: Any 
+    signal: str = ""
     original_data: str = ""
     data: str = ""
     parentComponent: Optional[ Any ] = None
     html: str = ""
     css: str = ""
     js: str = ""
-    signal: str = ""
     # on any property change, rebuild the tree
 
 

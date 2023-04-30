@@ -26,7 +26,7 @@ class RootParser(HTMLParser):
         self.current_depth = 0
         self.css = css
         self.js = js
-        self.signal = ""
+        self.signal = set()
 
         # these are the event handlers and the props
         self.local_variables = component_local_variables
@@ -157,7 +157,7 @@ class RootParser(HTMLParser):
                 # we need to handle a case where the eval result is a signal object
                 if self.is_signal(match):
                     new_js = transpile(match)
-                    self.signal = new_js
+                    self.signal = new_js.strip("{").strip("}").strip(";")
                     current_data = new_js
 
                 else:

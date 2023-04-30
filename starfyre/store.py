@@ -27,7 +27,6 @@ def create_signal(initial_state=None):
     def setState(state):
         store[id] = state
         for component in observers[id]:
-            print("observer component", component)
             if component and component.parentDom:
                 parentDom = component.parentDom
                 parentDom.removeChild(component.dom)
