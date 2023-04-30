@@ -1,8 +1,8 @@
 import ast
 import inspect
-import pysnooper
 
 class PythonToJsTranspiler(ast.NodeVisitor):
+    JS_RESERVED_KEYWORDS = { "create_signal", "use_signal", "set_signal", "console.log" }
     def __init__(self):
         self.js_code = []
 
@@ -15,11 +15,24 @@ class PythonToJsTranspiler(ast.NodeVisitor):
         self.generic_visit(node)
         self.js_code.append("}\n")
 
+    def visit_AsyncFunctionDef(self, node):
+        function_name = node.name
+        parameters = [arg.arg for arg in node.args.args]
+        param_list = ", ".join(parameters)
+
+        self.js_code.append(f"async function {function_name}({param_list}) {{")
+        self.generic_visit(node)
+        self.js_code.append("}\n")
+
     def visit_Assign(self, node):
         reset = "\x1b[0m"
         red = "\x1b[31;20m"
         targets_code = " = ".join([ast.unparse(t) for t in node.targets])
         value_code = ast.unparse(node.value)
+
+        if targets_code.startswith("(") and targets_code.endswith(")"):
+            targets_code = targets_code.replace("(", "[").replace(")", "]")
+
         self.js_code.append(f"  {targets_code} = {value_code};")
         js_code = f"  {targets_code} = {value_code};"
         print(f"This is the assign value {red}{js_code}{reset}")
@@ -33,12 +46,19 @@ class PythonToJsTranspiler(ast.NodeVisitor):
         if isinstance(node.value, ast.Call):
             self.visit_Call(node.value)
 
+    def visit_If(self, node):
+        test_code = ast.unparse(node.test)
+        self.js_code.append(f"  if ({test_code}) {{")
+        self.generic_visit(node)
+        self.js_code.append("  }\n")
+
+
+
     def visit_Call(self, node):
         """This is a call node
         Call node is e.g. print("Hello, World")
         No assignment takes place here
         """
-        print("This is a call node: ", node.func.id)
         
         if isinstance(node.func, ast.Name) and node.func.id == "print":
             args_code = ", ".join([ast.unparse(arg) for arg in node.args])
@@ -55,6 +75,7 @@ def transpile(python_code: str) -> str:
     tree = ast.parse(python_code)
     transpiler = PythonToJsTranspiler()
     transpiler.visit(tree)
+    print(f"This is the transpiler {transpiler.js_code}")
     return "".join(transpiler.js_code)
 
 def transpile_to_js(python_code):

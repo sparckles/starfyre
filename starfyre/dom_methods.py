@@ -12,7 +12,6 @@ from .component import Component
 
 
 def assign_event_listeners(event_listener_name, event_listener):
-
     # component.dom.addEventListener(event_type, create_proxy(event_listener))
     js_event_listener = transpile_to_js(event_listener)
     html = f" {event_listener_name}='{event_listener.__name__}()' "
@@ -70,11 +69,11 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 
 
     # Add event listeners
-    def isListener(name):
+    def is_listener(name):
         print("This is the event listener name", component.event_listeners, name)
         return name.startswith("on")
-    def isAttribute(name):
-        return not isListener(name) and name != "children"
+    def is_attribute(name):
+        return not is_listener(name) and name != "children"
 
     # TODO: add event listeners
     # assign_event_listeners(component, component.event_listeners)
@@ -83,11 +82,11 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 
     prop_string = ""
     for name in props:
-        if isAttribute(name):
+        if is_attribute(name):
             prop_string += f" {name}='{props[name]}' "
         
     for name, function in event_listeners.items():
-        if isListener(name):
+        if is_listener(name):
             print("Assigning event listeners to the component", component, name, function)
             new_html, new_js = assign_event_listeners(name, function)
             js += new_js
@@ -123,7 +122,7 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
     red = "\033[1;31m" 
     reset = "\033[0;0m"
 
-    print(f"{red}This is the html{reset}", html)
+    print(f"{red}This is the html{reset}", html, js)
 
     return html, css, js
     # // Append to parent
@@ -137,6 +136,7 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 def render(component: Component) -> str:
     html, css, js = render_helper(component)
     final_html = f"<style>{css}</style>{html}<script>{js}</script>"
+    print("This is the final html", final_html)
     return final_html
 
 def render_root(component: Component) -> str:

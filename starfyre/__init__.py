@@ -5,7 +5,7 @@ from .transpiler import transpile_to_js
 # import js
 
 # for exports
-from starfyre.starfyre import sum_as_string, compile
+from .compiler import compile
 
 # from .component import Component
 # from .dom_methods import render

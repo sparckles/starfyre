@@ -116,7 +116,6 @@ class RootParser(HTMLParser):
 
         while len(self.children) > 0:
             child, child_depth = self.children[0]
-            print("These are the children", child, child_depth)
             if child_depth == parent_depth + 1:
                 self.children.pop(0)
                 self.stack[-1][0].children.insert(0, child)
@@ -135,8 +134,8 @@ class RootParser(HTMLParser):
     def handle_data(self, data):
         # this is doing too much
         # lexing 
-        # as well as parsing
-        # move this to rust
+        # parsing
+
         data = data.strip().strip("\n").strip(" ")
         # regex to find all the elements that are wrapped in {}
 
@@ -155,7 +154,7 @@ class RootParser(HTMLParser):
                 current_data = self.global_variables[match]
             else:
                 eval_result = eval(match, self.local_variables, self.global_variables)
-                print("BCCCCCC - The eval result is", eval_result)
+                print("BCCCCCC - The eval result of ", match, " is ", eval_result)
                 if isinstance(eval_result, Component):
                     self.stack[-1][0].children.append(eval_result)
                     return
@@ -164,6 +163,8 @@ class RootParser(HTMLParser):
                 elif isinstance(eval_result, list):
                     current_data = " ".join([str(i) for i in eval_result])
                 else:
+                    # we need to handle a case where the eval result is a state object
+
                     raise Exception("Variable not found")
 
             if not self.is_state(current_data) and not callable(current_data):

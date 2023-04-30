@@ -1,11 +1,23 @@
 from .parent import parent
-
 def mocked_request():
   return "fetched on the server"
 
-def handle_on_click():
+
+
+
+async def handle_on_click(e):
   alert("click rendered on client")
-  print("handles on click")
+  initial_value = use_signal(e)
+  if 1==1:
+    print("Hello world")
+
+  set_signal(2)
+  initial_value = use_signal(e)
+  console.log("This is the initial value", initial_value)
+
+  a = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+  console.log(await a.text())
+  console.log("handles on click")
   
 <style>
   body {
@@ -23,5 +35,4 @@ def handle_on_click():
 <script>
 // this is optional 
 // as I don't know why someone would need it
-  alert("Just in case you need to do something special")
 </script>
