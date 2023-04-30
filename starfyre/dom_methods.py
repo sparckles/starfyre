@@ -73,7 +73,8 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 
         if component.signal:
             js += f"""
-                const component = document.getElementById('{component.uuid}');
+                component = document.getElementById('{component.uuid}');
+                addDomIdToMap('{component.uuid}', "{ component.signal }");
                 if (component) {{
                    component.innerText = `${{{ component.signal }}}`;
                 }}
@@ -83,6 +84,10 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 
     if component.css:
         css += f"{ component.css }\n"
+
+    if component.js:
+        js += f"{component.js}\n"
+
     html += f"<{tag} id='{component.uuid}' "
 
 
@@ -119,8 +124,6 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
     html += f"</{tag}>\n"
 
 
-    if component.js:
-        js += f"{component.js}\n"
 
     component.html = html
     return html, css, js

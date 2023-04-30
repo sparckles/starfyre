@@ -1,4 +1,7 @@
 import inspect
+from uuid import uuid4
+
+from starfyre.component import Component
 from .dom_methods import render, render_root
 from .transpiler import transpile, transpile_to_js
 
@@ -14,7 +17,7 @@ from .parser import RootParser
 
 
 
-def create_component(pyml, css="", js="", client_side_python=""):
+def create_component(pyml="", css="", js="", client_side_python=""):
     if client_side_python:
         new_js = transpile(client_side_python) + js
         js = new_js
@@ -26,8 +29,12 @@ def create_component(pyml, css="", js="", client_side_python=""):
     pyml = pyml.strip("\n").strip()
     parser.feed(pyml)
     parser.close()
-    pytml_root = parser.get_root()
-    return pytml_root
+    pyml_root = parser.get_root()
+
+    if pyml_root is None:
+        return Component("div", {}, [], {}, {}, uuid="store", js=js)
+
+    return pyml_root
 
 
 # __all__ = [

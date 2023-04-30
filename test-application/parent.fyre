@@ -8,8 +8,19 @@ def ssr_request():
     return "No response"
 
 <pyml>
-    <div>
-      {use_parent_signal()} 
-    </div>
+    <span>
+      <div>
+        {ssr_request()}
+      </div>
+      <b>
+        {use_parent_signal()}
+      </b>
+      <b>
+        {get_parent_signal()}
+      </b>
+      <div> 
+        This won't be re-rendered
+      </div>
+    </span>
 </pyml>
 

@@ -1,0 +1,5 @@
+--client 
+use_parent_signal, set_parent_signal, get_parent_signal = create_signal(2)
+
+use_clock_signal, set_clock_signal, _ = create_signal(0)
+---
