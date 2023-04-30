@@ -1,6 +1,6 @@
 import os
-import re
 from pathlib import Path
+
 
 def get_fyre_files(project_dir):
     fyre_files = []
@@ -8,6 +8,7 @@ def get_fyre_files(project_dir):
         if file.endswith(".fyre"):
             fyre_files.append(file)
     return fyre_files
+
 
 def parse(fyre_file_name):
     def remove_empty_lines_from_end(lines):
@@ -17,10 +18,9 @@ def parse(fyre_file_name):
         while lines and lines[0] == "\n":
             lines.pop(0)
 
-        if lines==[]:
+        if lines == []:
             return [""]
         return lines
-    js_reserved_keywords = ["create_signal", "use_signal", "set_signal"]
 
     current_line_type = "python"
     python_lines = []
@@ -28,8 +28,6 @@ def parse(fyre_file_name):
     pyml_lines = []
     js_lines = []
     client_side_python = []
-
-
 
     with open(fyre_file_name, "r") as fyre_file:
         for line in fyre_file.readlines():
@@ -43,9 +41,14 @@ def parse(fyre_file_name):
                 current_line_type = "js"
                 continue
             elif line.startswith("--client"):
-                current_line_type = "client" # this is a hack
+                current_line_type = "client"  # this is a hack
                 continue
-            elif "</style>" in line or "</pyml>" in line or "</script>" in line or "--" in line:
+            elif (
+                "</style>" in line
+                or "</pyml>" in line
+                or "</script>" in line
+                or "--" in line
+            ):
                 current_line_type = "python"
                 continue
 
@@ -60,16 +63,23 @@ def parse(fyre_file_name):
             elif current_line_type == "client":
                 client_side_python.append(line)
 
+    return (
+        remove_empty_lines_from_end(python_lines),
+        remove_empty_lines_from_end(css_lines),
+        remove_empty_lines_from_end(pyml_lines),
+        remove_empty_lines_from_end(js_lines),
+        remove_empty_lines_from_end(client_side_python),
+    )
 
-    return remove_empty_lines_from_end(python_lines), remove_empty_lines_from_end(css_lines), remove_empty_lines_from_end( pyml_lines ), remove_empty_lines_from_end(js_lines), remove_empty_lines_from_end(client_side_python)
 
-def python_transpiled_string(pyml_lines, css_lines, js_lines, client_side_python, file_name):
+def python_transpiled_string(
+    pyml_lines, css_lines, js_lines, client_side_python, file_name
+):
     file_name = file_name.replace(".py", "").split("/")[-1]
     pyml_lines = "".join(pyml_lines)
     css_lines = "".join(css_lines)
     js_lines = "".join(js_lines)
     client_side_python = "".join(client_side_python)
-
 
     root_name = None
 
@@ -118,8 +128,6 @@ def fx_{root_name}():
 {root_name}=fx_{root_name}()
 '''
 
-    
-
 
 def transpile_to_python(
     python_lines,
@@ -132,18 +140,17 @@ def transpile_to_python(
 ):
     final_python_lines = ["".join(python_lines)]
 
-    main_content = python_transpiled_string(pyml_lines, css_lines, js_lines, client_side_python, output_file_name)
+    main_content = python_transpiled_string(
+        pyml_lines, css_lines, js_lines, client_side_python, output_file_name
+    )
 
     final_python_lines.append(main_content)
 
     file_name = output_file_name.split("/")[-1]
-    output_file_name = project_dir / "build" /  file_name
+    output_file_name = project_dir / "build" / file_name
 
     with open(output_file_name, "w") as output_file:
         output_file.write("".join(final_python_lines))
-
-
-
 
 
 def compile(entry_file_name):
@@ -156,14 +163,15 @@ def compile(entry_file_name):
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
-        python_lines, css_lines, pyml_lines, js_lines, client_side_python = parse(project_dir / fyre_file)
-        transpile_to_python(python_lines, css_lines, pyml_lines, js_lines, client_side_python, python_file_name, project_dir )
-
-
-
-
-
-
-
-
-
+        python_lines, css_lines, pyml_lines, js_lines, client_side_python = parse(
+            project_dir / fyre_file
+        )
+        transpile_to_python(
+            python_lines,
+            css_lines,
+            pyml_lines,
+            js_lines,
+            client_side_python,
+            python_file_name,
+            project_dir,
+        )

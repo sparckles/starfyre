@@ -1,20 +1,17 @@
 import inspect
-from uuid import uuid4
 
 from starfyre.component import Component
-from .dom_methods import render, render_root
-from .transpiler import transpile, transpile_to_js
+from .transpiler import transpile
 
 # import js
 
 # for exports
-from .compiler import compile
 
 # from .component import Component
 # from .dom_methods import render
 from .parser import RootParser
-# from .store import create_signal
 
+# from .store import create_signal
 
 
 def create_component(pyml="", css="", js="", client_side_python=""):
@@ -45,4 +42,3 @@ def create_component(pyml="", css="", js="", client_side_python=""):
 #     "create_signal",
 #     "sum_as_string",
 # ]
-

@@ -1,8 +1,10 @@
 import ast
 import inspect
 
+
 class PythonToJsTranspiler(ast.NodeVisitor):
-    JS_RESERVED_KEYWORDS = { "create_signal", "use_signal", "set_signal", "console.log" }
+    JS_RESERVED_KEYWORDS = {"create_signal", "use_signal", "set_signal", "console.log"}
+
     def __init__(self):
         self.js_code = []
 
@@ -25,8 +27,6 @@ class PythonToJsTranspiler(ast.NodeVisitor):
         self.js_code.append("}\n")
 
     def visit_Assign(self, node):
-        reset = "\x1b[0m"
-        red = "\x1b[31;20m"
         targets_code = " = ".join([ast.unparse(t) for t in node.targets])
         value_code = ast.unparse(node.value)
 
@@ -34,7 +34,6 @@ class PythonToJsTranspiler(ast.NodeVisitor):
             targets_code = targets_code.replace("(", "[").replace(")", "]")
 
         self.js_code.append(f"  {targets_code} = {value_code};")
-        js_code = f"  {targets_code} = {value_code};"
 
     def visit_Return(self, node):
         value_code = ast.unparse(node.value) if node.value else ""
@@ -67,14 +66,12 @@ class PythonToJsTranspiler(ast.NodeVisitor):
         self.generic_visit(node)
         self.js_code.append("  }\n")
 
-
-
     def visit_Call(self, node):
         """This is a call node
         Call node is e.g. print("Hello, World")
         No assignment takes place here
         """
-        
+
         if isinstance(node.func, ast.Name) and node.func.id == "print":
             args_code = ", ".join([ast.unparse(arg) for arg in node.args])
             self.js_code.append(f"  console.log({args_code});")
@@ -84,20 +81,20 @@ class PythonToJsTranspiler(ast.NodeVisitor):
             self.js_code.append(f"  {func_code}({args_code});")
 
 
-
-
 def transpile(python_code: str) -> str:
     tree = ast.parse(python_code)
     transpiler = PythonToJsTranspiler()
     transpiler.visit(tree)
     return "".join(transpiler.js_code)
 
+
 def transpile_to_js(python_code):
     code = inspect.getsource(python_code)
     return transpile(code)
 
+
 def main():
-    python_code = '''
+    python_code = """
 def greet(name):
     print("Hello, " + name)
 
@@ -107,13 +104,13 @@ def add(a, b):
 
 def subtract(a, b):
     return add(a, -b)
-'''
+"""
 
     js_code = transpile(python_code)
 
     # get ast of code
     print(js_code)
 
+
 if __name__ == "__main__":
     main()
-

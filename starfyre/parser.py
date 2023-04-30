@@ -2,7 +2,7 @@ import re
 from html.parser import HTMLParser
 from uuid import uuid4
 
-from starfyre.transpiler import transpile, transpile_to_js
+from starfyre.transpiler import transpile
 
 from .component import Component
 
@@ -31,7 +31,9 @@ class RootParser(HTMLParser):
         self.local_variables = component_local_variables
         self.global_variables = component_global_variables
 
-        self.components = self.extract_components({**self.local_variables, **self.global_variables})
+        self.components = self.extract_components(
+            {**self.local_variables, **self.global_variables}
+        )
         # populate the dict with the components
 
     def extract_components(self, local_functions):
@@ -89,15 +91,22 @@ class RootParser(HTMLParser):
             component.event_listeners = {**component.event_listeners, **event_listeners}
             self.stack.append((component, self.current_depth))
 
-
             return
 
-
-        component = Component(tag, props, [], event_listeners, state, js=self.js, css=self.css, uuid=uuid4() )
+        component = Component(
+            tag,
+            props,
+            [],
+            event_listeners,
+            state,
+            js=self.js,
+            css=self.css,
+            uuid=uuid4(),
+        )
 
         # instead of assiging tags we assign uuids
         self.stack.append((component, self.current_depth))
-        printable_stack = [( element[0].tag, element[1]) for element in self.stack]
+        [(element[0].tag, element[1]) for element in self.stack]
 
     def handle_endtag(self, tag):
         # we need to check if the tag is a default component or a custom component
@@ -125,19 +134,17 @@ class RootParser(HTMLParser):
         if parent_node.tag != "style" and parent_node.tag != "script":
             self.children.insert(0, (parent_node, parent_depth))
 
-
     def is_signal(self, str):
         if not str:
             return False
         return "signal" in str
-    
+
     def inject_uuid(self, signal, uuid):
         return signal.replace("()", f"('{uuid}')")
 
-
     def handle_data(self, data):
         # this is doing too much
-        # lexing 
+        # lexing
         # parsing
 
         data = data.strip().strip("\n").strip(" ")
@@ -145,9 +152,7 @@ class RootParser(HTMLParser):
 
         matches = re.findall(r"{(.*?)}", data)
 
-
         state = {}
-
 
         parent_node, parent_depth = self.stack[-1]
         uuid = uuid4()
@@ -172,7 +177,9 @@ class RootParser(HTMLParser):
                     current_data = new_js
 
                 else:
-                    eval_result = eval(match, self.local_variables, self.global_variables)
+                    eval_result = eval(
+                        match, self.local_variables, self.global_variables
+                    )
                     if isinstance(eval_result, Component):
                         self.stack[-1][0].children.append(eval_result)
                         return
@@ -189,7 +196,7 @@ class RootParser(HTMLParser):
                 print("current data", current_data)
                 if matches:
                     data = data.replace("{", "").replace("}", "")
-                data = data.replace(match, str( current_data ))
+                data = data.replace(match, str(current_data))
 
         if data == "":
             return
@@ -203,22 +210,46 @@ class RootParser(HTMLParser):
         # this should never be in the parent stack
         # a text node is a child node as soon as it is created
 
-
         # add a parent component
-         # on the wrapper div component
+        # on the wrapper div component
 
-        wrapper_div_component = Component("div", {}, [], {}, state=state, data=data, css=self.css, js=self.js, signal="", uuid=uuid)
-
-        wrapper_div_component.children.append(
-            Component("TEXT_NODE", {}, [], {}, state=state, data=data, css=self.css, js=self.js, signal=component_signal, uuid=uuid)
+        wrapper_div_component = Component(
+            "div",
+            {},
+            [],
+            {},
+            state=state,
+            data=data,
+            css=self.css,
+            js=self.js,
+            signal="",
+            uuid=uuid,
         )
 
+        wrapper_div_component.children.append(
+            Component(
+                "TEXT_NODE",
+                {},
+                [],
+                {},
+                state=state,
+                data=data,
+                css=self.css,
+                js=self.js,
+                signal=component_signal,
+                uuid=uuid,
+            )
+        )
 
         parent_node.children.insert(0, wrapper_div_component)
-    
-        print("parent node", parent_node.tag, parent_node.children, "for the text node ", data)
-        
-        
+
+        print(
+            "parent node",
+            parent_node.tag,
+            parent_node.children,
+            "for the text node ",
+            data,
+        )
 
     def get_stack(self):
         return self.stack
@@ -226,5 +257,6 @@ class RootParser(HTMLParser):
     def get_root(self):
         if len(self.children) != 0:
             return self.children[0][0]
-        return Component("div", {}, [], {}, state={}, data="", css=self.css, js=self.js, uuid=uuid4())
-
+        return Component(
+            "div", {}, [], {}, state={}, data="", css=self.css, js=self.js, uuid=uuid4()
+        )

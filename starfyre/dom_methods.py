@@ -19,16 +19,16 @@ def assign_event_listeners(event_listener_name, event_listener):
 
     return html, js_event_listener
 
-    
 
 # there should be two renders
 
 
 # render page and render component
-def render_helper(component: Component) -> tuple[ str, str, str ]:
+def render_helper(component: Component) -> tuple[str, str, str]:
     # Add event listeners
     def is_listener(name):
         return name.startswith("on")
+
     def is_attribute(name):
         return not is_listener(name) and name != "children"
 
@@ -43,17 +43,15 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
         parentElement = Component("div", {"id": "root"}, [], {}, {}, uuid=uuid4())
         component.parentComponent = parentElement
 
-        # ?? 
+        # ??
         # cannot use js
         # js.document.body.appendChild(parentElement)
-
 
     tag = component.tag
     props = component.props
     state = component.state
     data = component.data
     event_listeners = component.event_listeners
-    
 
     # Create DOM element
     if component.is_text_component:
@@ -80,7 +78,7 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
                 }}
             """
 
-        return html, css, js 
+        return html, css, js
 
     if component.css:
         css += f"{ component.css }\n"
@@ -90,26 +88,23 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 
     html += f"<{tag} id='{component.uuid}' "
 
-
-
     # this is not when the component is a text component
     prop_string = ""
     for name in props:
         if is_attribute(name):
             prop_string += f" {name}='{props[name]}' "
-        
+
     for name, function in event_listeners.items():
         if is_listener(name):
             new_html, new_js = assign_event_listeners(name, function)
             js += new_js
             html += new_html
-            
+
     if html.endswith(">"):
         html.removesuffix(">")
 
     if not component.is_text_component:
         html += f"{prop_string} >"
-            
 
     # Render children
     children = component.children
@@ -123,8 +118,6 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
 
     html += f"</{tag}>\n"
 
-
-
     component.html = html
     return html, css, js
     # // Append to parent
@@ -135,14 +128,14 @@ def render_helper(component: Component) -> tuple[ str, str, str ]:
     # else:
     #     parentElement.appendChild(dom)
 
+
 def render(component: Component) -> str:
     html, css, js = render_helper(component)
     final_html = f"<style>{css}</style>{html}<script>{js}</script>"
     return final_html
 
+
 def render_root(component: Component) -> str:
-    html,css,js = render_helper(component)
+    html, css, js = render_helper(component)
     final_html = f"<style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
     return final_html
-
-

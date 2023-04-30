@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import click
 
+
 def create_main_file(path):
     output_file_path = path + "/build/__main__.py"
     store_path = path + "/build/store.js"
@@ -13,12 +14,11 @@ def create_main_file(path):
 
     dist_path.mkdir(exist_ok=True)
 
-    
     shutil.copy(store_path, path + "/dist/store.js")
 
     with open(output_file_path, "w") as f:
         f.write(
-"""
+            """
 
 from . import app
 import os
@@ -37,13 +37,12 @@ if __name__ == '__main__':
 """
         )
 
+
 @click.command()
 @click.option("--path", default=".", help="Path to the project")
 @click.option("--dev", default=False, help="Run in development mode")
 @click.option("--build", default=False, help="Build the project")
 def main(path, dev, build):
-    red = "\033[1;31m"
-    reset = "\033[0;0m"
     if dev:
         path_ = path + "/__init__.py"
         # get absolute path
@@ -51,12 +50,13 @@ def main(path, dev, build):
         compile(path)
         create_main_file(os.path.dirname(path))
     if build:
+        subprocess.run(
+            [sys.executable, "-m", "build"],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
-        subprocess.run([sys.executable , "-m", "build"], cwd=path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-
-    
 
 if __name__ == "__main__":
     main()
-

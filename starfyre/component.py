@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-from html.parser import HTMLParser
 from typing import Any, Optional
-
 
 
 @dataclass
@@ -11,16 +9,15 @@ class Component:
     children: list
     event_listeners: dict
     state: dict
-    uuid: Any 
+    uuid: Any
     signal: str = ""
     original_data: str = ""
     data: str = ""
-    parentComponent: Optional[ Any ] = None
+    parentComponent: Optional[Any] = None
     html: str = ""
     css: str = ""
     js: str = ""
     # on any property change, rebuild the tree
-
 
     def render(self):
         pass
