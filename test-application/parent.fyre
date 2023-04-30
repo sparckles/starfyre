@@ -1,0 +1,26 @@
+import requests
+
+def ssr_request():
+  text = "Hello"
+  if text != "":
+    return text + " from Server Side"
+  else:
+    return "No response"
+
+<pyml>
+    <span>
+      <div>
+        {ssr_request()}
+      </div>
+      <b>
+        {use_parent_signal()}
+      </b>
+      <b>
+        {get_parent_signal()}
+      </b>
+      <div> 
+        This won't be re-rendered
+      </div>
+    </span>
+</pyml>
+

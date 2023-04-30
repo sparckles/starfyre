@@ -1,0 +1,40 @@
+from .parent import parent
+from .store import store
+
+def mocked_request():
+  return "fetched on the server"
+
+
+async def handle_on_click(e):
+  alert("click rendered on client")
+  if 1==1:
+    print("Hello world")
+
+  current_value = get_parent_signal()
+  set_parent_signal(current_value + 1)
+  a = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+  print(await a.text())
+  print("handles on click")
+  
+
+<style>
+  body {
+    background-color: red;
+  }
+</style>
+
+<pyml>
+  <store>
+    <parent hello='world'>
+        <span onclick={handle_on_click}>
+          {[ mocked_request() for i in range(4)]}
+        </span>
+    </parent>
+  </store>
+</pyml>
+
+
+<script>
+// this is optional 
+// as I don't know why someone would need it
+</script>

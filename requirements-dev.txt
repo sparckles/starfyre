@@ -1,2 +1,0 @@
-setuptools
-maturin>=0.14

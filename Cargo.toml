@@ -10,6 +10,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 pyo3 = { version = "0.16.1", features = ["extension-module"] }
+walkdir = "2.3.2"
 
 [tool.maturin]
 include = [{ path = "src/**/*", format = "sdist" }, { path = "starfyre/**/*", format = "sdist" }]
