@@ -17,42 +17,96 @@ The easiest way to get started is to clone `create-starfyre-app` repo. Hosted at
 ## Sample Usage
 
 
-src/__init__.py
+src/__init__.fyre
 ```python
-from starfyre import create_component, render
 
-from .component import Component
+from .parent import parent
+from .store import store
+
+def mocked_request():
+  return "fetched on the server"
 
 
-def main():
-    component = Component()
-    render(create_component(<component></component>))
+async def handle_on_click(e):
+  alert("click rendered on client")
+  if 1==1:
+    print("Hello world")
+
+  current_value = get_parent_signal()
+  set_parent_signal(current_value + 1)
+  a = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+  print(await a.text())
+  print("handles on click")
+  
+
+<style>
+  body {
+    background-color: red;
+  }
+</style>
+
+<pyml>
+  <store>
+    <parent hello='world'>
+        <span onclick={handle_on_click}>
+          {[ mocked_request() for i in range(4)]}
+        </span>
+    </parent>
+  </store>
+</pyml>
+
+
+<script>
+// this is the optional section 
+// for third party scripts and custom js
+</script>
+
 ```
 
-src/component.py
+src/parent.fyre
 ```python
 
-from starfyre import create_component, create_signal
+import requests
 
-[get_component_state, set_state] = create_signal(0)
+def ssr_request():
+  text = "Hello"
+  if text != "":
+    return text + " from Server Side"
+  else:
+    return "No response"
 
+<pyml>
+    <span>
+      <div>
+        {ssr_request()}
+      </div>
+      <b>
+        {use_parent_signal()}
+      </b>
+      <b>
+        {get_parent_signal()}
+      </b>
+      <div> 
+        This won't be re-rendered
+      </div>
+    </span>
+</pyml>
 
-def updateCounter(component, *args):
-    set_state(get_component_state(component) + 1)
+```
 
+src/store.fyre
 
-def Component():
-    return create_component("""<div onClick={updateCounter}>
-        This is the component state
-        <button>Click Here to increment</button> {get_component_state}
-        </div>""",
-    )
+```python
+--client 
+use_parent_signal, set_parent_signal, get_parent_signal = create_signal(2)
 
+use_clock_signal, set_clock_signal, _ = create_signal(0)
+---
 ```
 
 ## Developing Locally
 
-1. `make in-dev`
+1. `./build.sh`
 
 For more flexibility, see `make help`
 
