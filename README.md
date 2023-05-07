@@ -12,7 +12,11 @@ Please note that Starfyre is still very naive and may be buggy, as it was develo
 
 ## Installation:
 
-The easiest way to get started is to clone `create-starfyre-app` repo. Hosted at [create-starfyre-app](https://github.com/sansyrox/create-starfyre-app)
+```
+pip install starfyre
+```
+
+A sample project is hosted on [GitHub](https://github.com/sansyrox/first-starfyre-app/).
 
 ## Sample Usage
 
