@@ -110,9 +110,9 @@ use_clock_signal, set_clock_signal, _ = create_signal(0)
 
 ## Developing Locally
 
-1. `./build.sh`
+1. Run the script `./build.sh`
+2. You can find a small test application in the `test-application` directory.
 
-For more flexibility, see `make help`
 
 ## Feedback
 
