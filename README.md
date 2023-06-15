@@ -113,7 +113,7 @@ use_clock_signal, set_clock_signal, _ = create_signal(0)
 1. Run the script `./build.sh`
 2. You can find a small test application in the `test-application` directory.
 
-## Running with Docker
+## Running the sample app with Docker
 
 1. Build the image `docker build --tag starfyre .`
 2. Run the container `docker run -v ./test-application:/app/test-application/ starfyre`
