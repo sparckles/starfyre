@@ -17,6 +17,9 @@ def extract_functions(obj):
 
 
 class RootParser(HTMLParser):
+    # this is the grammar for the parser
+    # we need cover all the grammar rules
+
     generic_tags = ["div", "p", "b", "span", "i", "button"]
 
     def __init__(self, component_local_variables, component_global_variables, css, js):
@@ -147,11 +150,16 @@ class RootParser(HTMLParser):
         # lexing
         # parsing
 
+
+        # this is a very minimal version of lexing
+        # we should ideally be writing a separate layer for lexing
         data = data.strip().strip("\n").strip(" ")
         # regex to find all the elements that are wrapped in {}
 
         matches = re.findall(r"{(.*?)}", data)
 
+
+        # parsing starts here
         state = {}
 
         parent_node, parent_depth = self.stack[-1]

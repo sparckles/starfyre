@@ -56,14 +56,8 @@ coverage.xml
 # Rope
 .ropeproject
 
-# Django stuff:
-*.log
-*.pot
-
 .DS_Store
 
-# Sphinx documentation
-docs/_build/
 
 # PyCharm
 .idea/

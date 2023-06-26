@@ -15,11 +15,9 @@ def write_js_file(path):
     shutil.copy(str(js_store), path + "/dist/store.js")
 
 
-
 def create_main_file(path):
     output_file_path = path + "/build/__main__.py"
     write_js_file(path)
-
 
     with open(output_file_path, "w") as f:
         f.write(

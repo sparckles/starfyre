@@ -1,19 +1,10 @@
 import inspect
 
-from starfyre.dom_methods import render, render_root
-from .compiler import compile
 from starfyre.component import Component
 from .transpiler import transpile
 
-# import js
-
-# for exports
-
-# from .component import Component
-# from .dom_methods import render
 from .parser import RootParser
 
-# from .store import create_signal
 
 
 def create_component(pyml="", css="", js="", client_side_python=""):
@@ -36,11 +27,3 @@ def create_component(pyml="", css="", js="", client_side_python=""):
     return pyml_root
 
 
-# __all__ = [
-#     "render",
-#     "js",
-#     "create_component",
-#     "Component",
-#     "create_signal",
-#     "sum_as_string",
-# ]

@@ -5,10 +5,6 @@ from uuid import uuid4
 from .transpiler import transpile_to_js
 
 
-# # import js
-# from pyodide import create_proxy
-
-
 from .component import Component
 
 
@@ -20,10 +16,6 @@ def assign_event_listeners(event_listener_name, event_listener):
     return html, js_event_listener
 
 
-# there should be two renders
-
-
-# render page and render component
 def render_helper(component: Component) -> tuple[str, str, str]:
     # Add event listeners
     def is_listener(name):
@@ -37,15 +29,8 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     css = "\n"
     js = "\n"
     if parentElement is None:
-        # instead of creating an element with js
-        # we need to create a div string
-
         parentElement = Component("div", {"id": "root"}, [], {}, {}, uuid=uuid4())
         component.parentComponent = parentElement
-
-        # ??
-        # cannot use js
-        # js.document.body.appendChild(parentElement)
 
     tag = component.tag
     props = component.props
@@ -120,13 +105,6 @@ def render_helper(component: Component) -> tuple[str, str, str]:
 
     component.html = html
     return html, css, js
-    # // Append to parent
-    # need to apply batch updates here
-    # also create a tree of dom nodes in the first place
-    # if parentElement.contains(dom):
-    #     parentElement.replaceChild(dom, parentElement.childNodes[0])
-    # else:
-    #     parentElement.appendChild(dom)
 
 
 def render(component: Component) -> str:
