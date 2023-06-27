@@ -42,8 +42,8 @@ if __name__ == '__main__':
 
 @click.command()
 @click.option("--path", default=".", help="Path to the project")
-@click.option("--dev", default=False, help="Run in development mode")
-@click.option("--build", default=False, help="Build the project")
+@click.option("--dev", default=False, help="Start the compilation and generate the build package.")
+@click.option("--build", default=False, help="Start the build package")
 def main(path, dev, build):
     if dev:
         path_ = path + "/__init__.py"

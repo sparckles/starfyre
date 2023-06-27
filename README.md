@@ -12,7 +12,7 @@ Starfyre is a library that allows you to build reactive frontends using only Pyt
 Please note that Starfyre is still very naive and may be buggy, as it was developed in just five days. However, it is under active development and we welcome contributions to improve it. Whether you are a seasoned web developer or new to frontend development, we hope that you will find Starfyre to be a useful tool. Its intuitive API and simple, declarative style make it easy to get started, and its powerful features allow you to build sophisticated applications.
 
 
-## Installation:
+## 📦 Installation:
 
 ```
 pip install starfyre
@@ -20,7 +20,7 @@ pip install starfyre
 
 A sample project is hosted on [GitHub](https://github.com/sansyrox/first-starfyre-app/).
 
-## Sample Usage
+## 🚀 Sample App
 
 
 src/__init__.fyre
@@ -69,53 +69,46 @@ async def handle_on_click(e):
 
 ```
 
-src/parent.fyre
-```python
 
-import requests
+## 🚀 Sample CLI usage
 
-def ssr_request():
-  text = "Hello"
-  if text != "":
-    return text + " from Server Side"
-  else:
-    return "No response"
+```bash
+Usage: python -m starfyre [OPTIONS]
 
-<pyml>
-    <span>
-      <div>
-        {ssr_request()}
-      </div>
-      <b>
-        {use_parent_signal()}
-      </b>
-      <b>
-        {get_parent_signal()}
-      </b>
-      <div> 
-        This won't be re-rendered
-      </div>
-    </span>
-</pyml>
-
+Options:
+  --path TEXT      Path to the project
+  --dev BOOLEAN    Start the compilation and generate the build package.
+  --build BOOLEAN  Start the build package
+  --help           Show this message and exit.
 ```
 
-src/store.fyre
+## 🗒️ How to contribute
 
-```python
---client 
-use_parent_signal, set_parent_signal, get_parent_signal = create_signal(2)
+### 🏁 Get started
+Please read the code of conduct and go through CONTRIBUTING.md before contributing to Robyn. Feel free to open an issue for any clarifications or suggestions.
 
-use_clock_signal, set_clock_signal, _ = create_signal(0)
----
-```
+If you're feeling curious. You can take a look at a more detailed architecture here.
 
-## Developing Locally
+If you still need help to get started, feel free to reach out on our community discord.
 
-1. Run the script `./build.sh`
-2. You can find a small test application in the `test-application` directory.
+
+## ⚙️  Developing Locally
+
+1. Install the dependencies `poetry install`
+2. Run the script `./build.sh`. This command will run the build process in starfyre against the test application in `test-application` directory.
+  - The `build.sh` file is a simple script that runs two commands sequentially.
+    - `python -m starfyre --dev=True --path="test-application/"`
+    - `python -m starfyre --build=True --path="test-application/"`
+        - The `path` variable here is the path to our application.
+        - The `dev` flag here is used to start the compilation and create the `build` directory. 
+        - The `build` directory is basically a python package that contains all the compiled files. We use the `--build` flag to run that package.
+
+3. You can find a small test application in the `test-application` directory.
+4. Navigate to `test-application/dist` and open `index.html` in your browser to see the output.
 
 ## Running the sample app with Docker
+
+#### Ideally, we should not be needing this. But if you are having trouble running the sample app locally, you can try this.
 
 1. Build the image `docker build --tag starfyre .`
 2. Run the container `docker run -v ./test-application:/app/test-application/ starfyre`

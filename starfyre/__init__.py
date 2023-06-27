@@ -1,10 +1,11 @@
 import inspect
+from starfyre.dom_methods import render, render_root
+from .compiler import compile
 
 from starfyre.component import Component
 from .transpiler import transpile
 
 from .parser import RootParser
-
 
 
 def create_component(pyml="", css="", js="", client_side_python=""):
@@ -27,3 +28,11 @@ def create_component(pyml="", css="", js="", client_side_python=""):
     return pyml_root
 
 
+__all__ = [
+    "create_component",
+    "render",
+    "render_root",
+    "compile",
+    "transpile",
+    "Component",
+]
