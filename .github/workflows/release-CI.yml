@@ -61,11 +61,13 @@ jobs:
         with:
           name: wheel-ubuntu-latest
           path: dist
+
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
           name: wheel-macos-latest
           path: dist
+
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
