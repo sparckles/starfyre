@@ -10,7 +10,7 @@ def get_fyre_files(project_dir):
     return fyre_files
 
 def import_css(import_statement):
-    """Read a css file and save it's content to a css list"""
+    """Read a css file and save it's content to a list"""
     css_content = []    
     css_file_name = import_statement.split("'")[1]  
 
