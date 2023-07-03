@@ -24,3 +24,5 @@ def ssr_request():
     </span>
 </pyml>
 
+import '/home/suelenk/starfyre_project/starfyre/test-application/css_file_test.css'
+

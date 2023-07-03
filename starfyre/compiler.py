@@ -2,12 +2,23 @@ import os
 from pathlib import Path
 
 
-def get_fyre_files(project_dir):
+def get_fyre_files(project_dir):   
     fyre_files = []
     for file in os.listdir(project_dir):
         if file.endswith(".fyre"):
             fyre_files.append(file)
     return fyre_files
+
+def import_css(import_statement):
+    """Read a css file and save it's content to a css list"""
+    css_content = []    
+    css_file_name = import_statement.split("'")[1]  
+
+    with open(css_file_name, "r") as import_file:
+        for line in import_file.readlines():
+            css_content.append(line)
+
+    return css_content           
 
 
 def parse(fyre_file_name):
@@ -42,6 +53,10 @@ def parse(fyre_file_name):
                 continue
             elif line.startswith("--client"):
                 current_line_type = "client"  # this is a hack
+                continue
+            elif line.startswith("import") and ".css" in line:
+                css_content = import_css(line)
+                css_lines += css_content
                 continue
             elif (
                 "</style>" in line
@@ -146,11 +161,11 @@ def transpile_to_python(
 
     final_python_lines.append(main_content)
 
-    file_name = output_file_name.split("/")[-1]
+    file_name = output_file_name.split("/")[-1]                 #getting the file itself "without the path"
     output_file_name = project_dir / "build" / file_name
 
     with open(output_file_name, "w") as output_file:
-        output_file.write("".join(final_python_lines))
+        output_file.write("".join(final_python_lines))          #result of the transpiled
 
 
 def compile(entry_file_name):
