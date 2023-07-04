@@ -41,20 +41,36 @@ if __name__ == '__main__':
 
 
 @click.command()
-@click.option("--path", default=".", help="Path to the project")
-@click.option("--dev", default=False, help="Start the compilation and generate the build package.")
-@click.option("--build", default=False, help="Start the build package")
-def main(path, dev, build):
-    if dev:
-        path_ = path + "/__init__.py"
-        # get absolute path
-        path = os.path.abspath(path_)
-        compile(path)
-        create_main_file(os.path.dirname(path))
+@click.option("--path", help="Path to the project")
+@click.option("--build", is_flag=True, help="Compile and build package")
+def main(path, build):
+    """
+    Command-line interface to compile and build a Starfyre project.
+
+    Args:
+
+        path (str): Path to the project directory.\n
+        build (bool): Whether to start the build package.
+    """
+    if not path:
+        click.echo(
+            "Error: Please provide a valid path using the --path flag.\nUse --help for more details")
+        return
+
+    # Convert path to absolute path
+    absolute_path = Path(path).resolve()
+
     if build:
+        # Compile and build project
+        init_file_path = absolute_path / "__init__.py"
+        compile(init_file_path.resolve())
+        create_main_file(str(absolute_path))
+
+        # Start/run project
+        build_dir = absolute_path / "build"
         subprocess.run(
             [sys.executable, "-m", "build"],
-            cwd=path,
+            cwd=build_dir.resolve(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
