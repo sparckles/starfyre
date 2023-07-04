@@ -67,10 +67,9 @@ def main(path, build):
         create_main_file(str(absolute_path))
 
         # Start/run project
-        build_dir = absolute_path / "build"
         subprocess.run(
             [sys.executable, "-m", "build"],
-            cwd=build_dir.resolve(),
+            cwd=path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
