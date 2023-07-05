@@ -9,10 +9,14 @@ def get_fyre_files(project_dir):
             fyre_files.append(file)
     return fyre_files
 
-def import_css(import_statement):
+def resolve_css_import(import_statement, working_directory):
     """Read a css file and save it's content to a list"""
     css_content = []    
-    css_file_name = import_statement.split("'")[1]  
+    if "" in import_statement:
+        css_file_name = import_statement.replace('"', "'")        
+    css_file_name = css_file_name.split("'")[1]   
+    if css_file_name.startswith("."):
+        css_file_name = css_file_name.replace(".", str(working_directory), 1)
 
     with open(css_file_name, "r") as import_file:
         for line in import_file.readlines():
@@ -21,7 +25,7 @@ def import_css(import_statement):
     return css_content           
 
 
-def parse(fyre_file_name):
+def parse(fyre_file_name): 
     def remove_empty_lines_from_end(lines):
         while lines and lines[-1] == "\n":
             lines.pop()
@@ -55,7 +59,8 @@ def parse(fyre_file_name):
                 current_line_type = "client"  # this is a hack
                 continue
             elif line.startswith("import") and ".css" in line:
-                css_content = import_css(line)
+                project_dir = Path(os.path.dirname(fyre_file_name))                                
+                css_content = resolve_css_import(line, project_dir)
                 css_lines += css_content
                 continue
             elif (

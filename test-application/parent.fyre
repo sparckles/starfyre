@@ -1,4 +1,6 @@
 import requests
+import "./css_file_test.css"
+
 
 def ssr_request():
   text = "Hello"
@@ -23,6 +25,3 @@ def ssr_request():
       </div>
     </span>
 </pyml>
-
-import '/home/suelenk/starfyre_project/starfyre/test-application/css_file_test.css'
-
