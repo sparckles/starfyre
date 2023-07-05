@@ -1,24 +1,20 @@
 import os
+import re
 from pathlib import Path
 
 
-def get_fyre_files(project_dir):   
+def get_fyre_files(project_dir):
     fyre_files = []
     for file in os.listdir(project_dir):
         if file.endswith(".fyre"):
             fyre_files.append(file)
     return fyre_files
 
-def resolve_css_import(import_statement, working_directory):
+def resolve_css_import(css_file_path: Path):
     """Read a css file and save it's content to a list"""
-    css_content = []    
-    if "" in import_statement:
-        css_file_name = import_statement.replace('"', "'")        
-    css_file_name = css_file_name.split("'")[1]   
-    if css_file_name.startswith("."):
-        css_file_name = css_file_name.replace(".", str(working_directory), 1)
+    css_content = [] 
 
-    with open(css_file_name, "r") as import_file:
+    with open(css_file_path.resolve(), "r") as import_file:
         for line in import_file.readlines():
             css_content.append(line)
 
@@ -44,8 +40,12 @@ def parse(fyre_file_name):
     js_lines = []
     client_side_python = []
 
+    # regex pattern to match if a line is a css import, e.g. import "style.css"
+    css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
+    
     with open(fyre_file_name, "r") as fyre_file:
         for line in fyre_file.readlines():
+            css_import_match = css_import_pattern.search(line)
             if line.startswith("<style"):
                 current_line_type = "css"
                 continue
@@ -58,9 +58,9 @@ def parse(fyre_file_name):
             elif line.startswith("--client"):
                 current_line_type = "client"  # this is a hack
                 continue
-            elif line.startswith("import") and ".css" in line:
-                project_dir = Path(os.path.dirname(fyre_file_name))                                
-                css_content = resolve_css_import(line, project_dir)
+            elif css_import_match:
+                css_import = css_import_match.group(1)
+                css_content = resolve_css_import(Path(css_import))
                 css_lines += css_content
                 continue
             elif (
