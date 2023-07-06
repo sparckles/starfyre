@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 
@@ -9,8 +10,18 @@ def get_fyre_files(project_dir):
             fyre_files.append(file)
     return fyre_files
 
+def resolve_css_import(css_file_path: Path):
+    """Read a css file and save it's content to a list"""
+    css_content = [] 
 
-def parse(fyre_file_name):
+    with open(css_file_path.resolve(), "r") as import_file:
+        for line in import_file.readlines():
+            css_content.append(line)
+
+    return css_content           
+
+
+def parse(fyre_file_name): 
     def remove_empty_lines_from_end(lines):
         while lines and lines[-1] == "\n":
             lines.pop()
@@ -29,8 +40,12 @@ def parse(fyre_file_name):
     js_lines = []
     client_side_python = []
 
+    # regex pattern to match if a line is a css import, e.g. import "style.css"
+    css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
+    
     with open(fyre_file_name, "r") as fyre_file:
         for line in fyre_file.readlines():
+            css_import_match = css_import_pattern.search(line)
             if line.startswith("<style"):
                 current_line_type = "css"
                 continue
@@ -42,6 +57,11 @@ def parse(fyre_file_name):
                 continue
             elif line.startswith("--client"):
                 current_line_type = "client"  # this is a hack
+                continue
+            elif css_import_match:
+                css_import = css_import_match.group(1)
+                css_content = resolve_css_import(Path(css_import))
+                css_lines += css_content
                 continue
             elif (
                 "</style>" in line
@@ -146,11 +166,11 @@ def transpile_to_python(
 
     final_python_lines.append(main_content)
 
-    file_name = output_file_name.split("/")[-1]
+    file_name = output_file_name.split("/")[-1]                 #getting the file itself "without the path"
     output_file_name = project_dir / "build" / file_name
 
     with open(output_file_name, "w") as output_file:
-        output_file.write("".join(final_python_lines))
+        output_file.write("".join(final_python_lines))          #result of the transpiled
 
 
 def compile(entry_file_name):

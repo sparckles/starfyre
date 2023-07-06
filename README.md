@@ -94,8 +94,15 @@ If you still need help to get started, feel free to reach out on our community d
 
 ## ⚙️  Developing Locally
 
-1. Install the dependencies `poetry install`
-2. Run the script `./build.sh`. This command will run the build process in starfyre against the test application in `test-application` directory.
+Python version 3.10
+
+1. Fork this [repo](https://github.com/sparckles/starfyre)
+2. Clone this repo - `git clone https://github.com/sparckles/starfyre`
+3. Go in to the starfire directory - `cd starfyre`
+4. Download poetry `curl -sSL https://install.python-poetry.org/ | python3 -`
+5. Install the dependencies `poetry install`
+6. Activate poetry virtual enviromente `poetry shell`
+7. Run the script `./build.sh`. This command will run the build process in starfyre against the test application in `test-application` directory.
   - The `build.sh` file is a simple script that runs two commands sequentially.
     - `python -m starfyre --dev=True --path="test-application/"`
     - `python -m starfyre --build=True --path="test-application/"`
@@ -103,8 +110,9 @@ If you still need help to get started, feel free to reach out on our community d
         - The `dev` flag here is used to start the compilation and create the `build` directory. 
         - The `build` directory is basically a python package that contains all the compiled files. We use the `--build` flag to run that package.
 
-3. You can find a small test application in the `test-application` directory.
-4. Navigate to `test-application/dist` and open `index.html` in your browser to see the output.
+8. You can find a small test application in the `test-application` directory.
+9. Navigate to `cd test-application/dist`.
+10. Open `index.html` in your browser to see the output, run `explorer.exe index.html`.
 
 ## Running the sample app with Docker
 
