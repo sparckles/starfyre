@@ -158,6 +158,13 @@ def transpile_to_python(
     output_file_name,
     project_dir,
 ):
+    """
+    Transpiles a fyre file into a python file.
+
+    This function is responsible for:
+    - parsing the fyre file into python, css, pyml, js and client side python
+
+    """
     final_python_lines = ["".join(python_lines)]
 
     main_content = python_transpiled_string(
@@ -174,12 +181,21 @@ def transpile_to_python(
 
 
 def compile(entry_file_name):
+    """
+    Compiles a fyre project into a python project.
+    This function is responsible for:
+    - finding all fyre files in the project
+    - transpiling each fyre file into a python file.
+        - "transpiling" is used a bit loosely here. What we're really doing is slicing up the fyre file into different components and then inserting them into a python file.
+        - We have two functions important for us in python files `create_component` and `render_root`. 
+        - The `init.py` file will have a component that will render root and the rest of the files will have components that will be rendered inside the root component.
+    """
     project_dir = Path(os.path.dirname(entry_file_name))
 
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)
 
-    fyre_files = get_fyre_files(project_dir)
+    fyre_files = get_fyre_files(project_dir) 
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
