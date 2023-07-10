@@ -10,11 +10,15 @@ def get_fyre_files(project_dir):
             fyre_files.append(file)
     return fyre_files
 
-def resolve_css_import(css_file_path: Path):
+
+def resolve_css_import(css_file_name, working_directory):
     """Read a css file and save it's content to a list"""
     css_content = [] 
 
-    with open(css_file_path.resolve(), "r") as import_file:
+    if css_file_name.startswith("."):
+        css_file_name = css_file_name.replace(".", str(working_directory), 1)
+
+    with open(css_file_name, "r") as import_file:
         for line in import_file.readlines():
             css_content.append(line)
 
@@ -59,8 +63,9 @@ def parse(fyre_file_name):
                 current_line_type = "client"  # this is a hack
                 continue
             elif css_import_match:
-                css_import = css_import_match.group(1)
-                css_content = resolve_css_import(Path(css_import))
+                css_import = css_import_match.group(1)                
+                project_dir = Path(os.path.dirname(fyre_file_name))                                
+                css_content = resolve_css_import(css_import, project_dir)
                 css_lines += css_content
                 continue
             elif (
