@@ -20,7 +20,18 @@ class RootParser(HTMLParser):
     # this is the grammar for the parser
     # we need cover all the grammar rules
 
-    generic_tags = ["div", "p", "b", "span", "i", "button"]
+    generic_tags = [
+        "html", "div", "p", "b", "span", "i", "button", "head", "link", "meta", "style", "title",
+        "body", "section", "nav", "main", "hgroup", "h1", "h2", "h3", "h4", "h5", "h6",
+        "header", "footer", "aside", "article", "address", "blockquote", "dd", "dl", "dt",
+        "figcaption", "figure", "hr", "li", "ol", "ul", "menu", "pre", "a", "abbr", "bdi",
+        "bdo", "br", "cite", "code", "data", "em", "mark", "q", "s", "small", "strong", "sub",
+        "sup", "time", "u", "area", "audio", "img", "map", "track", "video", "embed", "iframe",
+        "picture", "object", "portal", "svg", "math", "canvas", "script", "noscript", "caption",
+        "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "datalist",
+        "fieldlist", "form", "input", "label", "legend", "meter", "optgroup", "option", "output",
+        "progress", "select", "textarea", "details", "dialog", "summary"
+    ]
 
     def __init__(self, component_local_variables, component_global_variables, css, js):
         super().__init__()
@@ -49,7 +60,7 @@ class RootParser(HTMLParser):
 
     def is_event_listener(self, name):
         return name.startswith("on")
-
+        
     def handle_starttag(self, tag, attrs):
         # logic should be to just create an empty component on start
         # and fill the contents on the end tag
@@ -58,6 +69,7 @@ class RootParser(HTMLParser):
         event_listeners = {}
         self.current_depth += 1
 
+        # extracting the attributes found in the tags
         for attr in attrs:
             if attr[1].startswith("{") and attr[1].endswith("}"):
                 attr_value = attr[1].strip("{").strip("}").strip(" ")
@@ -86,15 +98,26 @@ class RootParser(HTMLParser):
             else:
                 props[attr[0]] = attr[1]
 
+        # if the tag is not found in the generic tags but found in custom components
         if tag not in self.generic_tags and tag in self.components:
+            print(f'Tag = {tag} is not a generic BUT it is a custom component')
             component = self.components[tag]
             tag = component.tag
             component.props = {**component.props, **props}
             component.state = {**component.state, **state}
-            component.event_listeners = {**component.event_listeners, **event_listeners}
+            component.event_listeners = {
+                **component.event_listeners, **event_listeners}
             self.stack.append((component, self.current_depth))
+            print(f'{tag} is inside a Custom Tag. Stack is now = {self.stack}\n\n')
+
 
             return
+
+        # if the tag is not found in the generic tags and custom components
+        if tag not in self.generic_tags and tag not in self.components:
+            print(f'Tag = {tag} is not a generic and custom component')
+            return
+
 
         component = Component(
             tag,
@@ -110,6 +133,7 @@ class RootParser(HTMLParser):
         # instead of assiging tags we assign uuids
         self.stack.append((component, self.current_depth))
         [(element[0].tag, element[1]) for element in self.stack]
+        print(f'{tag} is a Generic Tag. Stack is now = {self.stack}\n\n')
 
     def handle_endtag(self, tag):
         # we need to check if the tag is a default component or a custom component
@@ -150,14 +174,12 @@ class RootParser(HTMLParser):
         # lexing
         # parsing
 
-
         # this is a very minimal version of lexing
         # we should ideally be writing a separate layer for lexing
         data = data.strip().strip("\n").strip(" ")
         # regex to find all the elements that are wrapped in {}
 
         matches = re.findall(r"{(.*?)}", data)
-
 
         # parsing starts here
         state = {}
