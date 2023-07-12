@@ -24,11 +24,12 @@ class RootParser(HTMLParser):
 
     def __init__(self, component_local_variables, component_global_variables, css, js):
         super().__init__()
-        self.stack: list[tuple[Component, int]] = []
-        self.children = []
+        self.stack: list[tuple[Component, int]] = []        
+        # self.stack: list[Component] = []    Suelen changes   
         self.current_depth = 0
         self.css = css
         self.js = js
+        self.root_node = None
 
         # these are the event handlers and the props
         self.local_variables = component_local_variables
@@ -92,6 +93,7 @@ class RootParser(HTMLParser):
             component.props = {**component.props, **props}
             component.state = {**component.state, **state}
             component.event_listeners = {**component.event_listeners, **event_listeners}
+            # self.stack.append(component) Suelen changes
             self.stack.append((component, self.current_depth))
 
             return
@@ -108,34 +110,53 @@ class RootParser(HTMLParser):
         )
 
         # instead of assiging tags we assign uuids
+        
         self.stack.append((component, self.current_depth))
         [(element[0].tag, element[1]) for element in self.stack]
 
     def handle_endtag(self, tag):
         # we need to check if the tag is a default component or a custom component
         # if it is a custom component, we get the element from the custom components dict
+        print("test start")    
+
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
             tag = component.tag
 
-        # need to check the if this is always true
-        parent_node, parent_depth = self.stack[
-            -1
-        ]  # based on the assumption that the stack is not empty
-
-        while len(self.children) > 0:
-            child, child_depth = self.children[0]
-            if child_depth == parent_depth + 1:
-                self.children.pop(0)
-                self.stack[-1][0].children.insert(0, child)
-            else:
-                break  # we have reached the end of the children
-
-        self.stack.pop()
+        endtag_node = self.stack.pop()[0]
+        # endtag_node = self.stack.pop() suelen change
         self.current_depth -= 1
+        if endtag_node.tag != "style" and endtag_node.tag != "script":
+            if len(self.stack) > 0:
+                parent_node = self.stack[-1][0]       #this is last item "top element" of stack
+                parent_node.children.append(endtag_node)
+            else:
+                self.root_node = endtag_node
+                # self.children.insert(0, (endtag_node, 1))
 
-        if parent_node.tag != "style" and parent_node.tag != "script":
-            self.children.insert(0, (parent_node, parent_depth))
+            # self.children.insert(0, (parent_node, parent_depth))
+        
+
+        # # need to check the if this is always true
+        # parent_node, parent_depth = self.stack[
+        #     -1
+        # ]  # based on the assumption that the stack is not empty
+
+        # while len(self.children) > 0:
+        #     child, child_depth = self.children[0]
+        #     if child_depth == parent_depth + 1:
+        #         self.children.pop(0)
+        #         self.stack[-1][0].children.insert(0, child)
+        #     else:
+        #         break  # we have reached the end of the children
+
+        # self.stack.pop()
+        # self.current_depth -= 1
+
+        # if parent_node.tag != "style" and parent_node.tag != "script":
+        #     self.children.insert(0, (parent_node, parent_depth))
+
+        print("test end")    
 
     def is_signal(self, str):
         if not str:
@@ -161,8 +182,9 @@ class RootParser(HTMLParser):
 
         # parsing starts here
         state = {}
-
+        
         parent_node, parent_depth = self.stack[-1]
+        # parent_node = [self.stack[-1] if self.stack is [] > self.stack else 0] sueeln
         uuid = uuid4()
         component_signal = ""
 
@@ -189,6 +211,7 @@ class RootParser(HTMLParser):
                         match, self.local_variables, self.global_variables
                     )
                     if isinstance(eval_result, Component):
+                        # self.stack[-1].children.append(eval_result) suelen change
                         self.stack[-1][0].children.append(eval_result)
                         return
                     elif isinstance(eval_result, str):
@@ -249,10 +272,13 @@ class RootParser(HTMLParser):
             )
         )
 
-        parent_node.children.insert(0, wrapper_div_component)
+        # parent_node.append(wrapper_div_component)    #suelen change
+        parent_node.children.append(wrapper_div_component) 
 
         print(
             "parent node",
+            # parent_node,  #suelen
+            # parent_node.children,   #suelen
             parent_node.tag,
             parent_node.children,
             "for the text node ",
@@ -263,8 +289,8 @@ class RootParser(HTMLParser):
         return self.stack
 
     def get_root(self):
-        if len(self.children) != 0:
-            return self.children[0][0]
+        if self.root_node is not None:
+            return self.root_node
         return Component(
             "div", {}, [], {}, state={}, data="", css=self.css, js=self.js, uuid=uuid4()
         )

@@ -11,10 +11,16 @@ def ssr_request():
 
 <pyml>
     <span>
+    
       <div>
-        {ssr_request()}
+        <h1> THIS IS MY 1 TEST </h1>
+        {ssr_request()} 
+        <p> THIS IS MY 2 TEST </p>
+        {ssr_request()} 
+        
       </div>
       <b>
+      
         {use_parent_signal()}
       </b>
       <b>
@@ -23,5 +29,6 @@ def ssr_request():
       <div> 
         This won't be re-rendered
       </div>
+      
     </span>
 </pyml>

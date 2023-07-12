@@ -1,0 +1,8 @@
+<pyml>
+  <span>
+    <h1> First 1 line of tag node </h1>
+    This is the first line of just text.
+    <h2> Second line 2 of tag node </h2>
+    THIS IS LAST LINE OF PLAIN TEXT.         
+  </span>   
+</pyml>
