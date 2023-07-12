@@ -13,14 +13,12 @@ def ssr_request():
     <span>
     
       <div>
-        <h1> THIS IS MY 1 TEST </h1>
+        <h1> THIS IS MY first text node </h1>
         {ssr_request()} 
-        <p> THIS IS MY 2 TEST </p>
-        {ssr_request()} 
-        
+        <p> THIS IS MY 2second text node </p>
+        {ssr_request()}         
       </div>
-      <b>
-      
+      <b>      
         {use_parent_signal()}
       </b>
       <b>

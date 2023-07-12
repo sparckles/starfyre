@@ -115,8 +115,7 @@ class RootParser(HTMLParser):
 
     def handle_endtag(self, tag):
         # we need to check if the tag is a default component or a custom component
-        # if it is a custom component, we get the element from the custom components dict
-        print("test start")    
+        # if it is a custom component, we get the element from the custom components dict          
 
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
@@ -126,7 +125,7 @@ class RootParser(HTMLParser):
         self.current_depth -= 1
         if endtag_node.tag != "style" and endtag_node.tag != "script":
             if len(self.stack) > 0:
-                parent_node = self.stack[-1]      #this is last item "top element" of stack
+                parent_node = self.stack[-1]      #this is last item/"top element" of stack
                 parent_node.children.append(endtag_node)
             else:
                 self.root_node = endtag_node
