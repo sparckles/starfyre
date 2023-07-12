@@ -5,6 +5,7 @@ from uuid import uuid4
 from starfyre.transpiler import transpile
 
 from .component import Component
+from .exceptions import UnknownTagError
 
 
 def extract_functions(obj):
@@ -33,7 +34,7 @@ class RootParser(HTMLParser):
         "progress", "select", "textarea", "details", "dialog", "summary"
     ]
 
-    def __init__(self, component_local_variables, component_global_variables, css, js):
+    def __init__(self, component_local_variables, component_global_variables, css, js, class_name):
         super().__init__()
         self.stack: list[tuple[Component, int]] = []
         self.children = []
@@ -49,6 +50,8 @@ class RootParser(HTMLParser):
             {**self.local_variables, **self.global_variables}
         )
         # populate the dict with the components
+        self.class_name = class_name
+        print(f'class_name={class_name}')
 
     def extract_components(self, local_functions):
         components = {}
@@ -115,9 +118,7 @@ class RootParser(HTMLParser):
 
         # if the tag is not found in the generic tags and custom components
         if tag not in self.generic_tags and tag not in self.components:
-            print(f'Tag = {tag} is not a generic and custom component')
-            return
-
+            raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.class_name}" component in the pyml code.')
 
         component = Component(
             tag,
@@ -136,6 +137,10 @@ class RootParser(HTMLParser):
         print(f'{tag} is a Generic Tag. Stack is now = {self.stack}\n\n')
 
     def handle_endtag(self, tag):
+        # if the tag is not found in the generic tags and custom components
+        if tag not in self.generic_tags and tag not in self.components:             
+            raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.class_name}" component in the pyml code.')
+
         # we need to check if the tag is a default component or a custom component
         # if it is a custom component, we get the element from the custom components dict
         if tag not in self.generic_tags and tag in self.components:

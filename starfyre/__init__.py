@@ -8,7 +8,7 @@ from .transpiler import transpile
 from .parser import RootParser
 
 
-def create_component(pyml="", css="", js="", client_side_python=""):
+def create_component(pyml="", css="", js="", client_side_python="", class_name=""):
     if client_side_python:
         new_js = transpile(client_side_python) + js
         js = new_js
@@ -16,7 +16,7 @@ def create_component(pyml="", css="", js="", client_side_python=""):
     local_variables = inspect.currentframe().f_back.f_back.f_locals.copy()
     global_variables = inspect.currentframe().f_back.f_back.f_globals.copy()
 
-    parser = RootParser(local_variables, global_variables, css, js)
+    parser = RootParser(local_variables, global_variables, css, js, class_name)
     pyml = pyml.strip("\n").strip()
     parser.feed(pyml)
     parser.close()
