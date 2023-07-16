@@ -20,11 +20,11 @@ def ssr_request():
       <b>
         {get_parent_signal()}
       </b>
-      <ulo>
+      <ul>
         <li>a</li>
         <li>b</li>
         <li>c</li>
-      </ulo>
+      </ul>
       <div> 
         This won't be re-rendered
       </div>

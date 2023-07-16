@@ -21,7 +21,7 @@ class RootParser(HTMLParser):
     # this is the grammar for the parser
     # we need cover all the grammar rules
 
-    generic_tags = [
+    generic_tags = {
         "html", "div", "p", "b", "span", "i", "button", "head", "link", "meta", "style", "title",
         "body", "section", "nav", "main", "hgroup", "h1", "h2", "h3", "h4", "h5", "h6",
         "header", "footer", "aside", "article", "address", "blockquote", "dd", "dl", "dt",
@@ -32,9 +32,9 @@ class RootParser(HTMLParser):
         "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "datalist",
         "fieldlist", "form", "input", "label", "legend", "meter", "optgroup", "option", "output",
         "progress", "select", "textarea", "details", "dialog", "summary"
-    ]
+    }
 
-    def __init__(self, component_local_variables, component_global_variables, css, js, class_name):
+    def __init__(self, component_local_variables, component_global_variables, css, js, component_name):
         super().__init__()
         self.stack: list[tuple[Component, int]] = []
         self.children = []
@@ -50,8 +50,8 @@ class RootParser(HTMLParser):
             {**self.local_variables, **self.global_variables}
         )
         # populate the dict with the components
-        self.class_name = class_name
-        print(f'class_name={class_name}')
+        self.component_name = component_name
+        
 
     def extract_components(self, local_functions):
         components = {}
@@ -103,7 +103,6 @@ class RootParser(HTMLParser):
 
         # if the tag is not found in the generic tags but found in custom components
         if tag not in self.generic_tags and tag in self.components:
-            print(f'Tag = {tag} is not a generic BUT it is a custom component')
             component = self.components[tag]
             tag = component.tag
             component.props = {**component.props, **props}
@@ -111,14 +110,13 @@ class RootParser(HTMLParser):
             component.event_listeners = {
                 **component.event_listeners, **event_listeners}
             self.stack.append((component, self.current_depth))
-            print(f'{tag} is inside a Custom Tag. Stack is now = {self.stack}\n\n')
 
 
             return
 
         # if the tag is not found in the generic tags and custom components
         if tag not in self.generic_tags and tag not in self.components:
-            raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.class_name}" component in the pyml code.')
+            raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.')
 
         component = Component(
             tag,
@@ -134,12 +132,11 @@ class RootParser(HTMLParser):
         # instead of assiging tags we assign uuids
         self.stack.append((component, self.current_depth))
         [(element[0].tag, element[1]) for element in self.stack]
-        print(f'{tag} is a Generic Tag. Stack is now = {self.stack}\n\n')
 
     def handle_endtag(self, tag):
         # if the tag is not found in the generic tags and custom components
         if tag not in self.generic_tags and tag not in self.components:             
-            raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.class_name}" component in the pyml code.')
+            raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.')
 
         # we need to check if the tag is a default component or a custom component
         # if it is a custom component, we get the element from the custom components dict
