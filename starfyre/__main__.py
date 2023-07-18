@@ -74,6 +74,7 @@ def main(path, build):
     if build:
         # Compile and build project
         init_file_path = absolute_path / "__init__.py"
+      
         compile(init_file_path.resolve())
         # At this point, the project has been compiled and the build directory has been created.
         # But there is no main file in the build directory.
@@ -84,7 +85,7 @@ def main(path, build):
             [sys.executable, "-m", "build"],
             cwd=path,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=None,
         )
 
 

@@ -5,6 +5,7 @@ from uuid import uuid4
 from starfyre.transpiler import transpile
 
 from .component import Component
+from .exceptions import UnknownTagError
 
 
 def extract_functions(obj):
@@ -20,9 +21,20 @@ class RootParser(HTMLParser):
     # this is the grammar for the parser
     # we need cover all the grammar rules
 
-    generic_tags = ["div", "p", "b", "span", "i", "button"]
+    generic_tags = {
+        "html", "div", "p", "b", "span", "i", "button", "head", "link", "meta", "style", "title",
+        "body", "section", "nav", "main", "hgroup", "h1", "h2", "h3", "h4", "h5", "h6",
+        "header", "footer", "aside", "article", "address", "blockquote", "dd", "dl", "dt",
+        "figcaption", "figure", "hr", "li", "ol", "ul", "menu", "pre", "a", "abbr", "bdi",
+        "bdo", "br", "cite", "code", "data", "em", "mark", "q", "s", "small", "strong", "sub",
+        "sup", "time", "u", "area", "audio", "img", "map", "track", "video", "embed", "iframe",
+        "picture", "object", "portal", "svg", "math", "canvas", "script", "noscript", "caption",
+        "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "datalist",
+        "fieldlist", "form", "input", "label", "legend", "meter", "optgroup", "option", "output",
+        "progress", "select", "textarea", "details", "dialog", "summary"
+    }
 
-    def __init__(self, component_local_variables, component_global_variables, css, js):
+    def __init__(self, component_local_variables, component_global_variables, css, js, component_name):
         super().__init__()
         self.stack: list[tuple[Component, int]] = []
         self.children = []
@@ -38,6 +50,8 @@ class RootParser(HTMLParser):
             {**self.local_variables, **self.global_variables}
         )
         # populate the dict with the components
+        self.component_name = component_name
+        
 
     def extract_components(self, local_functions):
         components = {}
@@ -49,7 +63,7 @@ class RootParser(HTMLParser):
 
     def is_event_listener(self, name):
         return name.startswith("on")
-
+        
     def handle_starttag(self, tag, attrs):
         # logic should be to just create an empty component on start
         # and fill the contents on the end tag
@@ -58,6 +72,7 @@ class RootParser(HTMLParser):
         event_listeners = {}
         self.current_depth += 1
 
+        # extracting the attributes found in the tags
         for attr in attrs:
             if attr[1].startswith("{") and attr[1].endswith("}"):
                 attr_value = attr[1].strip("{").strip("}").strip(" ")
@@ -86,15 +101,22 @@ class RootParser(HTMLParser):
             else:
                 props[attr[0]] = attr[1]
 
+        # if the tag is not found in the generic tags but found in custom components
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
             tag = component.tag
             component.props = {**component.props, **props}
             component.state = {**component.state, **state}
-            component.event_listeners = {**component.event_listeners, **event_listeners}
+            component.event_listeners = {
+                **component.event_listeners, **event_listeners}
             self.stack.append((component, self.current_depth))
 
+
             return
+
+        # if the tag is not found in the generic tags and custom components
+        if tag not in self.generic_tags and tag not in self.components:
+            raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.')
 
         component = Component(
             tag,
@@ -112,6 +134,10 @@ class RootParser(HTMLParser):
         [(element[0].tag, element[1]) for element in self.stack]
 
     def handle_endtag(self, tag):
+        # if the tag is not found in the generic tags and custom components
+        if tag not in self.generic_tags and tag not in self.components:             
+            raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.')
+
         # we need to check if the tag is a default component or a custom component
         # if it is a custom component, we get the element from the custom components dict
         if tag not in self.generic_tags and tag in self.components:
@@ -150,14 +176,12 @@ class RootParser(HTMLParser):
         # lexing
         # parsing
 
-
         # this is a very minimal version of lexing
         # we should ideally be writing a separate layer for lexing
         data = data.strip().strip("\n").strip(" ")
         # regex to find all the elements that are wrapped in {}
 
         matches = re.findall(r"{(.*?)}", data)
-
 
         # parsing starts here
         state = {}

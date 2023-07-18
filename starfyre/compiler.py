@@ -127,7 +127,8 @@ def fx_{root_name}():
 {js_lines}
 """, client_side_python="""
 {client_side_python}
-"""
+""",
+component_name="""{root_name}"""
 )
     return render_root(component)
 
@@ -146,7 +147,8 @@ def fx_{root_name}():
 {js_lines}
 """, client_side_python="""
 {client_side_python}
-"""
+""",
+component_name="""{root_name}"""
 )
     return component
 
