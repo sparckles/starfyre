@@ -27,4 +27,4 @@ class Component:
         return self.tag == "TEXT_NODE"
     
     def __repr__(self):
-        return f"<{self.tag}> {self.data} {self.children}"
+        return f"<{self.tag}> {self.data} {self.children} </{self.tag}>"
