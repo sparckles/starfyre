@@ -21,6 +21,10 @@ class RootParser(HTMLParser):
     # this is the grammar for the parser
     # we need cover all the grammar rules
 
+    def __init__(self, component_local_variables, component_global_variables, css, js):
+        super().__init__()             
+        self.stack: list[Component] = [] 
+
     generic_tags = {
         "html", "div", "p", "b", "span", "i", "button", "head", "link", "meta", "style", "title",
         "body", "section", "nav", "main", "hgroup", "h1", "h2", "h3", "h4", "h5", "h6",
@@ -34,13 +38,10 @@ class RootParser(HTMLParser):
         "progress", "select", "textarea", "details", "dialog", "summary"
     }
 
-    def __init__(self, component_local_variables, component_global_variables, css, js, component_name):
-        super().__init__()
-        self.stack: list[tuple[Component, int]] = []
-        self.children = []
         self.current_depth = 0
         self.css = css
         self.js = js
+        self.root_node = None
 
         # these are the event handlers and the props
         self.local_variables = component_local_variables
@@ -107,10 +108,9 @@ class RootParser(HTMLParser):
             tag = component.tag
             component.props = {**component.props, **props}
             component.state = {**component.state, **state}
-            component.event_listeners = {
-                **component.event_listeners, **event_listeners}
-            self.stack.append((component, self.current_depth))
 
+            component.event_listeners = {**component.event_listeners, **event_listeners}
+            self.stack.append(component)
 
             return
 
@@ -129,9 +129,10 @@ class RootParser(HTMLParser):
             uuid=uuid4(),
         )
 
-        # instead of assiging tags we assign uuids
-        self.stack.append((component, self.current_depth))
-        [(element[0].tag, element[1]) for element in self.stack]
+        # instead of assiging tags we assign uuids        
+        
+        self.stack.append(component)
+        
 
     def handle_endtag(self, tag):
         # if the tag is not found in the generic tags and custom components
@@ -139,29 +140,23 @@ class RootParser(HTMLParser):
             raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.')
 
         # we need to check if the tag is a default component or a custom component
-        # if it is a custom component, we get the element from the custom components dict
+        # if it is a custom component, we get the element from the custom components dict          
+
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
             tag = component.tag
-
-        # need to check the if this is always true
-        parent_node, parent_depth = self.stack[
-            -1
-        ]  # based on the assumption that the stack is not empty
-
-        while len(self.children) > 0:
-            child, child_depth = self.children[0]
-            if child_depth == parent_depth + 1:
-                self.children.pop(0)
-                self.stack[-1][0].children.insert(0, child)
-            else:
-                break  # we have reached the end of the children
-
-        self.stack.pop()
+        
+        endtag_node = self.stack.pop()  
         self.current_depth -= 1
+        if endtag_node.tag != "style" and endtag_node.tag != "script":
+            if len(self.stack) > 0:
+                parent_node = self.stack[-1]      #this is last item/"top element" of stack
+                parent_node.children.append(endtag_node)
+            else:
+                self.root_node = endtag_node
+      
 
-        if parent_node.tag != "style" and parent_node.tag != "script":
-            self.children.insert(0, (parent_node, parent_depth))
+        print("test end")    
 
     def is_signal(self, str):
         if not str:
@@ -185,8 +180,8 @@ class RootParser(HTMLParser):
 
         # parsing starts here
         state = {}
-
-        parent_node, parent_depth = self.stack[-1]
+        parent_node = self.stack[-1]         
+        
         uuid = uuid4()
         component_signal = ""
 
@@ -213,7 +208,7 @@ class RootParser(HTMLParser):
                         match, self.local_variables, self.global_variables
                     )
                     if isinstance(eval_result, Component):
-                        self.stack[-1][0].children.append(eval_result)
+                        self.stack[-1].children.append(eval_result)
                         return
                     elif isinstance(eval_result, str):
                         current_data = eval_result
@@ -272,11 +267,11 @@ class RootParser(HTMLParser):
                 uuid=uuid,
             )
         )
-
-        parent_node.children.insert(0, wrapper_div_component)
+        
+        parent_node.children.append(wrapper_div_component) 
 
         print(
-            "parent node",
+            "parent node",            
             parent_node.tag,
             parent_node.children,
             "for the text node ",
@@ -287,8 +282,8 @@ class RootParser(HTMLParser):
         return self.stack
 
     def get_root(self):
-        if len(self.children) != 0:
-            return self.children[0][0]
+        if self.root_node is not None:
+            return self.root_node
         return Component(
             "div", {}, [], {}, state={}, data="", css=self.css, js=self.js, uuid=uuid4()
         )

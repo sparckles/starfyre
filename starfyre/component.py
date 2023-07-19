@@ -25,3 +25,6 @@ class Component:
     @property
     def is_text_component(self):
         return self.tag == "TEXT_NODE"
+    
+    def __repr__(self):
+        return f"<{self.tag}> {self.data} {self.children} </{self.tag}>"
