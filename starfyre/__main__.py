@@ -16,6 +16,17 @@ def write_js_file(path):
 
 
 def create_main_file(path):
+    """
+    Creates a main file in the build directory.
+    
+    This file will be used to run the project.
+    Every starfyre build will have an `__init__.py` file in the build directory.
+    And the `__init__.py` file will have a component that will render the root component. It will be named `app`.
+
+    You can have a look at the `test-application/build/__init__.py` file to see what it looks like.
+
+    The main file is also responsible for adding the `store.js` file to the `index.html` file.
+    """
     output_file_path = path + "/build/__main__.py"
     write_js_file(path)
 
@@ -63,7 +74,10 @@ def main(path, build):
     if build:
         # Compile and build project
         init_file_path = absolute_path / "__init__.py"
+      
         compile(init_file_path.resolve())
+        # At this point, the project has been compiled and the build directory has been created.
+        # But there is no main file in the build directory.
         create_main_file(str(absolute_path))
 
         # Start/run project
@@ -71,7 +85,7 @@ def main(path, build):
             [sys.executable, "-m", "build"],
             cwd=path,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=None,
         )
 
 
