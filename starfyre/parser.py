@@ -21,23 +21,9 @@ class RootParser(HTMLParser):
     # this is the grammar for the parser
     # we need cover all the grammar rules
 
-    def __init__(self, component_local_variables, component_global_variables, css, js):
+    def __init__(self, component_local_variables, component_global_variables, css, js, component_name):
         super().__init__()             
         self.stack: list[Component] = [] 
-
-    generic_tags = {
-        "html", "div", "p", "b", "span", "i", "button", "head", "link", "meta", "style", "title",
-        "body", "section", "nav", "main", "hgroup", "h1", "h2", "h3", "h4", "h5", "h6",
-        "header", "footer", "aside", "article", "address", "blockquote", "dd", "dl", "dt",
-        "figcaption", "figure", "hr", "li", "ol", "ul", "menu", "pre", "a", "abbr", "bdi",
-        "bdo", "br", "cite", "code", "data", "em", "mark", "q", "s", "small", "strong", "sub",
-        "sup", "time", "u", "area", "audio", "img", "map", "track", "video", "embed", "iframe",
-        "picture", "object", "portal", "svg", "math", "canvas", "script", "noscript", "caption",
-        "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "datalist",
-        "fieldlist", "form", "input", "label", "legend", "meter", "optgroup", "option", "output",
-        "progress", "select", "textarea", "details", "dialog", "summary"
-    }
-
         self.current_depth = 0
         self.css = css
         self.js = js
@@ -52,7 +38,20 @@ class RootParser(HTMLParser):
         )
         # populate the dict with the components
         self.component_name = component_name
-        
+
+    generic_tags = {
+        "html", "div", "p", "b", "span", "i", "button", "head", "link", "meta", "style", "title",
+        "body", "section", "nav", "main", "hgroup", "h1", "h2", "h3", "h4", "h5", "h6",
+        "header", "footer", "aside", "article", "address", "blockquote", "dd", "dl", "dt",
+        "figcaption", "figure", "hr", "li", "ol", "ul", "menu", "pre", "a", "abbr", "bdi",
+        "bdo", "br", "cite", "code", "data", "em", "mark", "q", "s", "small", "strong", "sub",
+        "sup", "time", "u", "area", "audio", "img", "map", "track", "video", "embed", "iframe",
+        "picture", "object", "portal", "svg", "math", "canvas", "script", "noscript", "caption",
+        "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "datalist",
+        "fieldlist", "form", "input", "label", "legend", "meter", "optgroup", "option", "output",
+        "progress", "select", "textarea", "details", "dialog", "summary"
+    }
+              
 
     def extract_components(self, local_functions):
         components = {}
