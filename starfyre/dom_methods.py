@@ -26,7 +26,7 @@ def render_helper(component: Component) -> tuple[str, str, str]:
 
     parentElement = component.parentComponent
     html = "\n"
-    css = "\n"
+    css = ""
     js = "\n"
     if parentElement is None:
         parentElement = Component("div", {"id": "root"}, [], {}, {}, uuid=uuid4())
