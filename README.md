@@ -98,7 +98,7 @@ Python version 3.10
 
 1. Fork this [repo](https://github.com/sparckles/starfyre)
 2. Clone this repo - `git clone https://github.com/sparckles/starfyre`
-3. Go in to the starfire directory - `cd starfyre`
+3. Go in to the starfyre directory - `cd starfyre`
 4. Download poetry `curl -sSL https://install.python-poetry.org/ | python3 -`
 5. Install the dependencies `poetry install`
 6. Activate poetry virtual enviromente `poetry shell`
