@@ -5,7 +5,7 @@ from .compiler import compile
 from starfyre.component import Component
 from .transpiler import transpile
 
-from .parser import RootParser
+from .parser import ComponentParser
 
 
 def create_component(pyml="", css="", js="", client_side_python="", component_name=""):
@@ -16,7 +16,7 @@ def create_component(pyml="", css="", js="", client_side_python="", component_na
     local_variables = inspect.currentframe().f_back.f_back.f_locals.copy()
     global_variables = inspect.currentframe().f_back.f_back.f_globals.copy()
 
-    parser = RootParser(local_variables, global_variables, css, js, component_name)
+    parser = ComponentParser(local_variables, global_variables, css, js, component_name)
     pyml = pyml.strip("\n").strip()
     parser.feed(pyml)
     parser.close()
