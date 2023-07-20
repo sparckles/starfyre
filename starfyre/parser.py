@@ -117,17 +117,6 @@ class RootParser(HTMLParser):
         if tag not in self.generic_tags and tag not in self.components:
             raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.')
 
-        # component = Component(
-        #     tag,
-        #     props,
-        #     [],
-        #     event_listeners,
-        #     state,
-        #     js=self.js,
-        #     css=self.css,
-        #     uuid=uuid4(),
-        # )
-
         if self.root_node is None:
             component = Component(
                 tag,
