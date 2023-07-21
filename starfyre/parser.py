@@ -17,7 +17,7 @@ def extract_functions(obj):
     return functions
 
 
-class RootParser(HTMLParser):
+class ComponentParser(HTMLParser):
     # this is the grammar for the parser
     # we need cover all the grammar rules
 

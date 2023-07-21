@@ -54,10 +54,10 @@ V
 client_side_python transpiles into js
 |
 V
-RootParser parses pyml, css, js, creating a Component or a Node, duplicating global and local variables
+ComponentParser parses pyml, css, js, creating a Component or a Node, duplicating global and local variables
 |
 V
-RootParser parses pyml and constructs a tree out of html, returns a Component
+ComponentParser parses pyml and constructs a tree out of html, returns a Component
 |
 V
 End
@@ -69,9 +69,9 @@ Each file features a function named `fx_<file_name>`, corresponding to the file'
 
 Firstly, `client_side_python` undergoes transpilation into `js` (Refer to line 13 of `starfyre/__init__.py`).
 
-Secondly, the `RootParser` steps in, parsing the `pyml`, `css`, `js` strings and transforming them into a Component or a Node in our Tree. Additionally, it also takes care of duplicating the global and local variables of the Python file, which is crucial for copying the imports and the variables associated with the component.
+Secondly, the `ComponentParser` steps in, parsing the `pyml`, `css`, `js` strings and transforming them into a Component or a Node in our Tree. Additionally, it also takes care of duplicating the global and local variables of the Python file, which is crucial for copying the imports and the variables associated with the component.
 
-The `RootParser` further parses the `pyml`, constructs a tree out of the provided `html`, and returns a `Component` (`starfyre/component.py`), the root of the tree.
+The `ComponentParser` further parses the `pyml`, constructs a tree out of the provided `html`, and returns a `Component` (`starfyre/component.py`), the root of the tree.
 
 ## Insight into the Build Directory
 ```
