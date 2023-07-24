@@ -1,5 +1,7 @@
 from starfyre import compile
 from pathlib import Path
+from .router import Router
+
 import sys
 import os
 import shutil
@@ -76,7 +78,13 @@ def main(path, build):
         init_file_path = absolute_path / "__init__.py"
       
         compile(init_file_path.resolve())
+     
         # At this point, the project has been compiled and the build directory has been created.
+        # Now, initialize the Router object and use it to handle file-based routing.
+
+        router = Router(absolute_path / "pages")
+        router.generate_routes()
+
         # But there is no main file in the build directory.
         create_main_file(str(absolute_path))
 
