@@ -16,4 +16,5 @@ class UnknownTagError(Exception):
    Attributes:
         message (str): A description of the error.
    """
-   pass
+   def __init__(self, message='Unknown tag found.'):
+    super().__init__(message)

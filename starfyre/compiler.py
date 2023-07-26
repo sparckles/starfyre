@@ -5,9 +5,14 @@ from pathlib import Path
 
 def get_fyre_files(project_dir):
     fyre_files = []
-    for file in os.listdir(project_dir):
-        if file.endswith(".fyre"):
-            fyre_files.append(file)
+    for entry in os.listdir(project_dir):
+        if entry.endswith(".fyre"):
+            fyre_files.append(entry)
+        # check inside the 'pages' folder
+        if entry == 'pages':
+            for file_ in os.listdir(project_dir / "pages"):
+                if file_.endswith(".fyre"):
+                    fyre_files.append(f'pages/{file_}')
     return fyre_files
 
 
