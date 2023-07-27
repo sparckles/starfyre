@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Optional
 
 
@@ -18,6 +18,9 @@ class Component:
     css: str = ""
     js: str = ""
     # on any property change, rebuild the tree
+
+    is_custom: bool = False
+    inner_content: list = field(default_factory=list)
 
     def render(self):
         pass

@@ -28,6 +28,7 @@ class ComponentParser(HTMLParser):
         self.css = css
         self.js = js
         self.root_node = None
+        
 
         # these are the event handlers and the props
         self.local_variables = component_local_variables
@@ -49,7 +50,7 @@ class ComponentParser(HTMLParser):
         "picture", "object", "portal", "svg", "math", "canvas", "script", "noscript", "caption",
         "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "datalist",
         "fieldlist", "form", "input", "label", "legend", "meter", "optgroup", "option", "output",
-        "progress", "select", "textarea", "details", "dialog", "summary"
+        "progress", "select", "textarea", "details", "dialog", "summary", "slot"
     }
               
 
@@ -104,6 +105,7 @@ class ComponentParser(HTMLParser):
         # if the tag is not found in the generic tags but found in custom components
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
+            component.is_custom = True
             tag = component.tag
             component.props = {**component.props, **props}
             component.state = {**component.state, **state}
@@ -159,16 +161,17 @@ class ComponentParser(HTMLParser):
             tag = component.tag
         
         endtag_node = self.stack.pop()  
-        self.current_depth -= 1
+        self.current_depth -= 1        
         if endtag_node.tag != "style" and endtag_node.tag != "script":
             if len(self.stack) > 0:
                 parent_node = self.stack[-1]      #this is last item/"top element" of stack
-                parent_node.children.append(endtag_node)
+                if parent_node.is_custom:           #Checking if the parent node is the special custom tag 
+                    parent_node.inner_content.append(endtag_node)
+                else:
+                    parent_node.children.append(endtag_node)                
             else:
                 self.root_node = endtag_node
-      
-
-        print("test end")    
+   
 
     def is_signal(self, str):
         if not str:

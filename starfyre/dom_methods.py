@@ -91,15 +91,34 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     if not component.is_text_component:
         html += f"{prop_string} >"
 
+    inner_content = component.inner_content
+    inner_html = ""
+    inner_css = ""
+    inner_js = ""
+
+    for innerElement in inner_content:
+        innerElement.parentElement = component
+        new_html, new_css, new_js = render_helper(innerElement)
+        inner_html += new_html
+        inner_css += new_css
+        inner_js += new_js
+
     # Render children
     children = component.children
     # childElements.forEach(childElement => render(childElement, dom));
+    
     for childElement in children:
         childElement.parentElement = component
-        new_html, new_css, new_js = render_helper(childElement)
-        html += new_html
-        css += new_css
-        js += new_js
+ 
+        if childElement.tag == "slot":            
+            html += inner_html
+            css += inner_css
+            js += inner_js
+        else:
+            new_html, new_css, new_js = render_helper(childElement)
+            html += new_html
+            css += new_css
+            js += new_js 
 
     html += f"</{tag}>\n"
 

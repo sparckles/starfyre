@@ -1,0 +1,11 @@
+from .parent import parent
+
+<pyml>
+
+    <parent>        
+        <h1>test from init</h1>  
+        <p>Hello</p>
+        <h2>World</h2>
+    </parent>  
+
+</pyml>    

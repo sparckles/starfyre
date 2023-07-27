@@ -1,0 +1,24 @@
+"""We can import as many file we would like"""
+
+from .parentt import parentt
+
+
+<pyml>
+    <span>
+
+        <parentt>
+            <h2> Child content of its component </h2>
+        </parentt>
+
+        <div>
+            <p> This </p> 
+            <h1> Won't </h1>
+            <h2> Be Replaced </h2>
+        </div>
+
+        <parentt>
+            <p> I'm a child </p>
+        </parentt>    
+
+    </span>
+</pyml>    

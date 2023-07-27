@@ -1,0 +1,26 @@
+"""Html file will generated like this"""
+
+
+ <span>
+
+    <span>
+        <div>
+            <p> Hello world </p>
+        <div>
+        <h2> Child content of its component </h2>        
+    </span>   
+    
+    <div>
+        <p> This </p> 
+        <h1> Won't </h1>
+        <h2> Be Replaced </h2>
+    </div>
+
+    <span>
+        <div>
+            <p> Hello world </p>
+        <div>
+        <p> I'm a child </p>
+    </span>
+
+</span>    
