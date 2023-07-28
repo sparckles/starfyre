@@ -16,7 +16,7 @@ def assign_event_listeners(event_listener_name, event_listener):
     return html, js_event_listener
 
 
-def render_helper(component: Component) -> tuple[str, str, str]:
+def render_helper(component: Component) -> tuple[str, str, str]:    
     # Add event listeners
     def is_listener(name):
         return name.startswith("on")
@@ -103,17 +103,19 @@ def render_helper(component: Component) -> tuple[str, str, str]:
         inner_css += new_css
         inner_js += new_js
 
+    is_slot_used = False
     # Render children
     children = component.children
     # childElements.forEach(childElement => render(childElement, dom));
     
     for childElement in children:
         childElement.parentElement = component
- 
+         
         if childElement.tag == "slot":            
             html += inner_html
             css += inner_css
             js += inner_js
+            is_slot_used = True
         else:
             new_html, new_css, new_js = render_helper(childElement)
             html += new_html
@@ -123,7 +125,12 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     html += f"</{tag}>\n"
 
     component.html = html
-    return html, css, js
+
+    #check if inner content of component is being used
+    if is_slot_used is not True and inner_html != "":
+        raise Exception("Attention: Your custom component has children. Required <slot> tag at components definition to specify where children component should be inserted.")
+    else:
+        return html, css, js
 
 
 def render(component: Component) -> str:
