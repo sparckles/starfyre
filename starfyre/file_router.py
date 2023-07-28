@@ -1,7 +1,9 @@
-from starfyre import compile
+from starfyre import create_component, render
 
 import os
+import sys
 from pathlib import Path
+import importlib
 
 
 class FileRouter:
@@ -9,15 +11,13 @@ class FileRouter:
     A router that handles file-based routing.
 
     This router parses the specified pages directory to automatically generate routes based on
-    the file names. Each file in the pages directory is treated as a separate route, and the
-    component name is derived from the file name. The routes and their corresponding component
-    names are stored in a dictionary.
+    the file names. Each file in the pages directory is treated as a separate route. 
 
     Parameters:
         pages_directory (str): The path to the directory containing the pages files.
     Example:
-        pages_directory = "test_app/pages"
-        file_router = FileBasedRouter(pages_directory)
+        pages_directory = "test-application/pages"
+        file_router = FileRouter(pages_directory)
     """
 
     def __init__(self, pages_directory):
@@ -26,12 +26,29 @@ class FileRouter:
 
     def generate_routes(self):
         """
-        Generate route
+        Generate routes and create corresponding HTML files.
+
+        This method generates routes based on the file names in the specified pages directory. Each file in the
+        pages directory with a ".fyre" extension is considered a separate route. The route names are derived from
+        the file names by removing the ".fyre" extension and converting the names to lowercase.
+
+        The generated route names are stored in a list, and corresponding HTML files are created in the specified
+        "dist" directory. The HTML files are created by transpiling the components using the `_build_output` method.
+
+        Note:
+        - This method should be called after initializing the `FileRouter` object.
+        - The `_build_output` method is responsible for generating the HTML files.
+
+        Example:
+            pages_directory = "test_app/pages"
+            router = FileRouter(pages_directory)
+            router.generate_routes()  # This generates the routes and corresponding HTML files.
+
+        Raises:
+            FileNotFoundError: If the specified pages directory does not exist.
         """
         routes = []
-        print(f'Router: Absolute Path = {self.pages_directory}')
         dist_dir = Path(self.pages_directory / ".." / "dist").resolve()
-        print(f'Directory to write to: {dist_dir}')
         if not dist_dir.exists():
             dist_dir.mkdir()
 
@@ -40,49 +57,50 @@ class FileRouter:
             if file_name.endswith(".fyre"):
                 route_name = file_name.replace(".fyre", "").lower()
                 routes.append(route_name)
-                print(f'Found fyre file: New route will be = {route_name}')
-                print(f'file path for route is = {dist_dir}/{route_name}.html')
+                # print(f'Found fyre file: New route will be = {route_name}')
+                # print(f'file path for route is = {dist_dir}/{route_name}.html')
 
         # read the contents from the generated python files
-        _generate_output(self, generated_routes=routes, out_dir=dist_dir)
+        self._build_output(generated_routes=routes, out_dir=dist_dir)
 
 
-def _generate_output(self, generated_routes, out_dir):
-    """
-    Send the output of `render_root(component)` to route html file
-    """
-    # build_dir = Path(self.pages_directory / ".." / "build").resolve()
+    def _build_output(self, generated_routes, out_dir):
+        """
+        Transpile the output of `render(component)` to route HTML files.
 
-    # # print(f'build directory = {build_dir}')
-    # import_lines = []
-    # separator_line = '\n\n# ---------- functions call ---------\n\n'
-    # body_lines = []
-    # export_section = ''
+        This method takes a list of generated routes and an output directory and transpiles the components
+        using `render(component)`. The resulting components are then written to corresponding HTML files
+        in the output directory.
 
-    # for file_ in os.listdir(build_dir):
-    #     file_name = file_.replace(".py", "")
-       
-    #     if file_name in generated_routes:
-    #         print(f'Generated python file: {file_} is defined as a route')
-           
-    #         # # create a build/route_generator.py file
-    #         # route_gen_file_path = build_dir / "route_generator.py"
-    #         # print(f"Route generator file:{route_gen_file_path}")
+        Parameters:
+            generated_routes (list): A list of route names (strings) generated from the pages directory.
+            out_dir (str): The path to the output directory where the HTML files will be written.
 
-    #         import_lines.append(f'from .{file_name} import {file_name}')
-    #         body_lines.append(f'{file_name}')
+        Example:
+            pages_directory = "test_app/pages"
+            router = FileRouter(pages_directory)
+            router.generate_routes()  # This generates the `generated_routes` list.
+            out_directory = "test_app/dist"
+            router._build_output(generated_routes, out_directory)
+        """
+        print(f'Generated routes: {generated_routes}')
 
-    #         # form file content
-    #         import_section = "\n".join(import_lines)
-    #         initial_body = 'def create_routes():'
-    #         for func in body_lines:
-    #             initial_body +=f"""
-    # {func}"""        
+        root = Path(out_dir / "..").resolve()
+        app_name = (str(root).split('/'))[-1] # get the user defined project name
 
-    #         initial_body += """
-    # return
-    #         """ 
-    #         main_content = import_section + separator_line + initial_body
-    #         main_content += '\n\nrouter=create_routes()'
-    #         print(main_content)
-    pass
+        for route_name in generated_routes:
+            # Get the module name dynamically based on the route_name
+            module_name = f"{Path(app_name)}.build.{route_name}"
+            
+            try:
+                module = importlib.import_module(module_name)
+            except ModuleNotFoundError:
+                print(f"Error: Could not import module '{module_name}'.")
+                continue
+
+            component = module.__dict__[route_name]
+            result = str(render(component))
+
+            # write to component file
+            with open(out_dir / f"{route_name}.html", "w") as html_file:
+                html_file.write(result)
