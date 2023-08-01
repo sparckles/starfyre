@@ -11,32 +11,30 @@ def ssr_request():
 
 <pyml>
     <span>
-          
+               
       <div>
-        <h1> THIS IS MY FIRST HTML NODE </h1>
+        <h2> 1 This is just a test </h2>
+        <p> 2 HTML NODE <p>
         {ssr_request()}         
-        <p> THIS IS MY SECOND HTML NODE </p>
-        {ssr_request()}    
-            
+        <p> 3 HTML NODE </p>
+        {ssr_request()}           
       </div>
       <b>      
         {use_parent_signal()}
-
       </b>
       <b>
         {get_parent_signal()}
       </b>
       <ul>
-        <li>a</li>
-        
+        <li>a</li>        
         <li>b</li>
-        <li>c</li>
-        
+        <li>c</li>        
       </ul>
       <div> 
         This won't be re-rendered
+        
       </div>
-      <slot></slot>
       
+      <slot> </slot>     
     </span>
 </pyml>

@@ -76,6 +76,3 @@ dist
 test-application/__pycache__/
 test-application/dist/*
 test-application/starfyre-dist/*
-
-test-childre
-test

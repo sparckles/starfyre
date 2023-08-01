@@ -19,7 +19,7 @@ async def handle_on_click(e):
 
 <style>
   body {
-    background-color: red;
+    background-color: green;
   }
 </style>
 

@@ -1,9 +1,9 @@
 <pyml>  
  
-    <div> 
-        <slot></slot>       
-        <p> testing parent.fyre </p>
-        <slot></slot>
+    <div>               
+        <p> Test template definition </p>
+        <slot> </slot>        
     </div>
     
 </pyml>        
+

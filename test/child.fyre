@@ -1,8 +1,0 @@
-<pyml>
-
-    <div>
-        TEST CHILD fyre
-        <p> HELLO TEST, HELLO TEST from child</p>
-    </div>    
-  
-</pyml>        
