@@ -1,9 +1,0 @@
-<pyml>  
- 
-    <div>               
-        <p> Test template definition </p>
-        <slot> </slot>        
-    </div>
-    
-</pyml>        
-

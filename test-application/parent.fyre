@@ -10,11 +10,10 @@ def ssr_request():
     return "No response"
 
 <pyml>
-    <span>
-               
-      <div>
+    <span>    
+      <div>      
         <h2> 1 This is just a test </h2>
-        <p> 2 HTML NODE <p>
+        <p> 2 HTML NODE </p>
         {ssr_request()}         
         <p> 3 HTML NODE </p>
         {ssr_request()}           
@@ -25,16 +24,14 @@ def ssr_request():
       <b>
         {get_parent_signal()}
       </b>
+      <slot></slot>
       <ul>
         <li>a</li>        
         <li>b</li>
         <li>c</li>        
       </ul>
       <div> 
-        This won't be re-rendered
-        
-      </div>
-      
-      <slot> </slot>     
+        This won't be re-rendered        
+      </div> 
     </span>
 </pyml>

@@ -96,7 +96,7 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     inner_css = ""
     inner_js = ""
 
-    for innerElement in inner_content:
+    for innerElement in inner_content:   
         innerElement.parentElement = component
         new_html, new_css, new_js = render_helper(innerElement)
         inner_html += new_html
@@ -127,10 +127,12 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     component.html = html
 
     #check if inner content of component is being used
-    if is_slot_used is not True and inner_html != "":
-        raise Exception("Attention: Your custom component has children. Required <slot> tag at components definition to specify where children component should be inserted.")
-    else:
-        return html, css, js
+    if is_slot_used == False and inner_html != "":
+        html += inner_html
+        css += inner_css
+        js += inner_js
+
+    return html, css, js
 
 
 def render(component: Component) -> str:
