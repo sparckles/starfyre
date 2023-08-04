@@ -98,18 +98,18 @@ class FileRouter:
             else:
                 component_key = route_name
             
-            module_name = f"{Path(app_name)}.build.{route_name}" if route_name else f"{Path(app_name)}.build"
+            module_name = f"{Path(app_name)}.build.{route_name}" if not route_name == 'app' else f"{Path(app_name)}.build"
             
             try:
                 module = importlib.import_module(module_name)
                 component = module.__dict__[component_key]
-                result = str(render_root(component)) if route_name else component
+                result = str(render_root(component)) if not route_name == 'app' else component
             except ModuleNotFoundError:
                 print(f"Error: Could not import module '{module_name}'.")
                 continue
 
             # write to component file
-            if route_name == '':
+            if route_name == 'app':
                 route_name = 'index'  # rename to index
             with open(out_dir / f"{route_name}.html", "w") as html_file:
                 html_file.write("<script src='store.js'></script>")
