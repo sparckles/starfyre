@@ -1,0 +1,8 @@
+from .daily_quote import daily_quote
+
+
+<pyml>  
+    <daily_quote hello='world'>
+        <p> Is a beautiful day </p>
+    </daily_quote> 
+</pyml>
