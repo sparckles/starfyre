@@ -1,4 +1,5 @@
-from starfyre import create_component, render
+from starfyre import create_component, render_root
+from starfyre.exceptions import IndexFileConflictError
 
 import os
 import sys
@@ -23,7 +24,6 @@ class FileRouter:
     def __init__(self, pages_directory):
         self.pages_directory = pages_directory
 
-
     def generate_routes(self):
         """
         Generate routes and create corresponding HTML files.
@@ -41,8 +41,8 @@ class FileRouter:
 
         Example:
             pages_directory = "test_app/pages"
-            router = FileRouter(pages_directory)
-            router.generate_routes()  # This generates the routes and corresponding HTML files.
+            file_router = FileRouter(pages_directory)
+            file_router.generate_routes()  # This generates the routes and corresponding HTML files.
 
         Raises:
             FileNotFoundError: If the specified pages directory does not exist.
@@ -56,20 +56,19 @@ class FileRouter:
         for file_name in os.listdir(self.pages_directory):
             if file_name.endswith(".fyre"):
                 route_name = file_name.replace(".fyre", "").lower()
+                if route_name.lower() == 'index':
+                    raise IndexFileConflictError()
                 routes.append(route_name)
-                # print(f'Found fyre file: New route will be = {route_name}')
-                # print(f'file path for route is = {dist_dir}/{route_name}.html')
 
         # read the contents from the generated python files
         self._build_output(generated_routes=routes, out_dir=dist_dir)
 
-
     def _build_output(self, generated_routes, out_dir):
         """
-        Transpile the output of `render(component)` to route HTML files.
+        Transpile the output of `render_root(component)` to route HTML files.
 
         This method takes a list of generated routes and an output directory and transpiles the components
-        using `render(component)`. The resulting components are then written to corresponding HTML files
+        using `render_root(component)`. The resulting components are then written to corresponding HTML files
         in the output directory.
 
         Parameters:
@@ -83,24 +82,35 @@ class FileRouter:
             out_directory = "test_app/dist"
             router._build_output(generated_routes, out_directory)
         """
-        print(f'Generated routes: {generated_routes}')
+        # index.html is to be generated first since it is the entry point of the app
+        generated_routes.insert(0, 'app')
+        # print(f'Generated routes: {generated_routes}')
 
         root = Path(out_dir / "..").resolve()
-        app_name = (str(root).split('/'))[-1] # get the user defined project name
+        # get the user defined project name
+        app_name = (str(root).split('/'))[-1]
 
         for route_name in generated_routes:
-            # Get the module name dynamically based on the route_name
-            module_name = f"{Path(app_name)}.build.{route_name}"
+            print(f'route name is = {route_name}')
+            
+            if route_name.lower() == 'app':
+                component_key = 'app'  # For the 'app' component in `build/__init__.py`
+            else:
+                component_key = route_name
+            
+            module_name = f"{Path(app_name)}.build.{route_name}" if route_name else f"{Path(app_name)}.build"
             
             try:
                 module = importlib.import_module(module_name)
+                component = module.__dict__[component_key]
+                result = str(render_root(component)) if route_name else component
             except ModuleNotFoundError:
                 print(f"Error: Could not import module '{module_name}'.")
                 continue
 
-            component = module.__dict__[route_name]
-            result = str(render(component))
-
             # write to component file
+            if route_name == '':
+                route_name = 'index'  # rename to index
             with open(out_dir / f"{route_name}.html", "w") as html_file:
+                html_file.write("<script src='store.js'></script>")
                 html_file.write(result)

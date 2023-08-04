@@ -1,6 +1,6 @@
 from starfyre import compile
 from pathlib import Path
-from .file_router import FileRouter
+from starfyre.file_router import FileRouter
 
 import sys
 import os
@@ -15,42 +15,27 @@ def write_js_file(path):
     dist_path.mkdir(exist_ok=True)
     js_store = pkg_resources.path("starfyre.js", "store.js")
     shutil.copy(str(js_store), path + "/dist/store.js")
-
-
+    
 def create_main_file(path):
     """
     Creates a main file in the build directory.
     
     This file will be used to run the project.
-    Every starfyre build will have an `__init__.py` file in the build directory.
+     Every starfyre build will have an `__init__.py` file in the build directory.
     And the `__init__.py` file will have a component that will render the root component. It will be named `app`.
 
     You can have a look at the `test-application/build/__init__.py` file to see what it looks like.
 
-    The main file is also responsible for adding the `store.js` file to the `index.html` file.
+    The main file is also responsible for adding the `store.js` file
     """
     output_file_path = path + "/build/__main__.py"
     write_js_file(path)
 
     with open(output_file_path, "w") as f:
         f.write(
-            """
-from . import app
-import os
-from pathlib import Path
-
-
-if __name__ == '__main__':
-    path_ = os.path.dirname(os.path.abspath(__file__))
-    directory = Path(path_ ) / ".." / "dist"
-    if not directory.exists():
-        directory.mkdir()
-
-    with open(f"{directory}/index.html", "w") as f:
-        f.write("<script src='store.js'></script>")
-        f.write(app)
-"""
-        )
+"""if __name__ == '__main__':
+    pass
+    """)
 
 
 @click.command()
@@ -82,8 +67,8 @@ def main(path, build):
         # At this point, the project has been compiled and the build directory has been created.
         # Now, initialize the Router object and use it to handle file-based routing.
         # Basically, generate the html files for the routes
-        router = FileRouter(absolute_path / "pages")
-        router.generate_routes()
+        file_router = FileRouter(absolute_path / "pages")
+        file_router.generate_routes()
 
         # But there is no main file in the build directory.
         create_main_file(str(absolute_path))

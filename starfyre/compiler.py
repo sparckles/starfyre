@@ -1,3 +1,5 @@
+from starfyre.exceptions import InitFyreMissingError, IndexFileConflictError
+
 import os
 import re
 from pathlib import Path
@@ -12,6 +14,9 @@ def get_fyre_files(project_dir):
         if entry == 'pages':
             for file_ in os.listdir(project_dir / "pages"):
                 if file_.endswith(".fyre"):
+                    # check for the invalid 'index.fyre'
+                    if file_.lower() == 'index.fyre':
+                        raise IndexFileConflictError()
                     fyre_files.append(f'pages/{file_}')
     return fyre_files
 
@@ -207,7 +212,11 @@ def compile(entry_file_name):
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)
 
-    fyre_files = get_fyre_files(project_dir) 
+    fyre_files = get_fyre_files(project_dir)
+
+    # check if __init__.fyre exist else stop compilation
+    if '__init__.fyre' not in fyre_files:
+        raise InitFyreMissingError()
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
