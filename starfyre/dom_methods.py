@@ -91,46 +91,48 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     if not component.is_text_component:
         html += f"{prop_string} >"
 
-    inner_content = component.inner_content
-    inner_html = ""
-    inner_css = ""
-    inner_js = ""
-
-    for innerElement in inner_content:   
-        innerElement.parentElement = component
-        new_html, new_css, new_js = render_helper(innerElement)
-        inner_html += new_html
-        inner_css += new_css
-        inner_js += new_js
+   
+    slot_html = ""
+    slot_css = ""
+    slot_js = ""
+  
 
     is_slot_used = False
     # Render children
     children = component.children
     # childElements.forEach(childElement => render(childElement, dom));
-    
+
+    for element in children:   
+        if element.is_slot_element == True:
+            element.parentElement = component
+            new_html, new_css, new_js = render_helper(element)
+            slot_html += new_html
+            slot_css += new_css
+            slot_js += new_js        
+
     for childElement in children:
-        childElement.parentElement = component
-         
-        if childElement.tag == "slot":            
-            html += inner_html
-            css += inner_css
-            js += inner_js
-            is_slot_used = True
-        else:
-            new_html, new_css, new_js = render_helper(childElement)
-            html += new_html
-            css += new_css
-            js += new_js 
+        if childElement.is_slot_element == False:
+            childElement.parentElement = component            
+            if childElement.tag == "slot":            
+                html += slot_html
+                css += slot_css
+                js += slot_js
+                is_slot_used = True
+            else:
+                new_html, new_css, new_js = render_helper(childElement)
+                html += new_html
+                css += new_css
+                js += new_js 
 
     html += f"</{tag}>\n"
 
     component.html = html
 
     #check if inner content of component is being used
-    if is_slot_used == False and inner_html != "":
-        html += inner_html
-        css += inner_css
-        js += inner_js
+    if is_slot_used == False and slot_html != "":
+        html += slot_html
+        css += slot_css
+        js += slot_js
 
     return html, css, js
 

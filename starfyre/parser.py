@@ -166,9 +166,8 @@ class ComponentParser(HTMLParser):
             if len(self.stack) > 0:
                 parent_node = self.stack[-1]      #this is last item/"top element" of stack
                 if parent_node.is_custom:           #Checking if the parent node is the special custom tag 
-                    parent_node.inner_content.append(endtag_node)
-                else:
-                    parent_node.children.append(endtag_node)                
+                    endtag_node.is_slot_element = True
+                parent_node.children.append(endtag_node)
             else:
                 self.root_node = endtag_node
    

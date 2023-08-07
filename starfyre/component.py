@@ -17,10 +17,10 @@ class Component:
     html: str = ""
     css: str = ""
     js: str = ""
+    is_slot_element: bool = False       #True for element that should be rendered into <slot> on the final html 
+    is_custom: bool = False             #True for root node of custom component "<store> or <parent>"
     # on any property change, rebuild the tree
-
-    is_custom: bool = False
-    inner_content: list = field(default_factory=list)
+    
 
     def render(self):
         pass
