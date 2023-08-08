@@ -15,29 +15,70 @@ def write_js_file(path):
     dist_path.mkdir(exist_ok=True)
     js_store = pkg_resources.path("starfyre.js", "store.js")
     shutil.copy(str(js_store), path + "/dist/store.js")
-    
-def create_main_file(path):
-    """
-    Creates a main file in the build directory.
-    
-    This file will be used to run the project.
-     Every starfyre build will have an `__init__.py` file in the build directory.
-    And the `__init__.py` file will have a component that will render the root component. It will be named `app`.
 
-    You can have a look at the `test-application/build/__init__.py` file to see what it looks like.
-
-    The main file is also responsible for adding the `store.js` file
-    """
+def build_routes_output(generated_routes, path):
     output_file_path = path + "/build/__main__.py"
     write_js_file(path)
 
     with open(output_file_path, "w") as f:
         f.write(
-"""if __name__ == '__main__':
-    pass
+f"""
+from starfyre import create_component, render_root
+from starfyre.exceptions import IndexFileConflictError
+
+import os
+import sys
+from pathlib import Path
+import importlib
+
+def _build_output(generated_routes, path):
+    user_routes = generated_routes[:]
+
+    # index.html is to be generated first since it is the entry point of the app
+    user_routes.insert(0, 'app')
+
+    print(f"Generated routes: {{user_routes}}")
+
+    out_dir = Path(path + "/dist").resolve()
+    root = Path(out_dir / "..").resolve()
+
+    # get the user defined project name
+    app_name = (str(root).split('/'))[-1]
+
+    for route_name in user_routes:
+        print(f'route name is = {{route_name}}')
+        
+        if route_name.lower() == 'app':
+            component_key = 'app'  # For the 'app' component in `build/__init__.py`
+        else:
+            component_key = route_name
+        
+        if route_name == 'app':
+            module_name = f"{{Path(app_name)}}.build"
+        else:
+            module_name= f"{{Path(app_name)}}.build.{{route_name}}"
+        
+        try:
+            module = importlib.import_module(module_name)
+            print(f"Module is = {{module}}")
+            component = module.__dict__[component_key]
+            result = str(render_root(component)) if not route_name == 'app' else component
+        except ModuleNotFoundError:
+            print(f"Error: Could not import module '{{module_name}}'.")
+            continue
+
+        # write to component file
+        if route_name == 'app':
+            route_name = 'index'  # rename to index
+        with open(out_dir / f"{{route_name}}.html", "w") as html_file:
+            html_file.write("<script src='store.js'></script>")
+            html_file.write(result)
+
+
+if __name__ == '__main__':
+    _build_output(generated_routes={generated_routes}, path="{path}")
     """)
-
-
+    
 @click.command()
 @click.option("--path", help="Path to the project")
 @click.option("--build", is_flag=True, help="Compile and build package")
@@ -57,6 +98,7 @@ def main(path, build):
 
     # Convert path to absolute path
     absolute_path = Path(path).resolve()
+    print(f'Absoulte path = {absolute_path}')
 
     if build:
         # Compile and build project
@@ -66,17 +108,19 @@ def main(path, build):
      
         # At this point, the project has been compiled and the build directory has been created.
         # Now, initialize the Router object and use it to handle file-based routing.
-        # Basically, generate the html files for the routes
+        # Basically, get all the file names from the "pages" directory
         file_router = FileRouter(absolute_path / "pages")
-        file_router.generate_routes()
+        routes = file_router.generate_routes()
 
-        # But there is no main file in the build directory.
-        create_main_file(str(absolute_path))
+        # We have to create the main file.
+        # The main file will be used to generate the HTML output for all routes found by the FileRouter, index route inclusively.
+        build_routes_output(generated_routes=routes, path=str(absolute_path))
+        
         # Start/run project
         subprocess.run(
             [sys.executable, "-m", "build"],
             cwd=path,
-            stdout=subprocess.PIPE,
+            # stdout=subprocess.PIPE,
             stderr=None,
         )
 
