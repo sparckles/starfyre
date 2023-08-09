@@ -22,27 +22,28 @@ class FileRouter:
     """
 
     def __init__(self, pages_directory):
+        """
+        Initialize the FileRouter with the specified pages directory.
+
+        Args:
+            pages_directory (str): The path to the directory containing the pages files.
+        """
         self.pages_directory = pages_directory
 
-    def generate_routes(self):
+    def populate_router(self):
         """
-        Generate routes and create corresponding HTML files.
+        Collect route names from files in the specified pages directory.
 
-        This method generates routes based on the file names in the specified pages directory. Each file in the
-        pages directory with a ".fyre" extension is considered a separate route. The route names are derived from
-        the file names by removing the ".fyre" extension and converting the names to lowercase.
+        This method collects route names based on the file names in the specified pages directory.
+        Each file in the pages directory with a ".fyre" extension is considered a separate route.
+        The route names are derived from the file names by removing the ".fyre" extension and
+        converting the names to lowercase.
 
-        The generated route names are stored in a list, and corresponding HTML files are created in the specified
-        "dist" directory. The HTML files are created by transpiling the components using the `_build_output` method.
+        The generated route names are stored in a list, and corresponding HTML files are created
+        in the specified "dist" directory.
 
-        Note:
-        - This method should be called after initializing the `FileRouter` object.
-        - The `_build_output` method is responsible for generating the HTML files.
-
-        Example:
-            pages_directory = "test_app/pages"
-            file_router = FileRouter(pages_directory)
-            file_router.generate_routes()  # This generates the routes and corresponding HTML files.
+        Returns:
+            list: A list of generated route names.
 
         Raises:
             FileNotFoundError: If the specified pages directory does not exist.

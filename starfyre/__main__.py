@@ -22,8 +22,7 @@ def build_routes_output(generated_routes, path):
 
     with open(output_file_path, "w") as f:
         f.write(
-f"""
-from starfyre import create_component, render_root
+            f'''from starfyre import create_component, render_root
 from starfyre.exceptions import IndexFileConflictError
 
 import os
@@ -31,7 +30,18 @@ import sys
 from pathlib import Path
 import importlib
 
-def _build_output(generated_routes, path):
+def generate_pages(generated_routes, path):
+    """
+    Generate HTML pages for each route in the provided list of routes.
+
+    Parameters:
+    - generated_routes (list): List of generated routes.
+    - path (str): Path to the project directory.
+
+    This function generates HTML pages for each route provided in the `generated_routes` list.
+    It imports the necessary components for each route, renders them using Starfyre,
+    and writes the rendered content to corresponding HTML files.
+    """
     user_routes = generated_routes[:]
 
     # index.html is to be generated first since it is the entry point of the app
@@ -76,9 +86,9 @@ def _build_output(generated_routes, path):
 
 
 if __name__ == '__main__':
-    _build_output(generated_routes={generated_routes}, path="{path}")
-    """)
-    
+    generate_pages(generated_routes={generated_routes}, path="{path}")
+    ''')
+
 @click.command()
 @click.option("--path", help="Path to the project")
 @click.option("--build", is_flag=True, help="Compile and build package")
@@ -105,22 +115,22 @@ def main(path, build):
         init_file_path = absolute_path / "__init__.py"
         # Note: The routes specified in the pages folder will have generated code in the build directory.
         compile(init_file_path.resolve())
-     
+
         # At this point, the project has been compiled and the build directory has been created.
         # Now, initialize the Router object and use it to handle file-based routing.
         # Basically, get all the file names from the "pages" directory
         file_router = FileRouter(absolute_path / "pages")
-        routes = file_router.generate_routes()
+        routes = file_router.populate_router()
 
         # We have to create the main file.
         # The main file will be used to generate the HTML output for all routes found by the FileRouter, index route inclusively.
         build_routes_output(generated_routes=routes, path=str(absolute_path))
-        
+
         # Start/run project
         subprocess.run(
             [sys.executable, "-m", "build"],
             cwd=path,
-            # stdout=subprocess.PIPE,
+            stdout=subprocess.PIPE,
             stderr=None,
         )
 
