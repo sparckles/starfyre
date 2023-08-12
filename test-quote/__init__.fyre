@@ -1,0 +1,9 @@
+from .parent import parent
+
+<pyml>
+  <parent>
+    <div>
+    Hello, world
+    </div>
+  </parent>
+<pyml>

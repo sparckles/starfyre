@@ -23,7 +23,8 @@ class ComponentParser(HTMLParser):
 
     def __init__(self, component_local_variables, component_global_variables, css, js, component_name):
         super().__init__()             
-        self.stack: list[Component] = [] 
+        self.stack: list[tuple[ Component, int ]] = [] 
+        self.children = []
         self.current_depth = 0
         self.css = css
         self.js = js
@@ -104,13 +105,10 @@ class ComponentParser(HTMLParser):
         # if the tag is not found in the generic tags but found in custom components
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
-            tag = component.tag
             component.props = {**component.props, **props}
             component.state = {**component.state, **state}
-
             component.event_listeners = {**component.event_listeners, **event_listeners}
-            self.stack.append(component)
-
+            self.stack.append(( component, self.current_depth ))
             return
 
         # if the tag is not found in the generic tags and custom components
@@ -119,11 +117,10 @@ class ComponentParser(HTMLParser):
 
         if self.root_node is None:
             component = Component(
-                tag,
-                props,
-                [],
-                event_listeners,
-                state,
+                tag=tag,
+                props=props,
+                event_listeners=event_listeners,
+                state=state,
                 js=self.js,
                 css=self.css,
                 uuid=uuid4(),
@@ -131,19 +128,17 @@ class ComponentParser(HTMLParser):
             self.root_node = component
         else:
             component = Component(
-                tag,
-                props,
-                [],
-                event_listeners,
-                state,
-                js="",
-                css="",
+                tag=tag,
+                props=props,
+                event_listeners=event_listeners,
+                state=state,
                 uuid=uuid4(),
             )
 
         # instead of assiging tags we assign uuids        
         
-        self.stack.append(component)
+        self.stack.append((component, self.current_depth))
+
         
 
     def handle_endtag(self, tag):
@@ -157,18 +152,46 @@ class ComponentParser(HTMLParser):
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
             tag = component.tag
-        
-        endtag_node = self.stack.pop()  
-        self.current_depth -= 1
-        if endtag_node.tag != "style" and endtag_node.tag != "script":
-            if len(self.stack) > 0:
-                parent_node = self.stack[-1]      #this is last item/"top element" of stack
-                parent_node.children.append(endtag_node)
-            else:
-                self.root_node = endtag_node
-      
 
-        print("test end")    
+        if len(self.stack) == 0:
+            raise Exception(
+                f"Stack is empty. Please review line {self.lineno} in your {self.component_name} component in the pyml code."
+            )
+
+
+
+
+        parent_node, parent_depth = self.stack[
+            -1
+        ]  # based on the assumption that the stack is not empty, which should be true always
+
+
+        while len(self.children) > 0:
+            child, child_depth = self.children[0]
+            if child_depth == parent_depth + 1:
+                self.children.pop(0)
+                self.stack[-1][0].children.insert(0, child)
+            else:
+                break  # we have reached the end of the children
+
+        # we don't pop before the start of the while loop 
+        # because we don't want to pop the parent tag out of the stack
+        self.stack.pop()
+        
+        self.current_depth -= 1
+        if parent_node.tag != "style" and parent_node.tag != "script":
+            # if len(self.stack) > 0:
+                # parent_node = self.stack[-1]      #this is last item/"top element" of stack
+                # parent_node.children.append(endtag_node)
+            self.children.append((parent_node, self.current_depth))
+            # else:
+                # self.root_node = endtag_node
+      
+        print("---------")
+        print("Stack: ", self.stack)
+        print("------------------")
+
+
 
     def is_signal(self, str):
         if not str:
@@ -192,7 +215,13 @@ class ComponentParser(HTMLParser):
 
         # parsing starts here
         state = {}
-        parent_node = self.stack[-1]         
+
+        if len(self.stack) == 0:
+            raise Exception(
+                f"Stack is empty. Maybe you are returning more than one components"
+            )
+
+        parent_node, parent_depth = self.stack[-1]         
         
         uuid = uuid4()
         component_signal = ""
@@ -220,7 +249,7 @@ class ComponentParser(HTMLParser):
                         match, self.local_variables, self.global_variables
                     )
                     if isinstance(eval_result, Component):
-                        self.stack[-1].children.append(eval_result)
+                        self.stack[-1][0].children.append(eval_result)
                         return
                     elif isinstance(eval_result, str):
                         current_data = eval_result
@@ -253,49 +282,31 @@ class ComponentParser(HTMLParser):
         # on the wrapper div component
 
         wrapper_div_component = Component(
-            "div",
-            {},
-            [],
-            {},
-            state=state,
-            data=data,
-            css="",
-            js="",
-            signal="",
-            uuid=uuid,
-        )
-
-        wrapper_div_component.children.append(
-            Component(
                 "TEXT_NODE",
-                {},
-                [],
-                {},
                 state=state,
                 data=data,
-                css="",
-                js="",
                 signal=component_signal,
                 uuid=uuid,
-            )
-        )
-        
-        parent_node.children.append(wrapper_div_component) 
 
-        print(
-            "parent node",            
-            parent_node.tag,
-            parent_node.children,
-            "for the text node ",
-            data,
         )
+
+        
+        parent_node.children.insert(0, wrapper_div_component) 
+        print("---------")
+        print("Data", data, "parent node", parent_node, "parent depth", parent_depth, "children", parent_node.children)
+        print("---------")
+
 
     def get_stack(self):
         return self.stack
 
     def get_root(self):
-        if self.root_node is not None:
-            return self.root_node
+        # if self.root_node is not None:
+            # return self.root_node
+        if len(self.children) != 0:
+            component, depth = self.children[0]
+            return component
+
         return Component(
             "div", {}, [], {}, state={}, data="", css=self.css, js=self.js, uuid=uuid4()
         )

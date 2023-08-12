@@ -1,0 +1,10 @@
+<pyml>
+  <span>
+  <div>
+    This is the parent component
+    </div>
+    <div>
+    Hello
+    </div>
+  </span>
+</pyml>
