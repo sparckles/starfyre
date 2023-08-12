@@ -81,12 +81,14 @@ def main(path, build):
         create_main_file(str(absolute_path))
 
         # Start/run project
-        subprocess.run(
+        result = subprocess.run(
             [sys.executable, "-m", "build"],
             cwd=path,
             stdout=subprocess.PIPE,
             stderr=None,
         )
+
+        print(result.stdout.decode("utf-8"))
 
 
 if __name__ == "__main__":
