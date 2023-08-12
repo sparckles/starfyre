@@ -92,47 +92,21 @@ def render_helper(component: Component) -> tuple[str, str, str]:
         html += f"{prop_string} >"
 
    
-    slot_html = ""
-    slot_css = ""
-    slot_js = ""
-  
 
-    is_slot_used = False
     # Render children
     children = component.children
     # childElements.forEach(childElement => render(childElement, dom));
 
-    for element in children:   
-        if element.is_slot_element == True:
-            element.parentElement = component
-            new_html, new_css, new_js = render_helper(element)
-            slot_html += new_html
-            slot_css += new_css
-            slot_js += new_js        
-
     for childElement in children:
-        if childElement.is_slot_element == False:
-            childElement.parentElement = component            
-            if childElement.tag == "slot":            
-                html += slot_html
-                css += slot_css
-                js += slot_js
-                is_slot_used = True
-            else:
-                new_html, new_css, new_js = render_helper(childElement)
-                html += new_html
-                css += new_css
-                js += new_js 
+        childElement.parentElement = component
+        new_html, new_css, new_js = render_helper(childElement)
+        html += new_html
+        css += new_css
+        js += new_js
 
     html += f"</{tag}>\n"
 
     component.html = html
-
-    #check if inner content of component is being used
-    if is_slot_used == False and slot_html != "":
-        html += slot_html
-        css += slot_css
-        js += slot_js
 
     return html, css, js
 

@@ -39,6 +39,7 @@ class ComponentParser(HTMLParser):
         )
         # populate the dict with the components
         self.component_name = component_name
+        self.current_children = []
 
     generic_tags = {
         "html", "div", "p", "b", "span", "i", "button", "head", "link", "meta", "style", "title",
@@ -105,14 +106,13 @@ class ComponentParser(HTMLParser):
         # if the tag is not found in the generic tags but found in custom components
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
-            component.is_custom = True
-            tag = component.tag
+            component.original_name = tag
             component.props = {**component.props, **props}
             component.state = {**component.state, **state}
 
             component.event_listeners = {**component.event_listeners, **event_listeners}
             self.stack.append(component)
-
+            print("This is the stack", self.stack)
             return
 
         # if the tag is not found in the generic tags and custom components
@@ -156,20 +156,32 @@ class ComponentParser(HTMLParser):
         # we need to check if the tag is a default component or a custom component
         # if it is a custom component, we get the element from the custom components dict          
 
-        if tag not in self.generic_tags and tag in self.components:
-            component = self.components[tag]
-            tag = component.tag
+
         
         endtag_node = self.stack.pop()  
-        self.current_depth -= 1        
+        self.current_depth -= 1
+
+        # Now, we check if `self.children` contains a slot component. If it does, we need to replace the slot component with the children of the slot component.
+        # @Suelen can you take this forward from here?
         if endtag_node.tag != "style" and endtag_node.tag != "script":
             if len(self.stack) > 0:
                 parent_node = self.stack[-1]      #this is last item/"top element" of stack
-                if parent_node.is_custom:           #Checking if the parent node is the special custom tag 
-                    endtag_node.is_slot_element = True
-                parent_node.children.append(endtag_node)
+                if parent_node.original_name == endtag_node.original_name:
+                    parent_node.children.extend(self.current_children)
+                    self.current_children = []
+                else:
+                    self.current_children.append(endtag_node)
+
+                # if parent_node.is_custom:           #Checking if the parent node is the special custom tag 
+                    # endtag_node.is_slot_element = True
             else:
+                parent_node = endtag_node
                 self.root_node = endtag_node
+                self.root_node.children.extend(self.current_children)
+                self.current_children = []
+
+
+
    
 
     def is_signal(self, str):
@@ -194,7 +206,7 @@ class ComponentParser(HTMLParser):
 
         # parsing starts here
         state = {}
-        parent_node = self.stack[-1]         
+        # parent_node = self.stack[-1]         
         
         uuid = uuid4()
         component_signal = ""
@@ -222,7 +234,8 @@ class ComponentParser(HTMLParser):
                         match, self.local_variables, self.global_variables
                     )
                     if isinstance(eval_result, Component):
-                        self.stack[-1].children.append(eval_result)
+                        # this is a parent, right?
+                        self.children.append(eval_result)
                         return
                     elif isinstance(eval_result, str):
                         current_data = eval_result
@@ -282,15 +295,8 @@ class ComponentParser(HTMLParser):
             )
         )
         
-        parent_node.children.append(wrapper_div_component) 
+        self.children.append(wrapper_div_component) 
 
-        print(
-            "parent node",            
-            parent_node.tag,
-            parent_node.children,
-            "for the text node ",
-            data,
-        )
 
     def get_stack(self):
         return self.stack

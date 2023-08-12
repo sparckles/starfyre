@@ -1,8 +1,8 @@
 <pyml>
-    <span>
+    <b>
           You
         <p> Are </p>       
           Awesome               
-        <slot></slot>
-    </span>
+        <slot>This is slot</slot>
+    </b>
 </pyml>

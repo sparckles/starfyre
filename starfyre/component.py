@@ -17,9 +17,8 @@ class Component:
     html: str = ""
     css: str = ""
     js: str = ""
-    is_slot_element: bool = False       #True for element that should be rendered into <slot> on the final html 
-    is_custom: bool = False             #True for root node of custom component "<store> or <parent>"
     # on any property change, rebuild the tree
+    original_name: str = ""
     
 
     def render(self):
@@ -28,6 +27,10 @@ class Component:
     @property
     def is_text_component(self):
         return self.tag == "TEXT_NODE"
+
+    @property
+    def is_slot_component(self):
+        return self.tag == "slot"
     
     def __repr__(self):
         return f"<{self.tag}> {self.data} {self.children} </{self.tag}>"
