@@ -9,7 +9,6 @@ import subprocess
 import click
 import importlib.resources as pkg_resources
 
-
 def write_js_file(path):
     dist_path = Path(path) / "dist"
     dist_path.mkdir(exist_ok=True)
@@ -17,8 +16,16 @@ def write_js_file(path):
     shutil.copy(str(js_store), path + "/dist/store.js")
 
 def build_routes_output(generated_routes, path):
-    output_file_path = path + "/build/__main__.py"
     write_js_file(path)
+
+    output_file_path = path + "/build/__main__.py"
+    init_file_path = path + "/build/__init__.py"
+    user_routes = generated_routes[:]
+    user_routes.insert(0, 'app')
+    
+    # create empty __init__.py file
+    with open(init_file_path, "w"):
+        pass
 
     with open(output_file_path, "w") as f:
         f.write(
@@ -42,12 +49,6 @@ def generate_pages(generated_routes, path):
     It imports the necessary components for each route, renders them using Starfyre,
     and writes the rendered content to corresponding HTML files.
     """
-    user_routes = generated_routes[:]
-
-    # index.html is to be generated first since it is the entry point of the app
-    user_routes.insert(0, 'app')
-
-    print(f"Generated routes: {{user_routes}}")
 
     out_dir = Path(path + "/dist").resolve()
     root = Path(out_dir / "..").resolve()
@@ -55,24 +56,26 @@ def generate_pages(generated_routes, path):
     # get the user defined project name
     app_name = (str(root).split('/'))[-1]
 
-    for route_name in user_routes:
+    for route_name in generated_routes:
         print(f'route name is = {{route_name}}')
         
         if route_name.lower() == 'app':
-            component_key = 'app'  # For the 'app' component in `build/__init__.py`
+            component_key = 'app'  # For the 'app' component in `build/pages/__init__.py`
         else:
             component_key = route_name
         
         if route_name == 'app':
-            module_name = f"{{Path(app_name)}}.build"
+            module_name = f"{{Path(app_name)}}.build.pages"
         else:
-            module_name= f"{{Path(app_name)}}.build.{{route_name}}"
+            module_name= f"{{Path(app_name)}}.build.pages.{{route_name}}"
         
         try:
             module = importlib.import_module(module_name)
-            print(f"Module is = {{module}}")
-            component = getattr(module, component_key, f"{{component_key}} does not exist")
-            result = str(render_root(component)) if not route_name == 'app' else component
+            if component_key == 'app':
+                component = getattr(module, component_key, f"{{component_key}} does not exist")
+            else:
+                component = getattr(module, f'rendered_{{component_key}}')
+            result = str(component)
         except ModuleNotFoundError:
             print(f"Error: Could not import module '{{module_name}}'.")
             continue
@@ -84,9 +87,8 @@ def generate_pages(generated_routes, path):
             html_file.write("<script src='store.js'></script>")
             html_file.write(result)
 
-
 if __name__ == '__main__':
-    generate_pages(generated_routes={generated_routes}, path="{path}")
+    generate_pages(generated_routes={user_routes}, path="{path}")
     ''')
 
 @click.command()
@@ -130,7 +132,7 @@ def main(path, build):
         subprocess.run(
             [sys.executable, "-m", "build"],
             cwd=path,
-            stdout=subprocess.PIPE,
+            # stdout=subprocess.PIPE,
             stderr=None,
         )
 
