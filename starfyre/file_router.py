@@ -8,22 +8,19 @@ import importlib
 
 
 class FileRouter:
-    """
-    A router that handles file-based routing.
-
-    This router parses the specified pages directory to automatically generate routes based on
-    the file names. Each file in the pages directory is treated as a separate route. 
-
-    Parameters:
-        pages_directory (str): The path to the directory containing the pages files.
-    Example:
-        pages_directory = "test-application/pages"
-        file_router = FileRouter(pages_directory)
-    """
-
     def __init__(self, pages_directory):
         """
-        Initialize the FileRouter with the specified pages directory.
+        A router that handles file-based routing.
+
+        This router parses the specified pages directory to automatically generate routes based on
+        the file names. Each file in the pages directory is treated as a separate route. 
+
+        Parameters:
+            pages_directory (str): The path to the directory containing the pages files.
+        Example:
+            pages_directory = "test-application/pages"
+            file_router = FileRouter(pages_directory)
+            Initialize the FileRouter with the specified pages directory.
 
         Args:
             pages_directory (str): The path to the directory containing the pages files.

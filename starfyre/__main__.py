@@ -71,7 +71,7 @@ def generate_pages(generated_routes, path):
         try:
             module = importlib.import_module(module_name)
             print(f"Module is = {{module}}")
-            component = module.__dict__[component_key]
+            component = getattr(module, component_key, f"{{component_key}} does not exist")
             result = str(render_root(component)) if not route_name == 'app' else component
         except ModuleNotFoundError:
             print(f"Error: Could not import module '{{module_name}}'.")
