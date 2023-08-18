@@ -15,6 +15,7 @@ requests = "^2.29.0"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 black = "^23.3.0"
+commitizen = "^3.6.0"
 
 [build-system]
 requires = ["poetry-core"]
