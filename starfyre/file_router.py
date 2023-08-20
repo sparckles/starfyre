@@ -54,6 +54,9 @@ class FileRouter:
         for file_name in os.listdir(self.pages_directory):
             if file_name.endswith(".fyre"):
                 route_name = file_name.replace(".fyre", "").lower()
+                if route_name == '__init__':
+                    routes.insert(0, 'app')
+                    continue # do no add '__init__' as a route found rather use 'app'
                 if route_name.lower() == 'index':
                     raise IndexFileConflictError()
                 routes.append(route_name)

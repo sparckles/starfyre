@@ -218,8 +218,8 @@ def compile(entry_file_name):
 
     fyre_files = get_fyre_files(project_dir)
 
-    # check if __init__.fyre exist else stop compilation
-    if '__init__.fyre' not in fyre_files:
+    # check if pages/__init__.fyre exist else stop compilation
+    if 'pages/__init__.fyre' not in fyre_files:
         raise InitFyreMissingError()
 
     for fyre_file in fyre_files:
