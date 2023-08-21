@@ -113,7 +113,6 @@ class ComponentParser(HTMLParser):
             component.event_listeners = {**component.event_listeners, **event_listeners}
             self.stack.append(component)
             print("This is the stack", self.stack)
-            #SK TODO: Bug - we should check for if self.root_node is None:
             if self.root_node is None:
                 self.root_node = component
             return
@@ -149,7 +148,6 @@ class ComponentParser(HTMLParser):
         # instead of assiging tags we assign uuids        
         
         self.stack.append(component)
-        pass
         
 
     def handle_endtag(self, tag):
@@ -165,15 +163,13 @@ class ComponentParser(HTMLParser):
         endtag_node = self.stack.pop()  
         self.current_depth -= 1
 
-        # Now, we check if `self.children` contains a slot component. If it does, we need to replace the slot component with the children of the slot component.
-        # @Suelen can you take this forward from here?
         if endtag_node.tag != "style" and endtag_node.tag != "script":
             if len(self.stack) > 0:
                 parent_node = self.stack[-1]      #this is last item/"top element" of stack
                 if endtag_node.original_name != "": #this node is for "custom" component, so we should check for <slot> tags 
                     #process endtag_node children
                     new_children = []
-                    for child_component in endtag_node.children:
+                    for  child_component in endtag_node.children:
                         if child_component.tag == "slot":
                             new_children.extend(self.current_children)
                         else:
@@ -182,23 +178,14 @@ class ComponentParser(HTMLParser):
                     self.current_children = []  
 
                 
-                # if parent_node.original_name == endtag_node.original_name: #SK Why we need this condition? It is empty string by default
-                #     parent_node.children.extend(self.current_children)
-                #     self.current_children = []
-                # else:
-                #     self.current_children.append(endtag_node)
-                #SK : New code
-                self.current_children.append(endtag_node)
+                parent_node.children.append(endtag_node)
 
-                # if parent_node.is_custom:           #Checking if the parent node is the special custom tag 
-                    # endtag_node.is_slot_element = True
             else:
                 parent_node = endtag_node
                 self.root_node = endtag_node
                 self.root_node.children.extend(self.current_children)
                 self.current_children = []
 
-        pass
 
    
 
@@ -313,11 +300,10 @@ class ComponentParser(HTMLParser):
             )
         )
         
-        # self.children.append(wrapper_div_component)
         if len(self.stack) > 0:
                 parent_node = self.stack[-1]
                 parent_node.children.append(wrapper_div_component)
-        else:
+        else: 
             self.current_children.append(wrapper_div_component) 
 
 
