@@ -57,5 +57,6 @@
     ]
 }
 ```
-7. In VSCode menu test with `Run` -> `Start Without Debuggig` or press `Ctrl + F5` - check that output has no errors
+7. In VSCode menu test with:
+    - Click on `Run` -> `Start Without Debuggig` "or press `Ctrl + F5`" - check that the output has no errors
 	
