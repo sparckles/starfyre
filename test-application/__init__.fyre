@@ -29,6 +29,7 @@ async def handle_on_click(e):
         <span onclick={handle_on_click}>
           {[ mocked_request() for i in range(4)]}
         </span>
+        <p> Hello world </p>
     </parent>
   </store>
 </pyml>

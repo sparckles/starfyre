@@ -166,6 +166,7 @@ class ComponentParser(HTMLParser):
         if endtag_node.tag != "style" and endtag_node.tag != "script":
             if len(self.stack) > 0:
                 parent_node = self.stack[-1]      #this is last item/"top element" of stack
+
                 if endtag_node.original_name != "": #this node is for "custom" component, so we should check for <slot> tags 
                     #process endtag_node children
                     new_children = []
@@ -177,11 +178,11 @@ class ComponentParser(HTMLParser):
                     endtag_node.children = new_children   
                     self.current_children = []  
 
-                
-                parent_node.children.append(endtag_node)
-
+                if parent_node.original_name != "":
+                    self.current_children.append(endtag_node)
+                else:
+                    parent_node.children.append(endtag_node)    
             else:
-                parent_node = endtag_node
                 self.root_node = endtag_node
                 self.root_node.children.extend(self.current_children)
                 self.current_children = []

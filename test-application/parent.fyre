@@ -12,18 +12,11 @@ def ssr_request():
 <pyml>
     <span>    
       <div>      
-        <h2> 1 This is just a test </h2>
-        <p> 2 HTML NODE </p>
-        {ssr_request()}         
-        <p> 3 HTML NODE </p>
-        {ssr_request()}           
+        <h2> This is just a test </h2>                 
       </div>
       <b>      
         {use_parent_signal()}
-      </b>
-      <b>
-        {get_parent_signal()}
-      </b>
+      </b>    
       <slot></slot>
       <ul>
         <li>a</li>        
