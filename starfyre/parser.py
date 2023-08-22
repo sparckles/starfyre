@@ -28,7 +28,7 @@ class ComponentParser(HTMLParser):
         self.css = css
         self.js = js
         self.root_node = None
-        
+                
 
         # these are the event handlers and the props
         self.local_variables = component_local_variables
@@ -37,7 +37,7 @@ class ComponentParser(HTMLParser):
         self.components = self.extract_components(
             {**self.local_variables, **self.global_variables}
         )
-        # populate the dict with the components
+        # populate the dict with the components       
         self.component_name = component_name
         self.current_children = []
 
@@ -59,9 +59,10 @@ class ComponentParser(HTMLParser):
         components = {}
         for key, value in local_functions.items():
             if isinstance(value, Component):
-                components[key] = value
+                components[key] = value        
 
         return components
+
 
     def is_event_listener(self, name):
         return name.startswith("on")
@@ -103,6 +104,7 @@ class ComponentParser(HTMLParser):
             else:
                 props[attr[0]] = attr[1]
 
+
         # if the tag is not found in the generic tags but found in custom components
         if tag not in self.generic_tags and tag in self.components:
             component = self.components[tag]
@@ -131,7 +133,7 @@ class ComponentParser(HTMLParser):
                 js=self.js,
                 css=self.css,
                 uuid=uuid4(),
-            )
+            )            
             self.root_node = component
         else:
             component = Component(
@@ -154,11 +156,6 @@ class ComponentParser(HTMLParser):
         # if the tag is not found in the generic tags and custom components
         if tag not in self.generic_tags and tag not in self.components:             
             raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.')
-
-        # we need to check if the tag is a default component or a custom component
-        # if it is a custom component, we get the element from the custom components dict          
-
-
         
         endtag_node = self.stack.pop()  
         self.current_depth -= 1
@@ -167,18 +164,23 @@ class ComponentParser(HTMLParser):
             if len(self.stack) > 0:
                 parent_node = self.stack[-1]      #this is last item/"top element" of stack
 
-                if endtag_node.original_name != "": #this node is for "custom" component, so we should check for <slot> tags 
-                    #process endtag_node children
+                if endtag_node.original_name != endtag_node.tag: #this node is for "custom" component
+                    #process endtag_node children                    
                     new_children = []
-                    for  child_component in endtag_node.children:
+                    is_slot_used = False
+                    for child_component in endtag_node.children:
                         if child_component.tag == "slot":
                             new_children.extend(self.current_children)
+                            is_slot_used = True
                         else:
                             new_children.append(child_component)
+                    if not is_slot_used and len(self.current_children) > 0:
+                        new_children.extend(self.current_children)
+                        print("Appending at the end of the stack as slot position not specified.")
                     endtag_node.children = new_children   
-                    self.current_children = []  
+                    self.current_children = []                     
 
-                if parent_node.original_name != "":
+                if parent_node.original_name != parent_node.tag:
                     self.current_children.append(endtag_node)
                 else:
                     parent_node.children.append(endtag_node)    
@@ -186,7 +188,6 @@ class ComponentParser(HTMLParser):
                 self.root_node = endtag_node
                 self.root_node.children.extend(self.current_children)
                 self.current_children = []
-
 
    
 
@@ -212,7 +213,7 @@ class ComponentParser(HTMLParser):
 
         # parsing starts here
         state = {}
-        # parent_node = self.stack[-1]         
+        parent_node = self.stack[-1]    
         
         uuid = uuid4()
         component_signal = ""
@@ -301,11 +302,8 @@ class ComponentParser(HTMLParser):
             )
         )
         
-        if len(self.stack) > 0:
-                parent_node = self.stack[-1]
-                parent_node.children.append(wrapper_div_component)
-        else: 
-            self.current_children.append(wrapper_div_component) 
+        parent_node.children.append(wrapper_div_component) #suelen change
+          
 
 
     def get_stack(self):
