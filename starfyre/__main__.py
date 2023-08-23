@@ -1,7 +1,7 @@
 from starfyre import compile
 from pathlib import Path
 from starfyre.file_router import FileRouter
-from starfyre.main_template import get_main_template
+from starfyre.build_main_file_content import get_build_main_file_content
 
 import sys
 import os
@@ -38,7 +38,7 @@ def prepare_html_and_main(generated_routes, path):
 
     main_file_path = path + "/build/__main__.py"
     init_file_path = path + "/build/__init__.py"
-    main_file_content = get_main_template(user_routes=generated_routes, path=path)
+    main_file_content = get_build_main_file_content(user_routes=generated_routes, path=path)
 
     # create empty __init__.py file
     Path(init_file_path).touch()
@@ -88,7 +88,7 @@ def main(path, build):
         result = subprocess.run(
             [sys.executable, "-m", "build"],
             cwd=path,
-            # stdout=subprocess.PIPE,
+            stdout=subprocess.PIPE,
             stderr=None,
         )
 

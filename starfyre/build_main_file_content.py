@@ -1,4 +1,4 @@
-def get_main_template(user_routes, path):
+def get_build_main_file_content(user_routes, path):
     """
     Template for the main execution script to generate HTML pages for generated routes.
 
