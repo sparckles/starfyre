@@ -1,4 +1,4 @@
-# To setup a debugger for this project in VS Code.
+# This document is intended for developers who want to setup a debugger for this project in VS Code.
 
 ## ⚙️ Follow the steps:
 
