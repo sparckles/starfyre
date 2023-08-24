@@ -1,4 +1,4 @@
-### To debug this project in VS Code need to select python interpreter from virtual environment created by poetry.
+# To setup a debugger for this project in VS Code.
 
 ## ⚙️ Follow the steps:
 
