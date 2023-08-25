@@ -1,5 +1,7 @@
 
-<img alt="Starfyre Logo" src="https://user-images.githubusercontent.com/29942790/221331176-609e156a-3896-4c1a-9386-7bf595dfb879.png" width="350" />
+<p align="center">
+  <img alt="Starfyre Logo" src="https://user-images.githubusercontent.com/29942790/221331176-609e156a-3896-4c1a-9386-7bf595dfb879.png" width="350" />
+</p>
 
 [![Discord](https://img.shields.io/discord/1080951642070978651?label=discord&logo=discord&logoColor=white&style=for-the-badge&color=blue)](https://discord.gg/ThQcpvJMZ6)
 
@@ -11,6 +13,38 @@ Starfyre is a library that allows you to build reactive frontends using only Pyt
 
 Please note that Starfyre is still very naive and may be buggy, as it was developed in just five days. However, it is under active development and we welcome contributions to improve it. Whether you are a seasoned web developer or new to frontend development, we hope that you will find Starfyre to be a useful tool. Its intuitive API and simple, declarative style make it easy to get started, and its powerful features allow you to build sophisticated applications.
 
+## 📚 Documentation
+**[Compiler](compiler.md)**: Learn about the compiler and its functionality.
+
+**[ComponentParser](component_parser.md)**: Understand how the Component Parser works and its usage.
+
+**[File-Based Router](file_based_router.md)**: Explore the file-based routing feature and use it.
+
+
+## 💥 What's new?! 
+### 🔥 Command Line Interface (CLI) Improvement
+
+With the recent enhancements to the Starfyre CLI, the process of building and compiling Starfyre projects has been streamlined and made more intuitive. The CLI commands have been refined to provide a simpler and more consistent experience for developers. Let's take a look at the changes that have been introduced:
+
+#### Previous Command (Before Improvement)
+```bash
+python3 starfyre --dev=True --path="test-application/" && python -m starfyre --build=True --path="test-application/"
+```
+
+#### New Compile and Build Command
+```bash
+python3 starfyre --build --path="test-application"
+```
+
+
+**🔥 File-Based Router**:
+```
+test-application
+├───pages
+    ├───home.fyre
+    ├───about.fyre
+```
+A new file-based routing feature has been introduced! Learn how to define routes using individual files in the pages directory [here](file_based_router.md).
 
 ## 📦 Installation:
 
@@ -77,15 +111,14 @@ Usage: python -m starfyre [OPTIONS]
 
 Options:
   --path TEXT      Path to the project
-  --dev BOOLEAN    Start the compilation and generate the build package.
-  --build BOOLEAN  Start the build package
+  --build BOOLEAN  Compile and build package
   --help           Show this message and exit.
 ```
 
 ## 🗒️ How to contribute
 
 ### 🏁 Get started
-Please read the code of conduct and go through CONTRIBUTING.md before contributing to Robyn. Feel free to open an issue for any clarifications or suggestions.
+Please read the code of conduct and go through `CONTRIBUTING.md` before contributing to Starfyre. Feel free to open an issue for any clarifications or suggestions.
 
 If you're feeling curious. You can take a look at a more detailed architecture here.
 
