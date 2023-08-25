@@ -45,7 +45,7 @@ Here's an example of how the Component Parser is utilized within Starfyre:
 
 2) Define your component structure using PyML syntax.
 
-3) Use the RootParser class to parse the PyML content of your component.
+3) Use the ComponentParser class to parse the PyML content of your component.
 
 4) Handle any exceptions raised during parsing, including the UnknownTagError.
 
