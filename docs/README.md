@@ -1,6 +1,5 @@
-<p align="center">
-  <img alt="Starfyre Logo" src="https://user-images.githubusercontent.com/29942790/221331176-609e156a-3896-4c1a-9386-7bf595dfb879.png" width="350" />
-</p>
+
+<img alt="Starfyre Logo" src="https://user-images.githubusercontent.com/29942790/221331176-609e156a-3896-4c1a-9386-7bf595dfb879.png" width="350" />
 
 [![Discord](https://img.shields.io/discord/1080951642070978651?label=discord&logo=discord&logoColor=white&style=for-the-badge&color=blue)](https://discord.gg/ThQcpvJMZ6)
 
@@ -127,3 +126,7 @@ Python version 3.10
 ## Feedback
 
 Feel free to open an issue and let me know what you think of it. 
+
+## Running Locally
+
+`npx docsify-cli serve docs`

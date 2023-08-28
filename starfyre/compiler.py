@@ -1,3 +1,5 @@
+from starfyre.exceptions import InitFyreMissingError, IndexFileConflictError
+
 import os
 import re
 from pathlib import Path
@@ -5,9 +7,17 @@ from pathlib import Path
 
 def get_fyre_files(project_dir):
     fyre_files = []
-    for file in os.listdir(project_dir):
-        if file.endswith(".fyre"):
-            fyre_files.append(file)
+    for entry in os.listdir(project_dir):
+        if entry.endswith(".fyre"):
+            fyre_files.append(entry)
+        # check inside the 'pages' folder
+        if entry == 'pages':
+            for file_ in os.listdir(project_dir / "pages"):
+                if file_.endswith(".fyre"):
+                    # check for the invalid 'index.fyre'
+                    if file_.lower() == 'index.fyre':
+                        raise IndexFileConflictError()
+                    fyre_files.append(f'pages/{file_}')
     return fyre_files
 
 
@@ -136,7 +146,7 @@ component_name="""{root_name}"""
 '''
     else:
         return f'''
-from starfyre import create_component
+from starfyre import create_component, render_root
 
 def fx_{root_name}():
     component = create_component("""
@@ -153,6 +163,7 @@ component_name="""{root_name}"""
     return component
 
 {root_name}=fx_{root_name}()
+rendered_{root_name} = render_root({root_name})
 '''
 
 
@@ -181,7 +192,7 @@ def transpile_to_python(
     final_python_lines.append(main_content)
 
     file_name = output_file_name.split("/")[-1]                 #getting the file itself "without the path"
-    output_file_name = project_dir / "build" / file_name
+    output_file_name = project_dir / "build" / "pages" /file_name
 
     with open(output_file_name, "w") as output_file:
         output_file.write("".join(final_python_lines))          #result of the transpiled
@@ -202,7 +213,14 @@ def compile(entry_file_name):
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)
 
-    fyre_files = get_fyre_files(project_dir) 
+    build_dir = project_dir / "build"/ "pages" # create build pages dir 
+    build_dir.mkdir(exist_ok=True)
+
+    fyre_files = get_fyre_files(project_dir)
+
+    # check if pages/__init__.fyre exist else stop compilation
+    if 'pages/__init__.fyre' not in fyre_files:
+        raise InitFyreMissingError()
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
