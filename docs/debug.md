@@ -1,6 +1,10 @@
-# This document is intended for developers who want to setup a debugger for this project in VS Code.
+# Debugger Setup
 
-## ⚙️ Follow the steps:
+### Introduction
+
+This document is intended for developers who want to setup a debugger for this project in VS Code.
+
+### ⚙️ Follow The Steps:
 
 1. Open project
 2. Run
