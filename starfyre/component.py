@@ -19,10 +19,6 @@ class Component:
     js: str = ""
     original_name: str = ""
     # on any property change, rebuild the tree
-    
-    
-    def __post_init__(self):
-        self.original_name = self.tag
    
 
     def render(self):

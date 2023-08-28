@@ -133,6 +133,7 @@ class ComponentParser(HTMLParser):
                 js=self.js,
                 css=self.css,
                 uuid=uuid4(),
+                original_name=tag,
             )
             self.root_node = component
         else:
@@ -145,6 +146,7 @@ class ComponentParser(HTMLParser):
                 js="",
                 css="",
                 uuid=uuid4(),
+                original_name=tag,
             )
 
         # instead of assiging tags we assign uuids        
@@ -168,8 +170,7 @@ class ComponentParser(HTMLParser):
                     #process endtag_node children                    
                     new_children = []
                     is_slot_used = False
-                    for child_component in endtag_node.children:
-                        # if child_component.tag == "slot":  #TODO: USE is_slot_component INSTEAD OF "slot" AS STRING
+                    for child_component in endtag_node.children:                        
                         if child_component.is_slot_component:
                             new_children.extend(self.current_children)
                             is_slot_used = True
@@ -286,6 +287,7 @@ class ComponentParser(HTMLParser):
             js="",
             signal="",
             uuid=uuid,
+            original_name="div",
         )
 
         wrapper_div_component.children.append(
@@ -300,6 +302,7 @@ class ComponentParser(HTMLParser):
                 js="",
                 signal=component_signal,
                 uuid=uuid,
+                original_name="TEXT_NODE",
             )
         )
         
@@ -314,5 +317,5 @@ class ComponentParser(HTMLParser):
         if self.root_node is not None:
             return self.root_node
         return Component(
-            "div", {}, [], {}, state={}, data="", css=self.css, js=self.js, uuid=uuid4()
+            "div", {}, [], {}, state={}, data="", css=self.css, js=self.js, uuid=uuid4(), original_name="div"
         )
