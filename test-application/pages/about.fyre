@@ -1,0 +1,67 @@
+<style>
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #f00000, #000);
+}
+
+.gradient-background {
+  position: relative;
+  width: fit-content; /* Set the width to fit the content (the text) */
+  height: fit-content; /* Set the height to fit the content (the text) */
+  padding: 30px; /* Add some padding around the text */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 30px; /* Rounded corner border */
+  background: radial-gradient(ellipse at center, transparent 0%, #ff8400 60%, transparent 100%);
+}
+
+.title {
+  font-size: 6rem;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 3px 3px 0 rgba(255, 0, 0, 0.5),
+               6px 6px 0 rgba(255, 165, 0, 0.5),
+               9px 9px 0 rgba(255, 215, 0, 0.5); /* Fire-themed text shadow */
+}
+
+.explore-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: red;
+  border: 1px solid white;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.explore-button:hover {
+  background-color: #ffc700;
+}
+
+
+
+
+</style>
+
+<pyml>
+    <body>
+       <div class="gradient-background">
+            <h1 class="title">starfyre</h1>
+            <a href="#" class="explore-button">Explore</a>
+        </div>
+    </body>
+
+</pyml>
