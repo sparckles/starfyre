@@ -1,4 +1,4 @@
-from ..parent import parent
+from test_application.parent import parent
 from ..store import store
 
 def mocked_request():
