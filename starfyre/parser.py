@@ -37,7 +37,7 @@ class ComponentParser(HTMLParser):
         self.components = self.extract_components(
             {**self.local_variables, **self.global_variables}
         )
-        # populate the dict with the components       
+        # populate the dict with the components
         self.component_name = component_name
         self.current_children = []
 
@@ -59,7 +59,7 @@ class ComponentParser(HTMLParser):
         components = {}
         for key, value in local_functions.items():
             if isinstance(value, Component):
-                components[key] = value        
+                components[key] = value
 
         return components
 
@@ -182,7 +182,7 @@ class ComponentParser(HTMLParser):
                     endtag_node.children = new_children   
                     self.current_children = []                     
 
-                if parent_node.original_name != parent_node.tag:
+                if parent_node.original_name != parent_node.tag: #check if parent node is the custom component "if is true"
                     self.current_children.append(endtag_node)
                 else:
                     parent_node.children.append(endtag_node)    

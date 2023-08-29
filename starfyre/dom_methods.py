@@ -16,7 +16,7 @@ def assign_event_listeners(event_listener_name, event_listener):
     return html, js_event_listener
 
 
-def render_helper(component: Component) -> tuple[str, str, str]:    
+def render_helper(component: Component) -> tuple[str, str, str]:
     # Add event listeners
     def is_listener(name):
         return name.startswith("on")
