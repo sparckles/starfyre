@@ -1,5 +1,5 @@
-from .parent import parent
-from .store import store
+from ..parent import parent
+from ..store import store
 
 def mocked_request():
   return "fetched on the server"

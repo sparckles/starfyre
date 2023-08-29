@@ -59,7 +59,9 @@ def generate_pages(generated_routes, path):
             result = str(component)
         except ModuleNotFoundError:
             print(f"Error: Could not import module '{{module_name}}'.")
-            continue
+            # throw an error stating that we could not resolve an import
+            raise ImportError('Please resolve your import statements')
+            
 
         # write to component file
         if route_name == 'app':

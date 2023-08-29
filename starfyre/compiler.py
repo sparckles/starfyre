@@ -23,7 +23,7 @@ def get_fyre_files(project_dir):
 
 def resolve_css_import(css_file_name, working_directory):
     """Read a css file and save it's content to a list"""
-    css_content = [] 
+    css_content = []
 
     if css_file_name.startswith("."):
         css_file_name = css_file_name.replace(".", str(working_directory), 1)
@@ -32,10 +32,10 @@ def resolve_css_import(css_file_name, working_directory):
         for line in import_file.readlines():
             css_content.append(line)
 
-    return css_content           
+    return css_content
 
 
-def parse(fyre_file_name): 
+def parse(fyre_file_name):
     def remove_empty_lines_from_end(lines):
         while lines and lines[-1] == "\n":
             lines.pop()
@@ -56,7 +56,7 @@ def parse(fyre_file_name):
 
     # regex pattern to match if a line is a css import, e.g. import "style.css"
     css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
-    
+
     with open(fyre_file_name, "r") as fyre_file:
         for line in fyre_file.readlines():
             css_import_match = css_import_pattern.search(line)
@@ -73,8 +73,8 @@ def parse(fyre_file_name):
                 current_line_type = "client"  # this is a hack
                 continue
             elif css_import_match:
-                css_import = css_import_match.group(1)                
-                project_dir = Path(os.path.dirname(fyre_file_name))                                
+                css_import = css_import_match.group(1)
+                project_dir = Path(os.path.dirname(fyre_file_name))
                 css_content = resolve_css_import(css_import, project_dir)
                 css_lines += css_content
                 continue
@@ -191,11 +191,11 @@ def transpile_to_python(
 
     final_python_lines.append(main_content)
 
-    file_name = output_file_name.split("/")[-1]                 #getting the file itself "without the path"
-    output_file_name = project_dir / "build" / "pages" /file_name
+    output_file_name = project_dir / "build" / output_file_name
 
     with open(output_file_name, "w") as output_file:
-        output_file.write("".join(final_python_lines))          #result of the transpiled
+        # result of the transpiled
+        output_file.write("".join(final_python_lines))
 
 
 def compile(entry_file_name):
@@ -213,7 +213,7 @@ def compile(entry_file_name):
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)
 
-    build_dir = project_dir / "build"/ "pages" # create build pages dir 
+    build_dir = project_dir / "build" / "pages"  # create build pages dir
     build_dir.mkdir(exist_ok=True)
 
     fyre_files = get_fyre_files(project_dir)
