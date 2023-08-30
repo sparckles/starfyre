@@ -26,16 +26,10 @@ Please note that Starfyre is still very naive and may be buggy, as it was develo
 
 With the recent enhancements to the Starfyre CLI, the process of building and compiling Starfyre projects has been streamlined and made more intuitive. The CLI commands have been refined to provide a simpler and more consistent experience for developers. Let's take a look at the changes that have been introduced:
 
-#### Previous Command (Before Improvement)
-```bash
-python3 starfyre --dev=True --path="test-application/" && python -m starfyre --build=True --path="test-application/"
-```
-
 #### New Compile and Build Command
 ```bash
 python3 starfyre --build --path="test-application"
 ```
-
 
 **🔥 File-Based Router**:
 ```

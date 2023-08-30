@@ -25,7 +25,7 @@ This exception class is raised when the `pages/__init__.fyre` file is missing in
 Raised when a Fyre file named `index.fyre` is found in the pages folder. This conflicts with the code generation process, as `__init__.fyre` is transpiled into `index.html`. This exception prevents conflicts and ensures smooth code generation.
 
 ## Transpiler Details
-The transpiler takes the intermediate representation (IR) of Fyre files and generates executable Python code. It accomplishes this through the following steps:
+The transpiler takes the intermediate representation (IR) of Fyre files, which are Python files that capture the abstracted structure of the original Fyre code, and generates executable Python code. It accomplishes this through the following steps:
 
 1) **Extracting IR Components**: The transpiler extracts `Python`, `CSS`, `PyML`, `JS`, and client-side Python components from the IR.
 

@@ -4,7 +4,7 @@
 This document provides an overview of the `ComponentParser` in Starfyre. This crucial feature ensures the correct parsing of PyML structure, validates tags, and maintains proper tag order in Starfyre components.
 
 ### Feature Overview
-The `ComponentParser` is responsible for parsing PyML structures and ensuring that they adhere to specified rules. It plays a significant role in validating tags, their attributes, and their order within the component.
+The `ComponentParser` is responsible for parsing `PyML` structures and ensuring that they adhere to specified rules. It plays a significant role in validating tags, their attributes, and their order within the component.
 
 ## Exception Handling
 
@@ -41,13 +41,13 @@ The Component Parser performs thorough error checking, ensuring that tags are va
 ### Usage Example
 Here's an example of how the Component Parser is utilized within Starfyre:
 
-1) Create a PyML file for your Starfyre component.
+1) Create a `PyML` file for your Starfyre component.
 
-2) Define your component structure using PyML syntax.
+2) Define your component structure using `PyML` syntax.
 
-3) Use the ComponentParser class to parse the PyML content of your component.
+3) Use the `ComponentParser` class to parse the `PyML` content of your component.
 
-4) Handle any exceptions raised during parsing, including the UnknownTagError.
+4) Handle any exceptions raised during parsing, including the `UnknownTagError`.
 
 5) Utilize the parsed component structure to generate dynamic content within your Starfyre application.
 
