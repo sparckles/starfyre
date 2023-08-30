@@ -94,7 +94,7 @@ def parse(fyre_file_name, project_dir):
                 project_dir_name = str(project_dir).split("/")[-1]
 
                 # Modify the line to use the resolved import path
-                line = f'from {project_dir_name}.build.{file_to_import} import {imported_component}'
+                line = f'from ...build.{file_to_import} import {imported_component}'
 
             if line.startswith("<style"):
                 current_line_type = "css"
