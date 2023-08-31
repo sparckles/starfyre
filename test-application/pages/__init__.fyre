@@ -26,11 +26,12 @@ async def handle_on_click(e):
 <pyml>
   <store>
     <parent hello='world'>
-        <span onclick={handle_on_click}>
-          {[ mocked_request() for i in range(4)]}
-        </span>
-        <p> Hello world </p>
-    </parent>    
+      first text node from init
+      <span onclick={handle_on_click}>
+        {[ mocked_request() for i in range(4)]}
+      </span>
+      <p> Hello world </p>
+    </parent>  
   </store>
 </pyml>
 

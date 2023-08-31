@@ -159,33 +159,32 @@ class ComponentParser(HTMLParser):
         if tag not in self.generic_tags and tag not in self.components:             
             raise UnknownTagError(f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.')
         
-        endtag_node = self.stack.pop()  
+        endtag_node = self.stack.pop()
         self.current_depth -= 1
 
         if endtag_node.tag != "style" and endtag_node.tag != "script":
+            
+            if endtag_node.original_name != endtag_node.tag: #We need to check if the endtag_node is a custom tag
+                #processing endtag_node children
+                new_children = []
+                is_slot_used = False
+                for child_component in endtag_node.children:
+                    if child_component.is_slot_component:   #We check each child in the entag_node list for the slot components 
+                        new_children.extend(self.current_children)
+                        is_slot_used = True
+                    else:
+                        new_children.append(child_component)
+                if not is_slot_used and len(self.current_children) > 0:  #If there arent slot tag on the template.fyre but the current_children is not empty, means that the user forget to add the slot tag, so we add the content to the end and let the user knows
+                    new_children.extend(self.current_children)
+                    print("Appending at the end of the stack as slot position not specified.")
+                endtag_node.children = new_children
+                self.current_children = []
             if len(self.stack) > 0:
                 parent_node = self.stack[-1]      #this is last item/"top element" of stack
-
-                if endtag_node.original_name != endtag_node.tag: #this node is for "custom" component
-                    #process endtag_node children                    
-                    new_children = []
-                    is_slot_used = False
-                    for child_component in endtag_node.children:                        
-                        if child_component.is_slot_component:
-                            new_children.extend(self.current_children)
-                            is_slot_used = True
-                        else:
-                            new_children.append(child_component)
-                    if not is_slot_used and len(self.current_children) > 0:
-                        new_children.extend(self.current_children)
-                        print("Appending at the end of the stack as slot position not specified.")
-                    endtag_node.children = new_children   
-                    self.current_children = []                     
-
-                if parent_node.original_name != parent_node.tag: #check if parent node is the custom component "if is true"
+                if parent_node.original_name != parent_node.tag:
                     self.current_children.append(endtag_node)
                 else:
-                    parent_node.children.append(endtag_node)    
+                    parent_node.children.append(endtag_node)
             else:
                 self.root_node = endtag_node
                 self.root_node.children.extend(self.current_children)
@@ -305,10 +304,13 @@ class ComponentParser(HTMLParser):
                 original_name="TEXT_NODE",
             )
         )
-        
-        parent_node.children.append(wrapper_div_component)
-          
 
+        #We need to check if the wrapped component should go to the custom list aka self.current_children or to parent_node children list
+        if parent_node.original_name != parent_node.tag:
+            self.current_children.append(wrapper_div_component)
+        else:
+            parent_node.children.append(wrapper_div_component)
+                      
 
     def get_stack(self):
         return self.stack
