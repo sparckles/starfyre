@@ -1,6 +1,8 @@
 import requests
 import "./css_file_test.css"
 
+from .store import store
+
 
 def ssr_request():
   text = "Hello"

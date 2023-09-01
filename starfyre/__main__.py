@@ -92,6 +92,9 @@ def main(path, build):
             stderr=None,
         )
 
+        print(result.stdout.decode("utf-8"))
+
+
 
 if __name__ == "__main__":
     main()

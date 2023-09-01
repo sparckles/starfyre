@@ -164,8 +164,12 @@ class ComponentParser(HTMLParser):
 
         if endtag_node.tag != "style" and endtag_node.tag != "script":
             
-            if endtag_node.original_name != endtag_node.tag: #We need to check if the endtag_node is a custom tag
-                #processing endtag_node children
+            if endtag_node.original_name != endtag_node.tag:
+                #We need to check if the endtag_node is a custom tag
+                # this is happening when we reach at an endtag
+                # and the endtag has been stored. we store the resolved tag in the stack
+                # so we need to check if the tag is a custom tag
+
                 new_children = []
                 is_slot_used = False
                 for child_component in endtag_node.children:
@@ -174,11 +178,16 @@ class ComponentParser(HTMLParser):
                         is_slot_used = True
                     else:
                         new_children.append(child_component)
-                if not is_slot_used and len(self.current_children) > 0:  #If there arent slot tag on the template.fyre but the current_children is not empty, means that the user forget to add the slot tag, so we add the content to the end and let the user knows
+
+                if not is_slot_used and len(self.current_children) > 0:
+                    #If there arent slot tag on the template.fyre and
+                    # the current_children is not empty, means that the user forget 
+                    # to add the slot tag, so we add the content to the end and let the user knows
                     new_children.extend(self.current_children)
                     print("Appending at the end of the stack as slot position not specified.")
                 endtag_node.children = new_children
                 self.current_children = []
+                
             if len(self.stack) > 0:
                 parent_node = self.stack[-1]      #this is last item/"top element" of stack
                 if parent_node.original_name != parent_node.tag:
