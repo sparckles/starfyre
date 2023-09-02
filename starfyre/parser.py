@@ -163,28 +163,29 @@ class ComponentParser(HTMLParser):
         self.current_depth -= 1
 
         if endtag_node.tag != "style" and endtag_node.tag != "script":
-            
-            if endtag_node.original_name != endtag_node.tag:
-                #We need to check if the endtag_node is a custom tag
-                # this is happening when we reach at an endtag
-                # and the endtag has been stored. we store the resolved tag in the stack
-                # so we need to check if the tag is a custom tag
-
-                new_children = []
-                is_slot_used = False
-                for child_component in endtag_node.children:
-                    if child_component.is_slot_component:   #We check each child in the entag_node list for the slot components 
-                        new_children.extend(self.current_children)
-                        is_slot_used = True
-                    else:
-                        new_children.append(child_component)
-
-                if not is_slot_used and len(self.current_children) > 0:
-                    #If there arent slot tag on the template.fyre and
-                    # the current_children is not empty, means that the user forget 
-                    # to add the slot tag, so we add the content to the end and let the user knows
+            # basically finding and replacing the slot with
+            # the actual content
+            new_children = []
+            is_slot_used = False
+            for child_component in endtag_node.children:
+                if child_component.is_slot_component:   #We check each child in the entag_node list for the slot components 
                     new_children.extend(self.current_children)
-                    print("Appending at the end of the stack as slot position not specified.")
+                    is_slot_used = True
+                else:
+                    new_children.append(child_component)
+
+            if not is_slot_used and len(self.current_children) > 0:
+                #If there arent slot tag on the template.fyre and
+                # the current_children is not empty, means that the user forget 
+                # to add the slot tag, so we add the content to the end and let the user knows
+                new_children.extend(self.current_children)
+                print("Appending at the end of the stack as slot position not specified.")
+
+            if endtag_node.original_name != endtag_node.tag:
+                # if the tag is not found in the generic tags but found in custom components
+                # we need to replace the tag with the actual component
+                # and add the children to the component
+                # @suelen can you come up with a better explanation for this?
                 endtag_node.children = new_children
                 self.current_children = []
                 
