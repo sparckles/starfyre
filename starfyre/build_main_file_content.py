@@ -58,9 +58,7 @@ def generate_pages(generated_routes, path):
                 component = getattr(module, f'rendered_{{component_key}}')
             result = str(component)
         except ModuleNotFoundError:
-            print(f"Error: Could not import module '{{module_name}}'.")
-            # throw an error stating that we could not resolve an import
-            raise ImportError('Please resolve your import statements')
+            raise ImportError(f"Error: Unable to import the module '{{module_name}}'. Please address your import statements.")
             
 
         # write to component file
@@ -75,4 +73,3 @@ def generate_pages(generated_routes, path):
 if __name__ == '__main__':
     generate_pages(generated_routes={user_routes}, path="{path}")
     """
-
