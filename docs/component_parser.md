@@ -6,11 +6,6 @@ This document provides an overview of the `ComponentParser` in Starfyre. This cr
 ### Feature Overview
 The `ComponentParser` is responsible for parsing `PyML` structures and ensuring that they adhere to specified rules. It plays a significant role in validating tags, their attributes, and their order within the component.
 
-## Exception Handling
-
-### UnknownTagError
-As part of this improvement, an `UnknownTagError` exception class has been introduced. This exception is raised when an unknown tag is encountered during parsing. It helps identify which component had the unknown tag, making debugging and troubleshooting easier.
-
 ### Implementation Details
 The `ComponentParser` in Starfyre is implemented as a class inheriting the `HTMLParser`. Here's an overview of its functionality:
 ```python

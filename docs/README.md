@@ -20,6 +20,8 @@ Please note that Starfyre is still very naive and may be buggy, as it was develo
 
 **[File-Based Router](file_based_router.md)**: Explore the file-based routing feature and use it.
 
+**[Exceptions](exceptions.md)**: Explore all possible errors that might occur while developing with Starfyre
+
 
 ## 💥 What's new?! 
 ### 🔥 Command Line Interface (CLI) Improvement
