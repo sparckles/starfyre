@@ -307,7 +307,7 @@ class ComponentParser(HTMLParser):
                 # if the tag is not found in the generic tags but found in custom components
                 # we need to replace the tag with the actual component
                 # and add the children to the component
-                # @suelen can you come up with a better explanation for this?
+                # @suelen can you come up with a better explanation for this?                
                 endtag_node.children = new_children
                 self.current_children = []
 
@@ -439,7 +439,13 @@ class ComponentParser(HTMLParser):
             )
         )
 
-        # We need to check if the wrapped component should go to the custom list aka self.current_children or to parent_node children list
+        # We need to check if the wrapped text component should go to the "self.current_children"
+        # or to parent_node children list.
+        # If the text node is child of a custom tag e.g <parent></parent>,
+        # that text node should go to self.current_children list, "what will be the replacement for the slot".
+        # If we don't check that, the text node will be added straight to the parent_node.children
+        # and consequently placed in the wrong order on the final HTML.
+
         if parent_node.original_name != parent_node.tag:
             self.current_children.append(wrapper_div_component)
         else:

@@ -12,21 +12,21 @@ def ssr_request():
     return "No response"
 
 <pyml>
-    <span>    
-      <div>      
-        <h2> This is just a test </h2>                 
+    <span>
+      <div>
+        <h2> This is just a test </h2>
       </div>
-      <b>      
+      <b>
         {use_parent_signal()}
-      </b>    
+      </b>
       <slot></slot>
       <ul>
-        <li>a</li>        
+        <li>a</li>
         <li>b</li>
-        <li>c</li>        
+        <li>c</li>
       </ul>
-      <div> 
-        This won't be re-rendered        
-      </div> 
+      <div>
+        This won't be re-rendered
+      </div>
     </span>
 </pyml>
