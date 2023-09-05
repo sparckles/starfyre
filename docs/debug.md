@@ -65,5 +65,5 @@ This document is intended for developers who want to setup a debugger for Starfy
     - Click on `Run` -> `Run Without Debugging` "or press `Ctrl + F5`" - to check that the output has no errors
 
 8. To debugg it, In VSCode menu:
-    - Add break point on the lines you want to debbug
+    - Add break point on the lines you want to debug
     - Click on `Run` -> `Start Debugging` "or press `F5`"
