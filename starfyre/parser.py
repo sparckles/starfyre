@@ -285,7 +285,9 @@ class ComponentParser(HTMLParser):
             # the actual content
             new_children = []
             is_slot_used = False
-            for child_component in endtag_node.children:
+
+            # TODO: this linear search of children is the reason of why neasted slot is not working
+            for child_component in endtag_node.children: 
                 if (
                     child_component.is_slot_component
                 ):  # We check each child in the entag_node list for the slot components
