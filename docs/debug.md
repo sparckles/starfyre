@@ -2,7 +2,7 @@
 
 ### Introduction
 
-This document is intended for developers who want to setup a debugger for this project in VS Code.
+This document is intended for developers who want to setup a debugger for Starfyre in VS Code.
 
 ### ⚙️ Follow The Steps:
 
