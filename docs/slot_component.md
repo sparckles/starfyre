@@ -1,7 +1,7 @@
 # <SLOT> Component Implementation
 
 ### Introduction
-This document provides an overview of component re-usage thought special `<slot>`.  
+This document provides an overview of component re-usage thought special tag `<slot>`.  
 
 ### Feature Description
 This feature allows Starfyre developers to redefine parts of a Component for their application using a special tag `<slot>`. It provides a better design and flexibility to the app.
@@ -11,44 +11,63 @@ This feature allows Starfyre developers to redefine parts of a Component for the
 ### Component Definition
 Every Component in Starfyre is defined in a separate `.fyre file`. It allows developers to specify the position on the pyml source code to insert a custom content when using a defined component in another `.fyre template` (as part of a different page/component.)
 To mark such placeholder, `<slot></slot> tag` should be inserted into the component definition.
-
-### Component Usage
-When there are a `<user_component>` inside another `.fyre template`, everything between open and closed tags is considered it’s “child content”, for example:
+Example of a component definition:
 
 ```python
-<user_component>
-    <div>HTML child content</div>
-    Text child content
-</user_component>
+user_component.fyre
+
+<pyml>
+  <div>
+    <slot></slot>
+    Hello    
+    <p>World</p>
+  </div>
+</pyml>
 ```
-When the result HTML for the Application is rendered, this “child content” will be inserted instead of the `<slot></slot> tag` in the same position as it was defined.
+
+### Component Usage
+When there are a `<user_component>` inside another `.fyre template`, everything between open and close tags `<user_component></user_component>` are considered it’s “children content”, for example:
+
+```python
+__init__.fyre
+
+from .user_component import user_component
+
+<pyml>
+  <user_component>
+      <div>I will replace slot</div>
+      I will replace slot too
+  </user_component>
+<pyml>
+```
+When the result HTML for the Application is rendered, this “children content” will be inserted instead of the `<slot></slot> tag` in the same position as it was defined.
 
 Here is a HTML file result:
 
 ```python
+index.html
 
 <script src='store.js'></script><style>
 
-
 </style><div id='root'>
-<div id='3cbf3ee9-52ae-448d-9b71-735797434cff'  >
-<div id='f0a8cc67-4530-476e-bb2c-30126b54c4d7'  >
-Before the slot
-</div>
-
-<div id='ea417e22-c456-420c-8ddc-9dc47ac033c9'  >
-<div id='2d392f01-ac23-4067-9cb3-53bc82c70d9e'  >
-HTML child content
+<div id='74ac46f6-0816-43e1-91c8-5496293a8e72'  >
+<div id='5194ec83-cb78-4162-874d-35a039f59a01'  >
+<div id='b0c0e539-1d0f-41ad-84b1-445d9d9aa7b3'  >
+I will replace slot
 </div>
 </div>
 
-<div id='c405ad08-1a97-4b79-935c-fa0fdeae950c'  >
-Text child content
+<div id='d16eb6a2-0df3-4278-a9cb-39c2c253ffe0'  >
+I will replace slot too
 </div>
 
-<p id='a3209a50-3157-4605-ae15-b218a52db41c'  >
-<div id='65041c6d-6106-4b6e-aecd-9d306397ba6e'  >
-After the slot
+<div id='60b7c7cb-32ad-4898-9dd0-9b7e3694034f'  >
+Hello
+</div>
+
+<p id='0f4ab321-ef7c-4290-8765-50e8016c6333'  >
+<div id='8c145b6c-25c7-439d-83d0-c907e0bb4c20'  >
+World
 </div>
 </p>
 </div>
@@ -56,35 +75,46 @@ After the slot
 
 ```
 
-In case of there are no `<slot></slot> tag` defined, the “child content” will be appended to the end of the Component's definition, (it will be the last thing before closing the root tag) and a warning message will be printed to the program’s output.
+In case of there are no `<slot></slot> tag` specified on the component definition, the “child content” will be appended to the end of the Component's definition, (it will be the last content before closing the root tag) and a warning message will be printed to the program’s output.
 
 See example:
+
+```python
+user_component.fyre "there are no <slot> especified here"
+
+<pyml>
+  <div>
+    Hello    
+    <p>World</p>
+  </div>
+</pyml>
+```
+This is the output with custom component content being added to the end on the html file.
 
 ```python
 
 <script src='store.js'></script><style>
 
-
 </style><div id='root'>
-<div id='92616af9-06ac-4337-afb5-c12bacb24b59'  >
-<div id='a9477267-5c16-4ee4-be5b-ae7babc32926'  >
+<div id='91e9507b-0892-419a-9fee-d603c9ed743f'  >
+<div id='af88c8fc-4fe9-433a-8ef6-460bc08240f2'  >
 Hello
 </div>
 
-<p id='c8950fce-dc49-4606-907d-7f413b9bf939'  >
-<div id='f1d2236e-74c2-4677-9096-a95989ee6b03'  >
+<p id='fcebb4f2-f5dd-4066-b4f2-6631fee46c93'  >
+<div id='996b939b-1e37-4832-918d-54f8556f9255'  >
 World
 </div>
 </p>
 
-<div id='bb79b3ea-e31a-4352-8ed9-e6591b385d28'  >
-<div id='4e2aa740-acd8-4954-a73b-07e92a289cbf'  >
-HTML child content
+<div id='0d606409-e5ce-406b-adb4-a76ad4505e56'  >
+<div id='b66def9a-861f-422c-a633-b5545dd987a4'  >
+I will replace slot
 </div>
 </div>
 
-<div id='f03ce8dc-5358-4c9a-a6ce-bc3b4ed8ca40'  >
-Text child content
+<div id='eab718c7-d1bf-4756-9274-d7a78148065f'  >
+I will replace slot too
 </div>
 </div>
 </div><script>
@@ -93,26 +123,8 @@ Text child content
 
 If a Component has no child content, no warning message is generated.
 
-"put an exemplo here"
-
-Usage Examples
-```python
-<pyml>
-    <span>  
-       <h1> THIS IS MY FIRST HTML NODE </h1>
-        {ssr_request()}
-       <slot></slot>
-        <p> THIS IS MY SECOND HTML NODE </p>        
-        <div>
-        This won't be re-rendered
-      </div>      
-    </span>
-</pyml>
-```
-
-
-Known Limitations
+### Known Limitations
 `<slot></slot> tag` should be a direct child of root element in the Component’s definition.
 
-Conclusion
-This feature allows a developer to re-use custom Starfyre Components, providing runtime flexibility. More features, such as flexible positioning, default values will be added in next releases.
+### Conclusion
+This feature allows the developer to re-use custom Starfyre Components, providing runtime flexibility. More features, such as flexible positioning, default values will be added in next releases.
