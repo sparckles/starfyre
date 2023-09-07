@@ -376,7 +376,7 @@ class ComponentParser(HTMLParser):
                         match, self.local_variables, self.global_variables
                     )
                     if isinstance(eval_result, Component):
-                        # this is a parent, right?
+# TODO: replace with one of the children stack
                         self.children.append(
                             eval_result
                         )  # TODO: Check with sanskar - this is a bug, we don't have self.children
