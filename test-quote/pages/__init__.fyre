@@ -1,0 +1,9 @@
+from .parent import parent
+
+<pyml>
+  <parent hello='world'>
+      This is the slot
+  </parent>
+</pyml>
+
+
