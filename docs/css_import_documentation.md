@@ -11,7 +11,7 @@ If relative path is used, it must start from `.` and the css file should be plac
 
 
 ### Usage Example
-An example is located in the test-project `test-application` folder under Starfyre’s [repo](https://github.com/sparckles/starfyre/tree/main/test-application)
+An example is located in the test-project `test_application` folder under Starfyre’s [repo](https://github.com/sparckles/starfyre/tree/main/test_application)
 
 ```python
 import "./css_file_test.css"
