@@ -66,107 +66,14 @@ class ComponentParser(HTMLParser):
         self.current_children = []
 
     generic_tags = {
-        "html",
-        "div",
-        "p",
-        "b",
-        "span",
-        "i",
-        "button",
-        "head",
-        "link",
-        "meta",
-        "style",
-        "title",
-        "body",
-        "section",
-        "nav",
-        "main",
-        "hgroup",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "header",
-        "footer",
-        "aside",
-        "article",
-        "address",
-        "blockquote",
-        "dd",
-        "dl",
-        "dt",
-        "figcaption",
-        "figure",
-        "hr",
-        "li",
-        "ol",
-        "ul",
-        "menu",
-        "pre",
-        "a",
-        "abbr",
-        "bdi",
-        "bdo",
-        "br",
-        "cite",
-        "code",
-        "data",
-        "em",
-        "mark",
-        "q",
-        "s",
-        "small",
-        "strong",
-        "sub",
-        "sup",
-        "time",
-        "u",
-        "area",
-        "audio",
-        "img",
-        "map",
-        "track",
-        "video",
-        "embed",
-        "iframe",
-        "picture",
-        "object",
-        "portal",
-        "svg",
-        "math",
-        "canvas",
-        "script",
-        "noscript",
-        "caption",
-        "col",
-        "colgroup",
-        "table",
-        "tbody",
-        "td",
-        "tfoot",
-        "th",
-        "thead",
-        "tr",
-        "datalist",
-        "fieldlist",
-        "form",
-        "input",
-        "label",
-        "legend",
-        "meter",
-        "optgroup",
-        "option",
-        "output",
-        "progress",
-        "select",
-        "textarea",
-        "details",
-        "dialog",
-        "summary",
-        "slot",
+        "html", "div", "p", "b", "span", "i", "button", "head", "link", "meta", "style", "title", "body", "section", "nav",
+        "main", "hgroup", "h1", "h2", "h3", "h4", "h5", "h6", "header", "footer", "aside", "article", "address", "blockquote",
+        "dd", "dl", "dt", "figcaption", "figure", "hr", "li", "ol", "ul", "menu", "pre", "a", "abbr", "bdi", "bdo", "br",
+        "cite", "code", "data", "em", "mark", "q", "s", "small", "strong", "sub", "sup", "time", "u", "area", "audio", "img",
+        "map", "track", "video", "embed", "iframe", "picture", "object", "portal", "svg", "math", "canvas", "script",
+        "noscript", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "datalist",
+        "fieldlist", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select",
+        "textarea", "details", "dialog", "summary", "slot"
     }
 
     def extract_components(self, local_functions):
@@ -287,7 +194,7 @@ class ComponentParser(HTMLParser):
             is_slot_used = False
 
             # TODO: this linear search of children is the reason of why neasted slot is not working
-            for child_component in endtag_node.children: 
+            for child_component in endtag_node.children:
                 if (
                     child_component.is_slot_component
                 ):  # We check each child in the entag_node list for the slot components
@@ -309,7 +216,7 @@ class ComponentParser(HTMLParser):
                 # if the tag is not found in the generic tags but found in custom components
                 # we need to replace the tag with the actual component
                 # and add the children to the component
-                # @suelen can you come up with a better explanation for this?                
+                # @suelen can you come up with a better explanation for this?
                 endtag_node.children = new_children
                 self.current_children = []
 
@@ -376,7 +283,7 @@ class ComponentParser(HTMLParser):
                         match, self.local_variables, self.global_variables
                     )
                     if isinstance(eval_result, Component):
-# TODO: replace with one of the children stack
+                        # TODO: replace with one of the children stack
                         self.children.append(
                             eval_result
                         )  # TODO: Check with sanskar - this is a bug, we don't have self.children
