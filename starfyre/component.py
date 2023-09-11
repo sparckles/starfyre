@@ -17,7 +17,9 @@ class Component:
     html: str = ""
     css: str = ""
     js: str = ""
+    original_name: str = ""
     # on any property change, rebuild the tree
+   
 
     def render(self):
         pass
@@ -25,6 +27,10 @@ class Component:
     @property
     def is_text_component(self):
         return self.tag == "TEXT_NODE"
+
+    @property
+    def is_slot_component(self):
+        return self.tag == "slot"
     
     def __repr__(self):
         return f"<{self.tag}> {self.data} {self.children} </{self.tag}>"

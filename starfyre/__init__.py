@@ -23,7 +23,7 @@ def create_component(pyml="", css="", js="", client_side_python="", component_na
     pyml_root = parser.get_root()
 
     if pyml_root is None:
-        return Component("div", {}, [], {}, {}, uuid="store", js=js)
+        return Component("div", {}, [], {}, {}, uuid="store", js=js, original_name="div")
 
     return pyml_root
 

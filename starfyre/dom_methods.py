@@ -29,7 +29,7 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     css = ""
     js = "\n"
     if parentElement is None:
-        parentElement = Component("div", {"id": "root"}, [], {}, {}, uuid=uuid4())
+        parentElement = Component("div", {"id": "root"}, [], {}, {}, uuid=uuid4(), original_name="div")
         component.parentComponent = parentElement
 
     tag = component.tag
@@ -91,9 +91,12 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     if not component.is_text_component:
         html += f"{prop_string} >"
 
+   
+
     # Render children
     children = component.children
     # childElements.forEach(childElement => render(childElement, dom));
+
     for childElement in children:
         childElement.parentElement = component
         new_html, new_css, new_js = render_helper(childElement)
@@ -104,6 +107,7 @@ def render_helper(component: Component) -> tuple[str, str, str]:
     html += f"</{tag}>\n"
 
     component.html = html
+
     return html, css, js
 
 

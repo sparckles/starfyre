@@ -1,0 +1,8 @@
+<pyml>
+  <div>
+    <slot></slot>
+    <p>After the slot</p>
+  </div>
+</pyml>
+
+
