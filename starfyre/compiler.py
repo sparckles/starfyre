@@ -23,7 +23,7 @@ def get_fyre_files(project_dir):
 
 def resolve_css_import(css_file_name, working_directory):
     """Read a css file and save it's content to a list"""
-    css_content = [] 
+    css_content = []
 
     if css_file_name.startswith("."):
         css_file_name = css_file_name.replace(".", str(working_directory), 1)
@@ -32,10 +32,28 @@ def resolve_css_import(css_file_name, working_directory):
         for line in import_file.readlines():
             css_content.append(line)
 
-    return css_content           
+    return css_content
 
 
-def parse(fyre_file_name): 
+def check_import_line(line, project_dir):
+    
+    """
+    Check if the given line starts with an fyre import statement from the specified project directory.
+
+    Args:
+        line (str): The line to check.
+        project_dir (str): The project directory name.
+
+    Returns:
+        bool: True if the line starts with the specified import statement, False otherwise.
+    """
+    project_dir_name = str(project_dir).split("/")[-1]
+    pattern = rf'^from\s+{project_dir_name}\.' # checks is we have a line like 'from {project_dir}.'
+    match = re.match(pattern, line)
+    return match is not None
+
+
+def parse(fyre_file_name, project_dir):
     def remove_empty_lines_from_end(lines):
         while lines and lines[-1] == "\n":
             lines.pop()
@@ -56,10 +74,28 @@ def parse(fyre_file_name):
 
     # regex pattern to match if a line is a css import, e.g. import "style.css"
     css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
-    
+
     with open(fyre_file_name, "r") as fyre_file:
         for line in fyre_file.readlines():
             css_import_match = css_import_pattern.search(line)
+
+            # check for fyre import styles
+            has_fyre_import = check_import_line(line=line, project_dir=project_dir)
+
+            # If the line is a fyre import statement, modify it to ensure proper resolution
+            if has_fyre_import:
+                # Split the line into module part and imported component
+                module_part, imported_component = line.split(" import ")
+
+                # Extract the file name to import from the module part
+                file_to_import = module_part.split(".")[-1]
+
+                # Get the name of the project directory
+                project_dir_name = str(project_dir).split("/")[-1]
+
+                # Modify the line to use the resolved import path
+                line = f'from test_application.build.{file_to_import} import {imported_component}'
+
             if line.startswith("<style"):
                 current_line_type = "css"
                 continue
@@ -73,8 +109,8 @@ def parse(fyre_file_name):
                 current_line_type = "client"  # this is a hack
                 continue
             elif css_import_match:
-                css_import = css_import_match.group(1)                
-                project_dir = Path(os.path.dirname(fyre_file_name))                                
+                css_import = css_import_match.group(1)
+                project_dir = Path(os.path.dirname(fyre_file_name))
                 css_content = resolve_css_import(css_import, project_dir)
                 css_lines += css_content
                 continue
@@ -191,11 +227,11 @@ def transpile_to_python(
 
     final_python_lines.append(main_content)
 
-    file_name = output_file_name.split("/")[-1]                 #getting the file itself "without the path"
-    output_file_name = project_dir / "build" / "pages" /file_name
+    output_file_name = project_dir / "build" / output_file_name
 
     with open(output_file_name, "w") as output_file:
-        output_file.write("".join(final_python_lines))          #result of the transpiled
+        # result of the transpiled
+        output_file.write("".join(final_python_lines))
 
 
 def compile(entry_file_name):
@@ -213,7 +249,7 @@ def compile(entry_file_name):
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)
 
-    build_dir = project_dir / "build"/ "pages" # create build pages dir 
+    build_dir = project_dir / "build" / "pages"  # create build pages dir
     build_dir.mkdir(exist_ok=True)
 
     fyre_files = get_fyre_files(project_dir)
@@ -225,7 +261,7 @@ def compile(entry_file_name):
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
         python_lines, css_lines, pyml_lines, js_lines, client_side_python = parse(
-            project_dir / fyre_file
+            fyre_file_name=project_dir / fyre_file, project_dir=project_dir
         )
         transpile_to_python(
             python_lines,

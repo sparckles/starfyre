@@ -18,7 +18,7 @@ class FileRouter:
         Parameters:
             pages_directory (str): The path to the directory containing the pages files.
         Example:
-            pages_directory = "test-application/pages"
+            pages_directory = "test_application/pages"
             file_router = FileRouter(pages_directory)
             Initialize the FileRouter with the specified pages directory.
 
