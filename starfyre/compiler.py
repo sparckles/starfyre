@@ -1,8 +1,8 @@
-from starfyre.exceptions import InitFyreMissingError, IndexFileConflictError
-
 import os
 import re
 from pathlib import Path
+
+from starfyre.exceptions import IndexFileConflictError, InitFyreMissingError
 
 
 def get_fyre_files(project_dir):
@@ -11,24 +11,35 @@ def get_fyre_files(project_dir):
         if entry.endswith(".fyre"):
             fyre_files.append(entry)
         # check inside the 'pages' folder
-        if entry == 'pages':
+        if entry == "pages":
             for file_ in os.listdir(project_dir / "pages"):
                 if file_.endswith(".fyre"):
                     # check for the invalid 'index.fyre'
-                    if file_.lower() == 'index.fyre':
+                    if file_.lower() == "index.fyre":
                         raise IndexFileConflictError()
-                    fyre_files.append(f'pages/{file_}')
+                    fyre_files.append(f"pages/{file_}")
     return fyre_files
 
 
 def resolve_css_import(css_file_name, working_directory):
     """Read a css file and save it's content to a list"""
+    print("This is the working directory", working_directory, css_file_name)
     css_content = []
+    # we should be checking if the css files
+    # are http/s
+    # or have some path
 
     if css_file_name.startswith("."):
-        css_file_name = css_file_name.replace(".", str(working_directory), 1)
+        # extract the path like ./ or ../ or ../../
+        path = Path(css_file_name)
+        import_path = working_directory / path
+        import_path = import_path.resolve()
+    elif css_file_name.startswith("/"):
+        import_path = css_file_name
+    else:
+        raise Exception("Unable to understand the import path")
 
-    with open(css_file_name, "r") as import_file:
+    with open(import_path, "r") as import_file:
         for line in import_file.readlines():
             css_content.append(line)
 
@@ -36,7 +47,6 @@ def resolve_css_import(css_file_name, working_directory):
 
 
 def check_import_line(line, project_dir):
-    
     """
     Check if the given line starts with an fyre import statement from the specified project directory.
 
@@ -48,7 +58,7 @@ def check_import_line(line, project_dir):
         bool: True if the line starts with the specified import statement, False otherwise.
     """
     project_dir_name = str(project_dir).split("/")[-1]
-    pattern = rf'^from\s+{project_dir_name}\.' # checks is we have a line like 'from {project_dir}.'
+    pattern = rf"^from\s+{project_dir_name}\."  # checks is we have a line like 'from {project_dir}.'
     match = re.match(pattern, line)
     return match is not None
 
@@ -91,10 +101,10 @@ def parse(fyre_file_name, project_dir):
                 file_to_import = module_part.split(".")[-1]
 
                 # Get the name of the project directory
-                project_dir_name = str(project_dir).split("/")[-1]
+                str(project_dir).split("/")[-1]
 
                 # Modify the line to use the resolved import path
-                line = f'from test_application.build.{file_to_import} import {imported_component}'
+                line = f"from test_application.build.{file_to_import} import {imported_component}"
 
             if line.startswith("<style"):
                 current_line_type = "css"
@@ -241,7 +251,7 @@ def compile(entry_file_name):
     - finding all fyre files in the project
     - transpiling each fyre file into a python file.
         - "transpiling" is used a bit loosely here. What we're really doing is slicing up the fyre file into different components and then inserting them into a python file.
-        - We have two functions important for us in python files `create_component` and `render_root`. 
+        - We have two functions important for us in python files `create_component` and `render_root`.
         - The `init.py` file will have a component that will render root and the rest of the files will have components that will be rendered inside the root component.
     """
     project_dir = Path(os.path.dirname(entry_file_name))
@@ -255,7 +265,7 @@ def compile(entry_file_name):
     fyre_files = get_fyre_files(project_dir)
 
     # check if pages/__init__.fyre exist else stop compilation
-    if 'pages/__init__.fyre' not in fyre_files:
+    if "pages/__init__.fyre" not in fyre_files:
         raise InitFyreMissingError()
 
     for fyre_file in fyre_files:

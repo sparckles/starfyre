@@ -2,10 +2,8 @@ import re
 from functools import partial
 from uuid import uuid4
 
-from .transpiler import transpile_to_js
-
-
 from .component import Component
+from .transpiler import transpile_to_js
 
 
 def assign_event_listeners(event_listener_name, event_listener):
@@ -16,20 +14,30 @@ def assign_event_listeners(event_listener_name, event_listener):
     return html, js_event_listener
 
 
+# Add event listeners
+def is_listener(name):
+    return name.startswith("on")
+
+
+def is_attribute(name):
+    return not is_listener(name) and name != "children"
+
+
 def render_helper(component: Component) -> tuple[str, str, str]:
-    # Add event listeners
-    def is_listener(name):
-        return name.startswith("on")
-
-    def is_attribute(name):
-        return not is_listener(name) and name != "children"
-
     parentElement = component.parentComponent
     html = "\n"
     css = ""
     js = "\n"
     if parentElement is None:
-        parentElement = Component("div", {"id": "root"}, [], {}, {}, uuid=uuid4(), original_name="div")
+        parentElement = Component(
+            tag="div",
+            props={"id": "root"},
+            children=[],
+            event_listeners={},
+            state={},
+            uuid=uuid4(),
+            original_name="div",
+        )
         component.parentComponent = parentElement
 
     tag = component.tag
@@ -90,8 +98,6 @@ def render_helper(component: Component) -> tuple[str, str, str]:
 
     if not component.is_text_component:
         html += f"{prop_string} >"
-
-   
 
     # Render children
     children = component.children

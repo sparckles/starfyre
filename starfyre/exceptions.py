@@ -19,14 +19,18 @@ class UnknownTagError(Exception):
     Attributes:
          message (str): A description of the error.
     """
+
     pass
+
 
 class InitFyreMissingError(Exception):
     """
     Exception raised when the '__init__.fyre' file is missing.
     """
+
     def __init__(self, message="Error: '__init__.fyre' file is missing."):
         super().__init__(message)
+
 
 class IndexFileConflictError(Exception):
     """Exception raised when there is an 'index.fyre' file in the pages folder.
@@ -43,7 +47,8 @@ class IndexFileConflictError(Exception):
         message (str): A description of the error.
     """
 
-    def __init__(self, message="'index.fyre' is not allowed as it conflicts with 'index.html' generation. Please rename the file to avoid this conflict."):
+    def __init__(
+        self,
+        message="'index.fyre' is not allowed as it conflicts with 'index.html' generation. Please rename the file to avoid this conflict.",
+    ):
         super().__init__(message)
-
-

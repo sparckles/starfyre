@@ -1,5 +1,5 @@
 import requests
-import "./styles/css_file_test.css"
+import "./css_file_test.css"
 
 from .store import store
 
@@ -13,20 +13,27 @@ def ssr_request():
 
 <pyml>
     <span>
+    
       <div>
-        <h2> This is just a test </h2>
+        <h1> THIS IS MY FIRST HTML NODE </h1>
+        {ssr_request()} 
+        <p> THIS IS MY SECOND HTML NODE </p>
+        {ssr_request()}         
       </div>
-      <b>
+      <b>      
         {use_parent_signal()}
       </b>
-      <slot></slot>
+      <b>
+        {get_parent_signal()}
+      </b>
       <ul>
         <li>a</li>
         <li>b</li>
         <li>c</li>
       </ul>
-      <div>
+      <div> 
         This won't be re-rendered
       </div>
+      
     </span>
 </pyml>
