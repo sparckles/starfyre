@@ -1,11 +1,11 @@
 import inspect
-from starfyre.dom_methods import render, render_root
-from .compiler import compile
 
 from starfyre.component import Component
-from .transpiler import transpile
+from starfyre.dom_methods import render, render_root
 
+from .compiler import compile
 from .parser import ComponentParser
+from .transpiler import transpile
 
 
 def create_component(pyml="", css="", js="", client_side_python="", component_name=""):
@@ -23,7 +23,16 @@ def create_component(pyml="", css="", js="", client_side_python="", component_na
     pyml_root = parser.get_root()
 
     if pyml_root is None:
-        return Component("div", {}, [], {}, {}, uuid="store", js=js, original_name="div")
+        return Component(
+            tag="div",
+            props={},
+            children=[],
+            event_listeners={},
+            state={},
+            uuid="store",
+            js=js,
+            original_name="div",
+        )
 
     return pyml_root
 

@@ -1,10 +1,7 @@
-from starfyre import create_component, render_root
-from starfyre.exceptions import IndexFileConflictError
-
 import os
-import sys
 from pathlib import Path
-import importlib
+
+from starfyre.exceptions import IndexFileConflictError
 
 
 class FileRouter:
@@ -13,7 +10,7 @@ class FileRouter:
         A router that handles file-based routing.
 
         This router parses the specified pages directory to automatically generate routes based on
-        the file names. Each file in the pages directory is treated as a separate route. 
+        the file names. Each file in the pages directory is treated as a separate route.
 
         Parameters:
             pages_directory (str): The path to the directory containing the pages files.
@@ -54,10 +51,10 @@ class FileRouter:
         for file_name in os.listdir(self.pages_directory):
             if file_name.endswith(".fyre"):
                 route_name = file_name.replace(".fyre", "").lower()
-                if route_name == '__init__':
-                    routes.insert(0, 'app')
-                    continue # do no add '__init__' as a route found rather use 'app'
-                if route_name.lower() == 'index':
+                if route_name == "__init__":
+                    routes.insert(0, "app")
+                    continue  # do no add '__init__' as a route found rather use 'app'
+                if route_name.lower() == "index":
                     raise IndexFileConflictError()
                 routes.append(route_name)
 

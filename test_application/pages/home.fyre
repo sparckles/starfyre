@@ -1,8 +1,8 @@
-import "./css_file_test.css"
+import "../styles/css_file_test.css"
 
 def mocked_request():
   return "fetched on the server"
   
 <pyml>
-    <p class="import_test">Hello, World!</p>
+  <p class="import_test">Hello, World!</p>
 </pyml>

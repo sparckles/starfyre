@@ -1,14 +1,14 @@
-from starfyre import compile
-from pathlib import Path
-from starfyre.file_router import FileRouter
-from starfyre.build_main_file_content import get_build_main_file_content
-
-import sys
-import os
+import importlib.resources as pkg_resources
 import shutil
 import subprocess
+import sys
+from pathlib import Path
+
 import click
-import importlib.resources as pkg_resources
+
+from starfyre import compile
+from starfyre.build_main_file_content import get_build_main_file_content
+from starfyre.file_router import FileRouter
 
 
 def write_js_file(path):
@@ -38,7 +38,9 @@ def prepare_html_and_main(generated_routes, path):
 
     main_file_path = path + "/build/__main__.py"
     init_file_path = path + "/build/__init__.py"
-    main_file_content = get_build_main_file_content(user_routes=generated_routes, path=path)
+    main_file_content = get_build_main_file_content(
+        user_routes=generated_routes, path=path
+    )
 
     # create empty __init__.py file
     Path(init_file_path).touch()
@@ -61,12 +63,13 @@ def main(path, build):
     """
     if not path:
         click.echo(
-            "Error: Please provide a valid path using the --path flag.\nUse --help for more details")
+            "Error: Please provide a valid path using the --path flag.\nUse --help for more details"
+        )
         return
 
     # Convert path to absolute path
     absolute_path = Path(path).resolve()
-    print(f'Absolute path of the project = {absolute_path}')
+    print(f"Absolute path of the project = {absolute_path}")
 
     if build:
         # Compile and build project
@@ -93,7 +96,6 @@ def main(path, build):
         )
 
         print(result.stdout.decode("utf-8"))
-
 
 
 if __name__ == "__main__":
