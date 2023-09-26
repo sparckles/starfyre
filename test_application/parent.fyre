@@ -11,7 +11,7 @@ def ssr_request():
   else:
     return "No response"
 
-<pyml>
+<pyxide>
     <span>
       <div>
         <h2> This is just a test </h2>
@@ -29,4 +29,4 @@ def ssr_request():
         This won't be re-rendered
       </div>
     </span>
-</pyml>
+</pyxide>

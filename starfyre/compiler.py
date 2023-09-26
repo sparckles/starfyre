@@ -78,7 +78,7 @@ def parse(fyre_file_name, project_dir):
     current_line_type = "python"
     python_lines = []
     css_lines = []
-    pyml_lines = []
+    pyxide_lines = []
     js_lines = []
     client_side_python = []
 
@@ -109,8 +109,8 @@ def parse(fyre_file_name, project_dir):
             if line.startswith("<style"):
                 current_line_type = "css"
                 continue
-            elif line.startswith("<pyml"):
-                current_line_type = "pyml"
+            elif line.startswith("<pyxide"):
+                current_line_type = "pyxide"
                 continue
             elif line.startswith("<script"):
                 current_line_type = "js"
@@ -126,7 +126,7 @@ def parse(fyre_file_name, project_dir):
                 continue
             elif (
                 "</style>" in line
-                or "</pyml>" in line
+                or "</pyxide>" in line
                 or "</script>" in line
                 or "--" in line
             ):
@@ -137,8 +137,8 @@ def parse(fyre_file_name, project_dir):
                 python_lines.append(line)
             elif current_line_type == "css":
                 css_lines.append(line)
-            elif current_line_type == "pyml":
-                pyml_lines.append(line)
+            elif current_line_type == "pyxide":
+                pyxide_lines.append(line)
             elif current_line_type == "js":
                 js_lines.append(line)
             elif current_line_type == "client":
@@ -147,17 +147,17 @@ def parse(fyre_file_name, project_dir):
     return (
         remove_empty_lines_from_end(python_lines),
         remove_empty_lines_from_end(css_lines),
-        remove_empty_lines_from_end(pyml_lines),
+        remove_empty_lines_from_end(pyxide_lines),
         remove_empty_lines_from_end(js_lines),
         remove_empty_lines_from_end(client_side_python),
     )
 
 
 def python_transpiled_string(
-    pyml_lines, css_lines, js_lines, client_side_python, file_name
+    pyxide_lines, css_lines, js_lines, client_side_python, file_name
 ):
     file_name = file_name.replace(".py", "").split("/")[-1]
-    pyml_lines = "".join(pyml_lines)
+    pyxide_lines = "".join(pyxide_lines)
     css_lines = "".join(css_lines)
     js_lines = "".join(js_lines)
     client_side_python = "".join(client_side_python)
@@ -176,7 +176,7 @@ from starfyre import create_component, render_root
 def fx_{root_name}():
     # not nesting the code to preserve the frames
     component = create_component("""
-{pyml_lines}
+{pyxide_lines}
 """, css="""
 {css_lines}
 """, js="""
@@ -196,7 +196,7 @@ from starfyre import create_component, render_root
 
 def fx_{root_name}():
     component = create_component("""
-{pyml_lines}
+{pyxide_lines}
 """, css="""
 {css_lines}
 """, js="""
@@ -216,7 +216,7 @@ rendered_{root_name} = render_root({root_name})
 def transpile_to_python(
     python_lines,
     css_lines,
-    pyml_lines,
+    pyxide_lines,
     js_lines,
     client_side_python,
     output_file_name,
@@ -226,13 +226,13 @@ def transpile_to_python(
     Transpiles a fyre file into a python file.
 
     This function is responsible for:
-    - parsing the fyre file into python, css, pyml, js and client side python
+    - parsing the fyre file into python, css, pyxide, js and client side python
 
     """
     final_python_lines = ["".join(python_lines)]
 
     main_content = python_transpiled_string(
-        pyml_lines, css_lines, js_lines, client_side_python, output_file_name
+        pyxide_lines, css_lines, js_lines, client_side_python, output_file_name
     )
 
     final_python_lines.append(main_content)
@@ -270,13 +270,13 @@ def compile(entry_file_name):
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
-        python_lines, css_lines, pyml_lines, js_lines, client_side_python = parse(
+        python_lines, css_lines, pyxide_lines, js_lines, client_side_python = parse(
             fyre_file_name=project_dir / fyre_file, project_dir=project_dir
         )
         transpile_to_python(
             python_lines,
             css_lines,
-            pyml_lines,
+            pyxide_lines,
             js_lines,
             client_side_python,
             python_file_name,

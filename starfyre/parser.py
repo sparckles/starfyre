@@ -237,7 +237,7 @@ class ComponentParser(HTMLParser):
         # if the tag is not found in the generic tags and custom components
         if tag not in self.generic_tags and tag not in self.components:
             raise UnknownTagError(
-                f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.'
+                f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyxide code.'
             )
 
         if self.root_node is None:
@@ -274,7 +274,7 @@ class ComponentParser(HTMLParser):
         # if the tag is not found in the generic tags and custom components
         if tag not in self.generic_tags and tag not in self.components:
             raise UnknownTagError(
-                f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyml code.'
+                f'Unknown tag: "{tag}". Please review line {self.lineno} in your "{self.component_name}" component in the pyxide code.'
             )
 
         endtag_node = self.stack.pop()

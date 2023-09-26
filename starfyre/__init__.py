@@ -8,7 +8,7 @@ from .parser import ComponentParser
 from .transpiler import transpile
 
 
-def create_component(pyml="", css="", js="", client_side_python="", component_name=""):
+def create_component(pyxide="", css="", js="", client_side_python="", component_name=""):
     if client_side_python:
         new_js = transpile(client_side_python) + js
         js = new_js
@@ -17,12 +17,12 @@ def create_component(pyml="", css="", js="", client_side_python="", component_na
     global_variables = inspect.currentframe().f_back.f_back.f_globals.copy()
 
     parser = ComponentParser(local_variables, global_variables, css, js, component_name)
-    pyml = pyml.strip("\n").strip()
-    parser.feed(pyml)
+    pyxide = pyxide.strip("\n").strip()
+    parser.feed(pyxide)
     parser.close()
-    pyml_root = parser.get_root()
+    pyxide_root = parser.get_root()
 
-    if pyml_root is None:
+    if pyxide_root is None:
         return Component(
             tag="div",
             props={},
@@ -34,7 +34,7 @@ def create_component(pyml="", css="", js="", client_side_python="", component_na
             original_name="div",
         )
 
-    return pyml_root
+    return pyxide_root
 
 
 __all__ = [

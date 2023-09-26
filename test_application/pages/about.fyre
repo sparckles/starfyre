@@ -56,7 +56,7 @@ body {
 
 </style>
 
-<pyml>
+<pyxide>
     <body>
        <div class="gradient-background">
             <h1 class="title">starfyre</h1>
@@ -64,4 +64,4 @@ body {
         </div>
     </body>
 
-</pyml>
+</pyxide>
