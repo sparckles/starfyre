@@ -23,7 +23,7 @@ async def handle_on_click(e):
   }
 </style>
 
-<pyml>
+<pyxide>
   <store>
 
 <div>
@@ -41,7 +41,7 @@ async def handle_on_click(e):
     </parent>  
   </div>
   </store>
-</pyml>
+</pyxide>
 
 
 <script>

@@ -2,18 +2,18 @@ observers = {}; // uuid , list[observers]
 
 const domIdMap = {};
 
-function addDomIdToMap(domId, pyml) {
-  domIdMap[domId] = pyml;
+function addDomIdToMap(domId, pyxide) {
+  domIdMap[domId] = pyxide;
 }
 
-function getPymlFromDomId(domId) {
+function getPyxideFromDomId(domId) {
   return domIdMap[domId];
 }
 
 function render(domId) {
   const element = document.getElementById(domId);
-  const pyml = getPymlFromDomId(domId);
-  element.innerHTML = `${eval(pyml)}`;
+  const pyxide = getPyxideFromDomId(domId);
+  element.innerHTML = `${eval(pyxide)}`;
 }
 
 function create_signal(initial_state) {

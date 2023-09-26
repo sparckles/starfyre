@@ -48,16 +48,16 @@ V
 For each file, create a function named fx_<file_name>
 |
 V
-create_component function transforms pyml, css, js, and client_side_python into a Component or a Node
+create_component function transforms pyxide, css, js, and client_side_python into a Component or a Node
 |
 V
 client_side_python transpiles into js
 |
 V
-ComponentParser parses pyml, css, js, creating a Component or a Node, duplicating global and local variables
+ComponentParser parses pyxide, css, js, creating a Component or a Node, duplicating global and local variables
 |
 V
-ComponentParser parses pyml and constructs a tree out of html, returns a Component
+ComponentParser parses pyxide and constructs a tree out of html, returns a Component
 |
 V
 End
@@ -65,13 +65,13 @@ End
 
 The build directory hosts all the Python files born out of the conversion process.
 
-Each file features a function named `fx_<file_name>`, corresponding to the file's component name. The `fx_<file_name>` function invokes the `create_component` function (defined in `starfyre/__init__.py`). This function transforms the `pyml`, `css`, `js`, and `client_side_python` strings into a Component or a Node in our Tree.
+Each file features a function named `fx_<file_name>`, corresponding to the file's component name. The `fx_<file_name>` function invokes the `create_component` function (defined in `starfyre/__init__.py`). This function transforms the `pyxide`, `css`, `js`, and `client_side_python` strings into a Component or a Node in our Tree.
 
 Firstly, `client_side_python` undergoes transpilation into `js` (Refer to line 13 of `starfyre/__init__.py`).
 
-Secondly, the `ComponentParser` steps in, parsing the `pyml`, `css`, `js` strings and transforming them into a Component or a Node in our Tree. Additionally, it also takes care of duplicating the global and local variables of the Python file, which is crucial for copying the imports and the variables associated with the component.
+Secondly, the `ComponentParser` steps in, parsing the `pyxide`, `css`, `js` strings and transforming them into a Component or a Node in our Tree. Additionally, it also takes care of duplicating the global and local variables of the Python file, which is crucial for copying the imports and the variables associated with the component.
 
-The `ComponentParser` further parses the `pyml`, constructs a tree out of the provided `html`, and returns a `Component` (`starfyre/component.py`), the root of the tree.
+The `ComponentParser` further parses the `pyxide`, constructs a tree out of the provided `html`, and returns a `Component` (`starfyre/component.py`), the root of the tree.
 
 ## Insight into the Build Directory
 ```

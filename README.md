@@ -52,7 +52,7 @@ async def handle_on_click(e):
   }
 </style>
 
-<pyml>
+<pyxide>
   <store>
     <parent hello='world'>
         <span onclick={handle_on_click}>
@@ -60,7 +60,7 @@ async def handle_on_click(e):
         </span>
     </parent>
   </store>
-</pyml>
+</pyxide>
 
 
 <script>

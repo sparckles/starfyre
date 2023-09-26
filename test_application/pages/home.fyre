@@ -3,6 +3,6 @@ import "../styles/css_file_test.css"
 def mocked_request():
   return "fetched on the server"
   
-<pyml>
+<pyxide>
   <p class="import_test">Hello, World!</p>
-</pyml>
+</pyxide>
