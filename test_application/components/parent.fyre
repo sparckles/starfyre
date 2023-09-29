@@ -1,5 +1,5 @@
 import requests
-import "./css_file_test.css"
+import "../styles/css_file_test.css"
 
 from .store import store
 

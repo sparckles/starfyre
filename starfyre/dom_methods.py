@@ -56,7 +56,7 @@ def render_helper(component: Component) -> tuple[str, str, str]:
                 function = partial(function, component)
                 data = component.data.replace(f"{{{ match }}}", str(function()))
             else:
-                print("No match found for", match)
+                print("No match found for", match, component, "This is the state", state)
 
         component.parentComponent.uuid = component.uuid
         html += f"{data}\n"
