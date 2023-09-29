@@ -4,22 +4,28 @@ from pathlib import Path
 
 from starfyre.exceptions import IndexFileConflictError, InitFyreMissingError
 
+DIRECTORIES_TO_IGNORE = ["__pycache__", "build", "dist", "venv", ".git", ".vscode"]
 
 def get_fyre_files(project_dir):
     fyre_files = []
-    for entry in os.listdir(project_dir):
-        if entry.endswith(".fyre"):
-            fyre_files.append(entry)
-        # check inside the 'pages' folder
-        if entry == "pages":
-            for file_ in os.listdir(project_dir / "pages"):
-                if file_.endswith(".fyre"):
-                    # check for the invalid 'index.fyre'
-                    if file_.lower() == "index.fyre":
-                        raise IndexFileConflictError()
-                    fyre_files.append(f"pages/{file_}")
-    return fyre_files
+    directories = []
+    
+    def traverse_directory(directory):
+        for entry in os.listdir(directory):
+            full_path = os.path.join(directory, entry)
+            relative_path = os.path.relpath(full_path, project_dir)
+            if os.path.isfile(full_path) and entry.endswith(".fyre"):
+                # Construct the relative path
+                if relative_path.lower() == "pages/index.fyre":
+                    raise IndexFileConflictError()
+                fyre_files.append(relative_path)
+            elif os.path.isdir(full_path) and relative_path not in DIRECTORIES_TO_IGNORE:
+                directories.append(relative_path)
+                traverse_directory(full_path)
 
+    traverse_directory(project_dir)
+
+    return fyre_files, directories
 
 def resolve_css_import(css_file_name, working_directory):
     """Read a css file and save it's content to a list"""
@@ -259,10 +265,17 @@ def compile(entry_file_name):
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)
 
-    build_dir = project_dir / "build" / "pages"  # create build pages dir
-    build_dir.mkdir(exist_ok=True)
 
-    fyre_files = get_fyre_files(project_dir)
+    fyre_files, directories = get_fyre_files(project_dir)
+    
+    print("These are the directories", directories)
+
+    # build_dir = project_dir / "build" / "pages"  # create build pages dir
+    # build_dir.mkdir(exist_ok=True)
+    for directory in directories:
+        build_dir = project_dir / "build" / directory
+        print("This is the build dir", build_dir)
+        build_dir.mkdir(exist_ok=True)
 
     # check if pages/__init__.fyre exist else stop compilation
     if "pages/__init__.fyre" not in fyre_files:

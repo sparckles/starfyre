@@ -1,10 +1,11 @@
-from test_application.parent import parent
+from test_application.components.parent import parent
 from ..store import store
 
 def mocked_request():
   return "fetched on the server"
 
 
+# client functions can be async
 async def handle_on_click(e):
   alert("click rendered on client")
   if 1==1:
@@ -34,9 +35,12 @@ async def handle_on_click(e):
   </nav>
     <parent hello='world'>
       first text node from init
-      <span onclick={handle_on_click}>
-        {[ mocked_request() for i in range(4)]}
-      </span>
+      <div>
+      {[ mocked_request() for i in range(4)]}
+      </div>
+      <button onclick={handle_on_click}>
+        This is the button 
+      </button>
       <p> Hello world </p>
     </parent>  
   </div>
