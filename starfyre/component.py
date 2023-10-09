@@ -17,7 +17,9 @@ class Component:
     html: str = ""
     css: str = ""
     js: str = ""
+    pyscript: str = ""
     original_name: str = ""
+
     # on any property change, rebuild the tree
 
     @property

@@ -87,6 +87,7 @@ def parse(fyre_file_name, project_dir):
     pyxide_lines = []
     js_lines = []
     client_side_python = []
+    pyscript_lines = []
 
     # regex pattern to match if a line is a css import, e.g. import "style.css"
     css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
@@ -121,6 +122,9 @@ def parse(fyre_file_name, project_dir):
             elif line.startswith("<script"):
                 current_line_type = "js"
                 continue
+            elif line.startswith("<pyscript"):
+                current_line_type = "pyscript"
+                continue
             elif line.startswith("--client"):
                 current_line_type = "client"  # this is a hack
                 continue
@@ -149,6 +153,8 @@ def parse(fyre_file_name, project_dir):
                 js_lines.append(line)
             elif current_line_type == "client":
                 client_side_python.append(line)
+            elif current_line_type == "pyscript":
+                pyscript_lines.append(line)
 
     return (
         remove_empty_lines_from_end(python_lines),
@@ -156,6 +162,7 @@ def parse(fyre_file_name, project_dir):
         remove_empty_lines_from_end(pyxide_lines),
         remove_empty_lines_from_end(js_lines),
         remove_empty_lines_from_end(client_side_python),
+        remove_empty_lines_from_end(pyscript_lines),
     )
 
 
@@ -283,7 +290,7 @@ def compile(entry_file_name):
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
-        python_lines, css_lines, pyxide_lines, js_lines, client_side_python = parse(
+        python_lines, css_lines, pyxide_lines, js_lines, client_side_python, pyscript_lines = parse(
             fyre_file_name=project_dir / fyre_file, project_dir=project_dir
         )
         transpile_to_python(
