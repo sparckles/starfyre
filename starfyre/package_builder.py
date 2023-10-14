@@ -43,9 +43,6 @@ def generate_pages(generated_routes, path):
     out_dir = Path(path + "/dist").resolve()
     root = Path(out_dir / "..").resolve()
 
-    # get the user defined project name
-    app_name = (str(root).split('/'))[-1]
-
     for route_name in generated_routes:
         print(f'route name is = {{route_name}}')
         
@@ -55,9 +52,9 @@ def generate_pages(generated_routes, path):
             component_key = route_name
         
         if route_name == 'app':
-            module_name = f"{{Path(app_name)}}.build.pages"
+            module_name = f"build.pages"
         else:
-            module_name= f"{{Path(app_name)}}.build.pages.{{route_name}}"
+            module_name= f"build.pages.{{route_name}}"
         
         try:
             module = importlib.import_module(module_name)

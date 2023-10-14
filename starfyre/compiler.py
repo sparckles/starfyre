@@ -110,7 +110,7 @@ def parse(fyre_file_name, project_dir):
                 str(project_dir).split("/")[-1]
 
                 # Modify the line to use the resolved import path
-                line = f"from test_application.build.{file_to_import} import {imported_component}"
+                line = f"from build.{file_to_import} import {imported_component}"
 
             if line.startswith("<style"):
                 current_line_type = "css"
@@ -264,6 +264,8 @@ def compile(entry_file_name):
 
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)
+    build_init_file = build_dir / "__init__.py"
+    build_init_file.touch(exist_ok=True)
 
 
     fyre_files, directories = get_fyre_files(project_dir)

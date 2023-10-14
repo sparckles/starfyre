@@ -31,6 +31,8 @@ def main(path, build):
     absolute_path = Path(path).resolve()
     print(f"Absolute path of the project = {absolute_path}")
 
+    sys.path.append(str(absolute_path))
+
     if build:
         # Compile and build project
         init_file_path = absolute_path / "__init__.py"

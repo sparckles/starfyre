@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python3 starfyre --build --path="test_application"
+python3 -m starfyre --build --path="test_application"
