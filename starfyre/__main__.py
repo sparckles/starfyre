@@ -10,30 +10,28 @@ from starfyre.file_router import FileRouter
 
 
 @click.command()
-@click.option("--path", help="Path to the project")
-@click.option("--build", is_flag=True, help="Compile and build package")
-def main(path, build):
+@click.option("--path", help="Path to the project. Requires --build.")
+@click.option("--build", is_flag=True, help="Compile and build package. Requires --path.")
+@click.option("--create", help="Create a new project. Requires a project name.")
+@click.option("--serve", is_flag=True, help="Serve the project. Requires --path.")
+def main(path, build, create, serve):
     """
     Command-line interface to compile and build a Starfyre project.
 
     Args:
 
         path (str): Path to the project directory.\n
-        build (bool): Whether to start the build package.
+        build (bool): Whether to start the build package.\n
+        create (str): Name of the project to create.\n
+        serve (bool): Whether to serve the project.\n
     """
-    if not path:
-        click.echo(
-            "Error: Please provide a valid path using the --path flag.\nUse --help for more details"
-        )
-        return
-
     # Convert path to absolute path
-    absolute_path = Path(path).resolve()
-    print(f"Absolute path of the project = {absolute_path}")
+    if path and build:
+        absolute_path = Path(path).resolve()
+        print(f"Absolute path of the project = {absolute_path}")
 
-    sys.path.append(str(absolute_path))
+        sys.path.append(str(absolute_path))
 
-    if build:
         # Compile and build project
         init_file_path = absolute_path / "__init__.py"
         # Note: The routes specified in the pages folder will have generated code in the build directory.
@@ -58,6 +56,28 @@ def main(path, build):
         )
 
         print(result.stdout.decode("utf-8"))
+
+
+    if create:
+        subprocess.run(
+            ["git", "clone", "git@github.com:sparckles/create-starfyre-app.git", create],
+            stdout=subprocess.PIPE,
+            stderr=None,
+        )
+
+    if path and serve:
+        path = Path(path).resolve() / "dist"
+        print("Serving the project at http://localhost:8000")
+        result = subprocess.run(
+            [sys.executable, "-m", "http.server", "--directory", path],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=None,
+        )
+
+        print(result.stdout.decode("utf-8"))
+        
+
 
 
 if __name__ == "__main__":
