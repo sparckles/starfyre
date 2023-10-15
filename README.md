@@ -8,9 +8,8 @@
 
 ## Introduction:
 
-Starfyre is a library that allows you to build reactive frontends using only Python. It is built using pyodide and wasm, which enables it to run natively in the browser. With Starfyre, you can create interactive, real-time applications with minimal effort. Simply define your frontend as a collection of observables and reactive functions, and let Starfyre handle the rest.
+Starfyre is a library that allows you to build reactive frontends using only Python. With Starfyre, you can create interactive, real-time applications with minimal effort. Simply define your frontend as a collection of observables and reactive functions, and let Starfyre handle the rest.
 
-Please note that Starfyre is still very naive and may be buggy, as it was developed in just five days. However, it is under active development and we welcome contributions to improve it. Whether you are a seasoned web developer or new to frontend development, we hope that you will find Starfyre to be a useful tool. Its intuitive API and simple, declarative style make it easy to get started, and its powerful features allow you to build sophisticated applications.
 
 
 ## 📦 Installation:
@@ -23,8 +22,14 @@ A sample project is hosted on [GitHub](https://github.com/sansyrox/first-starfyr
 
 ## 🚀 Sample App
 
+To create an application
 
-src/__init__.fyre
+```bash
+python3 -m starfyre --create="my-app"
+```
+
+
+my-app/src/__init__.fyre
 ```python
 
 from .parent import parent
@@ -76,17 +81,30 @@ async def handle_on_click(e):
 ```bash
 Usage: python -m starfyre [OPTIONS]
 
+  Command-line interface to compile and build a Starfyre project.
+
+  Args:
+
+      path (str): Path to the project directory.
+
+      build (bool): Whether to start the build package.
+
+      create (str): Name of the project to create.
+
+      serve (bool): Whether to serve the project.
+
 Options:
-  --path TEXT      Path to the project
-  --dev BOOLEAN    Start the compilation and generate the build package.
-  --build BOOLEAN  Start the build package
-  --help           Show this message and exit.
+  --path TEXT    Path to the project. Requires --build.
+  --build        Compile and build package. Requires --path.
+  --create TEXT  Create a new project. Requires a project name.
+  --serve        Serve the project. Requires --path.
+  --help         Show this message and exit.
 ```
 
 ## 🗒️ How to contribute
 
 ### 🏁 Get started
-Please read the code of conduct and go through CONTRIBUTING.md before contributing to Robyn. Feel free to open an issue for any clarifications or suggestions.
+Please read the code of conduct and go through CONTRIBUTING.md before contributing to Starfyre. Feel free to open an issue for any clarifications or suggestions.
 
 If you're feeling curious. You can take a look at a more detailed architecture here.
 
@@ -102,27 +120,17 @@ Python version 3.10
 3. Go in to the starfyre directory - `cd starfyre`
 4. Download poetry `curl -sSL https://install.python-poetry.org/ | python3 -`
 5. Install the dependencies `poetry install`
-6. Activate poetry virtual enviromente `poetry shell`
+6. Activate poetry virtual environment `poetry shell`
 7. Run the script `./build.sh`. This command will run the build process in starfyre against the test application in `test-application` directory.
   - The `build.sh` file is a simple script that runs two commands sequentially.
-    - `python -m starfyre --dev=True --path="test-application/"`
-    - `python -m starfyre --build=True --path="test-application/"`
+    - `python -m starfyre --build=True --path="test_application/"`
         - The `path` variable here is the path to our application.
-        - The `dev` flag here is used to start the compilation and create the `build` directory. 
         - The `build` directory is basically a python package that contains all the compiled files. We use the `--build` flag to run that package.
 
-8. You can find a small test application in the `test-application` directory.
-9. Navigate to `cd test-application/dist`.
-10. Open `index.html` in your browser to see the output, run `explorer.exe index.html`.
+8. You can find a small test application in the `test_application` directory.
+9. Navigate to `cd test_application/dist`.
+10. Open `index.html` in your browser to see the output.
 
-## Running the sample app with Docker
-
-#### Ideally, we should not be needing this. But if you are having trouble running the sample app locally, you can try this.
-
-1. Build the image `docker build --tag starfyre .`
-2. Run the container `docker run -v ./test-application:/app/test-application/ starfyre`
-3. Check the `test-application` directory for `build` and `dist` directories that contain the outputs
-4. If you would like to develop interactively inside the container, run `docker run -it -v ./test-application:/app/test-application/ starfyre bash`
 
 ## Feedback
 
