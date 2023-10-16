@@ -29,7 +29,7 @@ python3 -m starfyre --create="my-app"
 ```
 
 
-my-app/src/__init__.fyre
+`my-app/src/__init__.fyre`
 ```python
 
 from .parent import parent
