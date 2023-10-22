@@ -250,7 +250,7 @@ def transpile_to_python(
         output_file.write("".join(final_python_lines))
 
 
-def compile(entry_file_name):
+def compile(project_dir: Path):
     """
     Compiles a fyre project into a python project.
     This function is responsible for:
@@ -260,7 +260,6 @@ def compile(entry_file_name):
         - We have two functions important for us in python files `create_component` and `render_root`.
         - The `init.py` file will have a component that will render root and the rest of the files will have components that will be rendered inside the root component.
     """
-    project_dir = Path(os.path.dirname(entry_file_name))
 
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)

@@ -8,6 +8,8 @@ from starfyre import compile
 from starfyre.package_builder import prepare_html_and_main
 from starfyre.file_router import FileRouter
 
+import os
+
 
 @click.command()
 @click.option("--path", help="Path to the project. Requires --build.")
@@ -34,8 +36,9 @@ def main(path, build, create, serve):
 
         # Compile and build project
         init_file_path = absolute_path / "__init__.py"
+        project_directory = Path(os.path.dirname(init_file_path.resolve()))
         # Note: The routes specified in the pages folder will have generated code in the build directory.
-        compile(init_file_path.resolve())
+        compile(project_directory)
 
         # At this point, the project has been compiled and the build directory has been created.
         # Now, initialize the Router object and use it to handle file-based routing.
@@ -45,17 +48,17 @@ def main(path, build, create, serve):
 
         # We have to create the main file.
         # The main file will be used to generate the HTML output for all routes found by the FileRouter, index route inclusively.
-        prepare_html_and_main(generated_routes=routes, path=str(absolute_path))
+        prepare_html_and_main(generated_routes=routes, project_dir_path=absolute_path)
 
         # Start/run project
-        result = subprocess.run(
-            [sys.executable, "-m", "build"],
-            cwd=path,
-            stdout=subprocess.PIPE,
-            stderr=None,
-        )
+        # result = subprocess.run(
+            # [sys.executable, "-m", "build"],
+            # cwd=path,
+            # stdout=subprocess.PIPE,
+            # stderr=None,
+        # )
 
-        print(result.stdout.decode("utf-8"))
+        # print(result.stdout.decode("utf-8"))
 
 
     if create:
