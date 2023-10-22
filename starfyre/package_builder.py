@@ -1,6 +1,7 @@
 from pathlib import Path
 import importlib.resources as pkg_resources
 import shutil
+import importlib
 
 """
 This module defines functions to build the distribution package for a Starfyre project.
@@ -15,58 +16,56 @@ def write_js_file(path: Path):
     shutil.copy(str(js_store), str(store_path))
 
 
-import os
-import sys
-from pathlib import Path
-import importlib
-
-def generate_pages(generated_routes, path: Path):
-    '''
+def generate_pages(generated_routes, project_dir: Path):
+    """
     Generate HTML pages for each route in the provided list of routes.
 
     Parameters:
     - generated_routes (list): List of generated routes.
-    - path (str): Path to the project directory.
+    - project_dir (str): Path to the project directory.
 
     This function generates HTML pages for each route provided in the `generated_routes` list.
     It imports the necessary components for each route, renders them using Starfyre,
     and writes the rendered content to corresponding HTML files.
-    '''
+    """
 
-    out_dir = Path(path / "dist").resolve()
-    root = path
+    dist_dir = Path(project_dir / "dist").resolve()
 
     for route_name in generated_routes:
-        print(f'route name is = {route_name}')
-        
-        if route_name.lower() == 'app':
-            component_key = 'app'  # For the 'app' component in `build/pages/__init__.py`
+        print(f"route name is = {route_name}")
+
+        if route_name.lower() == "app":
+            component_key = (
+                "app"  # For the 'app' component in `build/pages/__init__.py`
+            )
         else:
             component_key = route_name
-        
-        if route_name == 'app':
+
+        if route_name == "app":
             module_name = f"build.pages"
         else:
-            module_name= f"build.pages.{route_name}"
-        
+            module_name = f"build.pages.{route_name}"
+
         try:
             module = importlib.import_module(module_name)
-            if component_key == 'app':
-                component = getattr(module, component_key, f"{component_key} does not exist")
+            if component_key == "app":
+                component = getattr(
+                    module, component_key, f"{component_key} does not exist"
+                )
             else:
-                component = getattr(module, f'rendered_{component_key}')
+                component = getattr(module, f"rendered_{component_key}")
             result = str(component)
         except ModuleNotFoundError:
-            raise ImportError(f"Error: Unable to import the module '{module_name}'. Please address your import statements.")
-            
+            raise ImportError(
+                f"Error: Unable to import the module '{module_name}'. Please address your import statements."
+            )
 
         # write to component file
-        if route_name == 'app':
-            route_name = 'index'  # rename to index
-        with open(out_dir / f"{route_name}.html", "w") as html_file:
+        if route_name == "app":
+            route_name = "index"  # rename to index
+        with open(dist_dir / f"{route_name}.html", "w") as html_file:
             html_file.write("<script src='store.js'></script>")
             html_file.write(result)
-
 
 
 def prepare_html_and_main(generated_routes, project_dir_path):
@@ -89,19 +88,6 @@ def prepare_html_and_main(generated_routes, project_dir_path):
 
     # first step is to transfer everything from the public folder to the dist folder
     # This is TODO
-    
-    public_dir = (project_dir_path  / "public").resolve()
+    public_dir = (project_dir_path / "public").resolve()
 
-
-
-    main_file_path = project_dir_path / "build"/ "__main__.py"
-    # init_file_path = project_dir_path + "/build/__init__.py"
-
-    generate_pages(generated_routes=generated_routes, path=project_dir_path)
-
-
-    # create empty __init__.py file
-    # Path(init_file_path).touch()
-
-    # with open(main_file_path, "w") as f:
-        # f.write(main_file_content)
+    generate_pages(generated_routes=generated_routes, project_dir=project_dir_path)
