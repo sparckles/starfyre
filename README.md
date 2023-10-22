@@ -3,6 +3,8 @@
 </p>
 
 [![Discord](https://img.shields.io/discord/1080951642070978651?label=discord&logo=discord&logoColor=white&style=for-the-badge&color=blue)](https://discord.gg/ThQcpvJMZ6)
+[![Downloads](https://static.pepy.tech/badge/starfyre)](https://pepy.tech/project/starfyre)
+
 
 # Starfyre ⭐🔥
 
