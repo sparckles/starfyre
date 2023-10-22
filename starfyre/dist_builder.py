@@ -24,14 +24,14 @@ def generate_html_pages(file_routes, project_dir: Path):
     - file_routes (list): List of file routes
     - project_dir (str): Path to the project directory.
 
-    This function generates HTML pages for each route provided in the `generated_routes` list.
+    This function generates HTML pages for each route provided in the `file_routes` list.
     It imports the necessary components for each route, renders them using Starfyre,
     and writes the rendered content to corresponding HTML files.
     """
 
     dist_dir = Path(project_dir / "dist").resolve()
 
-    for route_name in generated_routes:
+    for route_name in file_routes:
         print(f"route name is = {route_name}")
 
         if route_name.lower() == "app":
@@ -84,4 +84,4 @@ def create_dist(file_routes, project_dir_path):
     # This is TODO
     public_dir = (project_dir_path / "public").resolve()
 
-    generate_html_pages(generated_routes=generated_routes, project_dir=project_dir_path)
+    generate_html_pages(file_routes=file_routes, project_dir=project_dir_path)

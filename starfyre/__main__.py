@@ -5,7 +5,7 @@ from pathlib import Path
 import click
 
 from starfyre import compile
-from starfyre.package_builder import prepare_html_and_main
+from starfyre.dist_builder import create_dist
 from starfyre.file_router import FileRouter
 
 import os
