@@ -44,21 +44,11 @@ def main(path, build, create, serve):
         # Now, initialize the Router object and use it to handle file-based routing.
         # Basically, get all the file names from the "pages" directory
         file_router = FileRouter(absolute_path / "pages")
-        routes = file_router.populate_router()
+        file_routes = file_router.populate_router()
 
         # We have to create the main file.
         # The main file will be used to generate the HTML output for all routes found by the FileRouter, index route inclusively.
-        prepare_html_and_main(generated_routes=routes, project_dir_path=absolute_path)
-
-        # Start/run project
-        # result = subprocess.run(
-            # [sys.executable, "-m", "build"],
-            # cwd=path,
-            # stdout=subprocess.PIPE,
-            # stderr=None,
-        # )
-
-        # print(result.stdout.decode("utf-8"))
+        create_dist(file_routes=file_routes, project_dir_path=absolute_path)
 
 
     if create:
