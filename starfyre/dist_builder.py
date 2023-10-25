@@ -42,7 +42,7 @@ def generate_html_pages(file_routes, project_dir: Path):
             component_key = route_name
 
         if route_name == "app":
-            module_name = f"build.pages"
+            module_name = "build.pages"
         else:
             module_name = f"build.pages.{route_name}"
 
