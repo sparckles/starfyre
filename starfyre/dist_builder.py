@@ -1,7 +1,7 @@
-from pathlib import Path
+import importlib
 import importlib.resources as pkg_resources
 import shutil
-import importlib
+from pathlib import Path
 
 """
 This module defines functions to build the distribution package for a Starfyre project.

@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -7,8 +8,6 @@ import click
 from starfyre import compile
 from starfyre.dist_builder import create_dist
 from starfyre.file_router import FileRouter
-
-import os
 
 
 @click.command()
