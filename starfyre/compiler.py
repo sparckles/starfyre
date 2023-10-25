@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+import shutil
 
 from starfyre.exceptions import IndexFileConflictError, InitFyreMissingError
 
@@ -276,7 +277,22 @@ def compile(project_dir: Path):
     for directory in directories:
         build_dir = project_dir / "build" / directory
         print("This is the build dir", build_dir)
-        build_dir.mkdir(exist_ok=True)
+
+        # the styles directory is a special case
+        # all the files in the styles directory should be copied to the build directory
+        # we will need a global styles directory
+        # maybe a better way to do this is to have a global styles directory in the public directory
+        if directory == "styles":
+            build_dir = project_dir / "build" / "styles"
+            if build_dir.exists():
+                shutil.rmtree(build_dir)
+            shutil.copytree(project_dir / "styles", build_dir)
+            continue
+
+        if directory != "public" or directory != "__pycache__":
+            build_dir.mkdir(exist_ok=True)
+
+        
 
     # check if pages/__init__.fyre exist else stop compilation
     if "pages/__init__.fyre" not in fyre_files:
