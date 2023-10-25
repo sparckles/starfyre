@@ -65,9 +65,31 @@ def generate_html_pages(file_routes, project_dir: Path):
             route_name = "index"  # rename to index
         with open(dist_dir / f"{route_name}.html", "w") as html_file:
             html_file.write("<script src='store.js'></script>")
-            # add pyscript here
+            # TODO: add pyscript here
             # also find a way to add various files
             html_file.write(result)
+
+def copy_public_files(project_dir: Path):
+    """
+    Copy files from the public directory to the dist directory.
+
+    Parameters:
+    - project_dir (str): Path to the project directory.
+    """
+    public_dir = (project_dir / "public").resolve()
+    dist_dir = (project_dir / "dist").resolve()
+
+    dist_dir.mkdir(exist_ok=True)
+
+    for file in public_dir.iterdir():
+        if file.is_file():
+            destination_path = dist_dir / file.name
+            shutil.copy(file, destination_path)
+        elif file.is_dir():
+            destination_path = dist_dir / file.name
+            shutil.copytree(file, destination_path)
+
+
 
 
 def create_dist(file_routes, project_dir_path):
@@ -81,7 +103,5 @@ def create_dist(file_routes, project_dir_path):
     write_js_file(project_dir_path)
 
     # first step is to transfer everything from the public folder to the dist folder
-    # This is TODO
-    public_dir = (project_dir_path / "public").resolve()
-
+    copy_public_files(project_dir_path)
     generate_html_pages(file_routes=file_routes, project_dir=project_dir_path)
