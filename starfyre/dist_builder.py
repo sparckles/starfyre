@@ -82,11 +82,14 @@ def copy_public_files(project_dir: Path):
     dist_dir.mkdir(exist_ok=True)
 
     for file in public_dir.iterdir():
+        destination_path = dist_dir / file.name
         if file.is_file():
-            destination_path = dist_dir / file.name
+            if destination_path.exists():
+                destination_path.unlink()
             shutil.copy(file, destination_path)
         elif file.is_dir():
-            destination_path = dist_dir / file.name
+            if destination_path.exists():
+                shutil.rmtree(destination_path)
             shutil.copytree(file, destination_path)
 
 
