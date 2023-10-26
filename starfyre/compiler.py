@@ -289,7 +289,7 @@ def compile(project_dir: Path):
             shutil.copytree(project_dir / "styles", build_dir)
             continue
 
-        if directory != "public" or directory != "__pycache__":
+        if directory != "public" or directory != "__pycache__" or directory != "build":
             build_dir.mkdir(exist_ok=True)
 
         
