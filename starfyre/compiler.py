@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+import shutil
 
 from starfyre.exceptions import IndexFileConflictError, InitFyreMissingError
 
@@ -250,7 +251,7 @@ def transpile_to_python(
         output_file.write("".join(final_python_lines))
 
 
-def compile(entry_file_name):
+def compile(project_dir: Path):
     """
     Compiles a fyre project into a python project.
     This function is responsible for:
@@ -260,7 +261,6 @@ def compile(entry_file_name):
         - We have two functions important for us in python files `create_component` and `render_root`.
         - The `init.py` file will have a component that will render root and the rest of the files will have components that will be rendered inside the root component.
     """
-    project_dir = Path(os.path.dirname(entry_file_name))
 
     build_dir = project_dir / "build"
     build_dir.mkdir(exist_ok=True)
@@ -277,7 +277,22 @@ def compile(entry_file_name):
     for directory in directories:
         build_dir = project_dir / "build" / directory
         print("This is the build dir", build_dir)
-        build_dir.mkdir(exist_ok=True)
+
+        # the styles directory is a special case
+        # all the files in the styles directory should be copied to the build directory
+        # we will need a global styles directory
+        # maybe a better way to do this is to have a global styles directory in the public directory
+        if directory == "styles":
+            build_dir = project_dir / "build" / "styles"
+            if build_dir.exists():
+                shutil.rmtree(build_dir)
+            shutil.copytree(project_dir / "styles", build_dir)
+            continue
+
+        if directory != "public" or directory != "__pycache__" or directory != "build":
+            build_dir.mkdir(exist_ok=True)
+
+        
 
     # check if pages/__init__.fyre exist else stop compilation
     if "pages/__init__.fyre" not in fyre_files:
