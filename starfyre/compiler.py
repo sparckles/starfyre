@@ -183,9 +183,8 @@ def python_transpiled_string(
     else:
         root_name = file_name
 
-    if root_name == "app":
-        return f'''
-from starfyre import create_component, render_root
+    return f'''
+from starfyre import create_component
 
 def fx_{root_name}():
     # not nesting the code to preserve the frames
@@ -200,30 +199,9 @@ def fx_{root_name}():
 """,
 component_name="""{root_name}"""
 )
-    return render_root(component)
-
-{root_name}=fx_{root_name}()
-'''
-    else:
-        return f'''
-from starfyre import create_component, render_root
-
-def fx_{root_name}():
-    component = create_component("""
-{pyxide_lines}
-""", css="""
-{css_lines}
-""", js="""
-{js_lines}
-""", client_side_python="""
-{client_side_python}
-""",
-component_name="""{root_name}"""
-)
     return component
 
 {root_name}=fx_{root_name}()
-rendered_{root_name} = render_root({root_name})
 '''
 
 
@@ -313,6 +291,8 @@ def compile(project_dir: Path):
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
+        # TODO: need to fix the parse function
+        # we need to find a way to not automatically color the functions
         python_lines, css_lines, pyxide_lines, js_lines, client_side_python, server_side_python = parse(
             fyre_file_name=project_dir / fyre_file, project_dir=project_dir
         )
@@ -324,9 +304,5 @@ def compile(project_dir: Path):
             client_side_python,
             python_file_name,
             project_dir,
-        )
-
-        write_client_side_python_to_dist(
-            client_side_python, python_file_name, project_dir
         )
 

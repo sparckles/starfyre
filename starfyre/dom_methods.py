@@ -1,6 +1,7 @@
 import re
 from functools import partial
 from uuid import uuid4
+import inspect
 
 from .component import Component
 from .transpiler import transpile_to_js
@@ -8,10 +9,15 @@ from .transpiler import transpile_to_js
 
 def assign_event_listeners(event_listener_name, event_listener):
     # component.dom.addEventListener(event_type, create_proxy(event_listener))
-    js_event_listener = transpile_to_js(event_listener)
+    # here we will add f strings in micropython
+    # js_event_listener = transpile_to_js(event_listener)
+    python_event_listener = inspect.getsource( event_listener )
+    # replace  onclick with py_click
+    event_listener_name = event_listener_name.replace("on", "py_")
+
     html = f" {event_listener_name}='{event_listener.__name__}()' "
 
-    return html, js_event_listener
+    return html, python_event_listener
 
 
 # Add event listeners
@@ -23,11 +29,13 @@ def is_attribute(name):
     return not is_listener(name) and name != "children"
 
 
-def render_helper(component: Component) -> tuple[str, str, str]:
+def render_helper(component: Component) -> tuple[str, str, str, str]:
     parentElement = component.parentComponent
     html = "\n"
     css = ""
     js = "\n"
+    client_side_python = ""
+
     if parentElement is None:
         parentElement = Component(
             tag="div",
@@ -71,7 +79,7 @@ def render_helper(component: Component) -> tuple[str, str, str]:
                 }}
             """
 
-        return html, css, js
+        return html, css, js, client_side_python
 
     if component.css:
         css += f"{ component.css }\n"
@@ -105,7 +113,7 @@ def render_helper(component: Component) -> tuple[str, str, str]:
 
     for childElement in children:
         childElement.parentElement = component
-        new_html, new_css, new_js = render_helper(childElement)
+        new_html, new_css, new_js, client_side_python = render_helper(childElement)
         html += new_html
         css += new_css
         js += new_js
@@ -114,16 +122,16 @@ def render_helper(component: Component) -> tuple[str, str, str]:
 
     component.html = html
 
-    return html, css, js
+    return html, css, js, client_side_python
 
 
 def render(component: Component) -> str:
-    html, css, js = render_helper(component)
-    final_html = f"<style>{css}</style>{html}<script>{js}</script>"
+    html, css, js, client_side_python = render_helper(component)
+    final_html = f"<style>{css}</style>{html}<script>{js}</script><script type='mpy'>{client_side_python}</script>"
     return final_html
 
 
-def render_root(component: Component) -> str:
-    html, css, js = render_helper(component)
-    final_html = f"<style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
-    return final_html
+def render_root(component: Component) -> tuple[str, str, str]:
+    html, css, js, client_side_python = render_helper(component)
+    final_html = f"<style>{css}</style><div id='root'>{html}</div><script>{js}</script><script type='mpy'>{client_side_python}</script>"
+    return final_html, css, js

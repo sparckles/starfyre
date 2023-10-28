@@ -17,6 +17,7 @@ class Component:
     html: str = ""
     css: str = ""
     js: str = ""
+    client_side_python: str = ""
     original_name: str = ""
     # on any property change, rebuild the tree
 
@@ -30,3 +31,4 @@ class Component:
 
     def __repr__(self):
         return f"<{self.tag}> {self.data} {self.children} </{self.tag}>"
+

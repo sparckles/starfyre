@@ -3,6 +3,8 @@ import importlib.resources as pkg_resources
 import shutil
 from pathlib import Path
 
+from starfyre.dom_methods import render_root
+
 """
 This module defines functions to build the distribution package for a Starfyre project.
 """
@@ -35,11 +37,11 @@ def generate_html_pages(file_routes, project_dir: Path):
         print(f"route name is = {route_name}")
 
         if route_name.lower() == "app":
-            component_key = (
+            component_name = (
                 "app"  # For the 'app' component in `build/pages/__init__.py`
             )
         else:
-            component_key = route_name
+            component_name = route_name
 
         if route_name == "app":
             module_name = "build.pages"
@@ -48,13 +50,12 @@ def generate_html_pages(file_routes, project_dir: Path):
 
         try:
             module = importlib.import_module(module_name)
-            if component_key == "app":
-                component = getattr(
-                    module, component_key, f"{component_key} does not exist"
-                )
-            else:
-                component = getattr(module, f"rendered_{component_key}")
-            result = str(component)
+            page = getattr(
+                module, component_name, f"{component_name} does not exist"
+            )
+            print("This is the page", page)
+            rendered_page_html, css, js = render_root(page)
+
         except ModuleNotFoundError:
             raise ImportError(
                 f"Error: Unable to import the module '{module_name}'. Please address your import statements."
@@ -69,7 +70,7 @@ def generate_html_pages(file_routes, project_dir: Path):
             html_file.write("<script type='mpy' src='./main.py'></script>")
             # TODO: add pyscript here
             # also find a way to add various files
-            html_file.write(result)
+            html_file.write(rendered_page_html)
 
 def copy_public_files(project_dir: Path):
     """
