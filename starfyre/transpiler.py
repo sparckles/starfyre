@@ -91,6 +91,7 @@ def transpile(python_code: str) -> str:
 def transpile_to_js(python_code):
     code = inspect.getsource(python_code)
     return transpile(code)
+    # return code
 
 
 def main():

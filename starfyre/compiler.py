@@ -88,6 +88,7 @@ def parse(fyre_file_name, project_dir):
     pyxide_lines = []
     js_lines = []
     client_side_python = []
+    server_side_python = []
 
     # regex pattern to match if a line is a css import, e.g. import "style.css"
     css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
@@ -125,6 +126,9 @@ def parse(fyre_file_name, project_dir):
             elif line.startswith("--client"):
                 current_line_type = "client"  # this is a hack
                 continue
+            elif line.startswith("--server"):
+                current_line_type = "server"  # this is a hack
+                continue
             elif css_import_match:
                 css_import = css_import_match.group(1)
                 project_dir = Path(os.path.dirname(fyre_file_name))
@@ -150,6 +154,8 @@ def parse(fyre_file_name, project_dir):
                 js_lines.append(line)
             elif current_line_type == "client":
                 client_side_python.append(line)
+            elif current_line_type == "server":
+                server_side_python.append(line)
 
     return (
         remove_empty_lines_from_end(python_lines),
@@ -157,6 +163,7 @@ def parse(fyre_file_name, project_dir):
         remove_empty_lines_from_end(pyxide_lines),
         remove_empty_lines_from_end(js_lines),
         remove_empty_lines_from_end(client_side_python),
+        remove_empty_lines_from_end(server_side_python),
     )
 
 
@@ -251,6 +258,12 @@ def transpile_to_python(
         output_file.write("".join(final_python_lines))
 
 
+def write_client_side_python_to_dist(client_side_python, output_file_name, project_dir):
+    output_file = project_dir / "dist" / "main.py"
+    with open(output_file, "w") as output_file:
+        output_file.write("\n")
+        output_file.write("".join(client_side_python))
+
 def compile(project_dir: Path):
     """
     Compiles a fyre project into a python project.
@@ -300,7 +313,7 @@ def compile(project_dir: Path):
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
-        python_lines, css_lines, pyxide_lines, js_lines, client_side_python = parse(
+        python_lines, css_lines, pyxide_lines, js_lines, client_side_python, server_side_python = parse(
             fyre_file_name=project_dir / fyre_file, project_dir=project_dir
         )
         transpile_to_python(
@@ -312,3 +325,8 @@ def compile(project_dir: Path):
             python_file_name,
             project_dir,
         )
+
+        write_client_side_python_to_dist(
+            client_side_python, python_file_name, project_dir
+        )
+

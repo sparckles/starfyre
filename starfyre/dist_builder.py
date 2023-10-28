@@ -66,6 +66,7 @@ def generate_html_pages(file_routes, project_dir: Path):
         with open(dist_dir / f"{route_name}.html", "w") as html_file:
             html_file.write("<script src='store.js'></script>")
             html_file.write("<script type='module' src='https://pyscript.net/snapshots/2023.09.1.RC2/core.js'></script>")
+            html_file.write("<script type='mpy' src='./main.py'></script>")
             # TODO: add pyscript here
             # also find a way to add various files
             html_file.write(result)
