@@ -54,7 +54,10 @@ def generate_html_pages(file_routes, project_dir: Path):
                 module, component_name, f"{component_name} does not exist"
             )
             print("This is the page", page)
-            rendered_page_html, css, js = render_root(page)
+            # TODO: this function should be called hydrate
+            # and we should have a function that executes a few lines of code
+            # on the server side
+            rendered_page = render_root(page)
 
         except ModuleNotFoundError:
             raise ImportError(
@@ -70,7 +73,7 @@ def generate_html_pages(file_routes, project_dir: Path):
             html_file.write("<script type='mpy' src='./main.py'></script>")
             # TODO: add pyscript here
             # also find a way to add various files
-            html_file.write(rendered_page_html)
+            html_file.write(rendered_page)
 
 def copy_public_files(project_dir: Path):
     """

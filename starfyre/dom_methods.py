@@ -131,7 +131,8 @@ def render(component: Component) -> str:
     return final_html
 
 
-def render_root(component: Component) -> tuple[str, str, str]:
+def render_root(component: Component) -> str:
+
     html, css, js, client_side_python = render_helper(component)
     final_html = f"<style>{css}</style><div id='root'>{html}</div><script>{js}</script><script type='mpy'>{client_side_python}</script>"
-    return final_html, css, js
+    return final_html
