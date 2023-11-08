@@ -3,7 +3,7 @@ import importlib.resources as pkg_resources
 import shutil
 from pathlib import Path
 
-from starfyre.dom_methods import render_root
+from starfyre.dom_methods import hydrate
 
 """
 This module defines functions to build the distribution package for a Starfyre project.
@@ -57,7 +57,7 @@ def generate_html_pages(file_routes, project_dir: Path):
             # TODO: this function should be called hydrate
             # and we should have a function that executes a few lines of code
             # on the server side
-            rendered_page = render_root(page)
+            rendered_page = hydrate(page)
 
         except ModuleNotFoundError:
             raise ImportError(

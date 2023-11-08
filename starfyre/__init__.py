@@ -1,7 +1,7 @@
 import inspect
 
 from starfyre.component import Component
-from starfyre.dom_methods import render, render_root
+from starfyre.dom_methods import hydrate
 
 from .compiler import compile
 from .parser import ComponentParser
@@ -39,8 +39,7 @@ def create_component(pyxide="", css="", js="", client_side_python="", component_
 
 __all__ = [
     "create_component",
-    "render",
-    "render_root",
+    "hydrate",
     "compile",
     "transpile",
     "Component",

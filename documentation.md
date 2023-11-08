@@ -78,17 +78,17 @@ The `ComponentParser` further parses the `pyxide`, constructs a tree out of the 
 Start
 |
 V
-In __init__.py, function fx_app() calls render_root() function
+In __init__.py, function fx_app() calls hydrate() function
 |
 V
-render_root() converts Component into the final html
+hydrate() converts Component into the final html
 |
 V
 End
 ```
 
-Returning to the previously generated build directory, two distinguishing features are noted in the `__init__.py` file. It always contains a function named `fx_app()`, which in turn calls upon the `render_root()` function.
+Returning to the previously generated build directory, two distinguishing features are noted in the `__init__.py` file. It always contains a function named `fx_app()`, which in turn calls upon the `hydrate()` function.
 
-The `render_root` function takes on the task of converting the `Component` into the final, fully generated `html`.
+The `hydrate` function takes on the task of converting the `Component` into the final, fully generated `html`.
 
 The `fx_` functions are dynamically generated via the `python_transpiled_string` function in the `starfyre/compiler.py`.

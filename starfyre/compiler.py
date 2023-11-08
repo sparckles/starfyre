@@ -249,8 +249,8 @@ def compile(project_dir: Path):
     - finding all fyre files in the project
     - transpiling each fyre file into a python file.
         - "transpiling" is used a bit loosely here. What we're really doing is slicing up the fyre file into different components and then inserting them into a python file.
-        - We have two functions important for us in python files `create_component` and `render_root`.
-        - The `init.py` file will have a component that will render root and the rest of the files will have components that will be rendered inside the root component.
+        - We have two functions important for us in python files `create_component` and `hydrate`.
+        - The `init.py` file will have a component that will hydrate and the rest of the files will have components that will be rendered inside the root component.
     """
 
     build_dir = project_dir / "build"
