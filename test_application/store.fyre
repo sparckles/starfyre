@@ -1,7 +1,4 @@
 --client 
-# use_parent_signal, set_parent_signal, get_parent_signal = create_signal(2)
-
-# use_clock_signal, set_clock_signal, _ = create_signal(0)
 
 from pyscript import display
 from pyscript import window, document
@@ -9,8 +6,6 @@ import js
 
 js.console.log('Yo!')
 
-my_element = document.querySelector("#my-id")
-my_element.innerText = window.location.hostname
 
 display('Hello World!')
 ---

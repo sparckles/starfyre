@@ -17,6 +17,16 @@ def write_js_file(path: Path):
     store_path = dist_path / "store.js"
     shutil.copy(str(js_store), str(store_path))
 
+def write_python_client_file(path: Path):
+    dist_path = Path(path) / "dist"
+    dist_path.mkdir(exist_ok=True)
+    dom_methods = pkg_resources.path("starfyre.js", "dom_methods.py")
+    store_py = pkg_resources.path("starfyre.js", "store.py")
+    dom_methods_path = dist_path / "dom_methods.py"
+    shutil.copy(str(dom_methods), str(dom_methods_path))
+
+    store_path = dist_path / "store.py"
+    shutil.copy(str(store_py), str(store_path))
 
 def generate_html_pages(file_routes, project_dir: Path):
     """
@@ -71,6 +81,8 @@ def generate_html_pages(file_routes, project_dir: Path):
             html_file.write("<script src='store.js'></script>")
             html_file.write("<script type='module' src='https://pyscript.net/snapshots/2023.09.1.RC2/core.js'></script>")
             html_file.write("<script type='mpy' src='./main.py'></script>")
+            html_file.write("<script type='mpy' src='./store.py'></script>")
+            html_file.write("<script type='mpy' src='./dom_methods.py'></script>")
             # TODO: add pyscript here
             # also find a way to add various files
             html_file.write(rendered_page)
@@ -110,6 +122,7 @@ def create_dist(file_routes, project_dir_path):
     - project_dir_path (str): Path to the project directory.
     """
     write_js_file(project_dir_path)
+    write_python_client_file(project_dir_path)
 
     # first step is to transfer everything from the public folder to the dist folder
     copy_public_files(project_dir_path)

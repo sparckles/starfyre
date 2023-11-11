@@ -1,42 +1,49 @@
-import uuid
+# import uuid
 
 import js
+import math
+import random
 
-from starfyre.component import Component
-
-from .dom_methods import render
+# from .dom_methods import render
 
 store = {}
-observers: dict[uuid.UUID, list[Component]] = {}
+observers = {}
+# dict[uuid.UUID, list[Component]] = 
+#
+
+def render(component):
+    ...
 
 
 def create_signal(initial_state=None):
     """Create a signal to be used in a component."""
     global store
-    id = uuid.uuid4()
+    id = random.randint(0, 100000)
 
-    def getState(element):
-        print("This is the type", type(element))
-        if id in observers:
-            observers[id].append(element)
-        else:
-            observers[id] = [element]
-
+    def use_signal(element=None):
+        """Get the state and manage observers."""
+        nonlocal id
+        if element:
+            observers.setdefault(id, []).append(element)
         return store.get(id, initial_state)
 
-    def setState(state):
+    def set_signal(state):
+        """Set a new state and trigger re-render for observers."""
+        nonlocal id
         store[id] = state
-        for component in observers[id]:
-            print("observer component", component)
-            if component and component.parentDom:
-                parentDom = component.parentDom
-                parentDom.removeChild(component.dom)
+        for component in observers.get(id, []):
+            if component and component.parentComponent:
+                parentDom = component.parentComponent
+                # 
+                parentDom.removeChild(component)
             else:
                 parentDom = js.document.getElementById("root")
                 parentDom.innerHTML = ""
-
-            print("rendering", component)
-            # should be done in batching
             render(component)
 
-    return [getState, setState]
+    def get_signal():
+        """Get the current state without affecting the observer list."""
+        nonlocal id
+        return store.get(id, initial_state)
+
+    return [use_signal, set_signal, get_signal]
