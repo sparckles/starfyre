@@ -29,9 +29,18 @@ def create_signal(initial_state=None):
 
     def set_signal(state):
         """Set a new state and trigger re-render for observers."""
+        # need to fix this
+        # we need to maintain a global tree indexed by uuids after the hydration process
+        # after the hydration process, we need to update the tree with the new state
+        # then we need to re-render the tree
+
+        
+
         nonlocal id
         store[id] = state
-        for component in observers.get(id, []):
+        for component_id in observers.get(id, []):
+            component = js.document.getElementById(component_id)
+
             if component and component.parentComponent:
                 parentDom = component.parentComponent
                 # 
@@ -39,6 +48,7 @@ def create_signal(initial_state=None):
             else:
                 parentDom = js.document.getElementById("root")
                 parentDom.innerHTML = ""
+
             render(component)
 
     def get_signal():

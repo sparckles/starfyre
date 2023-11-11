@@ -2,10 +2,6 @@
 
 from pyscript import display
 from pyscript import window, document
-import js
-
-js.console.log('Yo!')
 
 
-display('Hello World!')
 ---

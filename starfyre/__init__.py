@@ -21,6 +21,7 @@ def create_component(pyxide="", css="", js="", client_side_python="", component_
     parser.feed(pyxide)
     parser.close()
     pyxide_root = parser.get_root()
+    pyxide_root.client_side_python = client_side_python
 
     if pyxide_root is None:
         return Component(

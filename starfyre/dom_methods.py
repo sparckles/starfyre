@@ -7,15 +7,22 @@ from .component import Component
 from .transpiler import transpile_to_js
 
 
-def assign_event_listeners(event_listener_name, event_listener):
+def assign_event_listeners(id, event_listener_name, event_listener):
     # js_event_listener = transpile_to_js(event_listener)
     # python_event_listener = inspect.getsource( event_listener )
     # replace  onclick with py_click
-    event_listener_name = event_listener_name.replace("on", "py_")
+    event_listener_name = event_listener_name.replace("on", "")
+    event_listener = event_listener.strip("()")
 
-    html = f" {event_listener_name}='{event_listener}' "
+    client_side_python = f"""
+element = js.document.getElementById('{id}');
+element.addEventListener('{event_listener_name}', {event_listener});
+    """
 
-    return html
+
+    html = f"{event_listener_name}='{event_listener}' "
+
+    return html, client_side_python
  # , python_event_listener
 
 
@@ -33,7 +40,7 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
     html = "\n"
     css = ""
     js = "\n"
-    client_side_python = ""
+    client_side_python = component.client_side_python
 
     if parentElement is None:
         parentElement = Component(
@@ -75,18 +82,19 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
                 component = document.getElementById('{component.uuid}');
                 addDomIdToMap('{component.uuid}', "{ component.signal }");
                 if (component) {{
-                   component.innerText = `${{{ component.signal }}}`;
+//                   component.innerText = `${{{ component.signal }}}`;
                 }}
             """
+
             
             client_side_python += f"""
-                import js
+# this is auto generated
+import js
 
-                component = js.document.getElementById('{component.uuid}');
-                js.addDomIdToMap('{component.uuid}', "{ component.signal }");
-                if (component) {{
-                   component.innerText = `${{{ component.signal }}}`;
-                }}
+component = js.document.getElementById('{component.uuid}');
+js.addDomIdToMap('{component.uuid}', "{component.signal}");
+if (component):
+   component.innerText = {component.signal}
             """
             print("This is the client side python", client_side_python)
 
@@ -110,8 +118,9 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
     for name, function in event_listeners.items():
         print("This is the name", name, "This is the function", function)
         if is_listener(name):
-            new_html = assign_event_listeners(name, function)
+            new_html, new_client_side_python = assign_event_listeners(component.uuid, name, function)
             html += new_html
+            client_side_python += new_client_side_python
 
     if html.endswith(">"):
         html.removesuffix(">")
@@ -121,7 +130,6 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
 
     # Render children
     children = component.children
-    # childElements.forEach(childElement => render(childElement, dom));
 
     for childElement in children:
         childElement.parentElement = component
@@ -144,6 +152,6 @@ def hydrate(component: Component) -> str:
     html, css, js, client_side_python = render_helper(component)
     print("This is the client side python", client_side_python)
 
-    final_html = f"<style>{css}</style><div id='root'>{html}</div><script>{js}</script><script type='mpy'>{client_side_python}</script>"
+    final_html = f"<script type='mpy'>{client_side_python}</script> <style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
     return final_html
 

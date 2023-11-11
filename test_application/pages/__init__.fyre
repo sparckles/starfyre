@@ -9,8 +9,13 @@ def mocked_request():
 # client functions can be async
 import js
 
-async def handle_on_click(e):
+[use_parent_signal, set_parent_signal, get_parent_signal] = create_signal(1)
+
+def handle_on_click(e):
    js.console.log("Ye")
+   signal_value = get_parent_signal()
+   set_parent_signal(signal_value+1)
+
 ---
 
 <style>

@@ -64,6 +64,8 @@ def generate_html_pages(file_routes, project_dir: Path):
                 module, component_name, f"{component_name} does not exist"
             )
             print("This is the page", page)
+            if page.client_side_python:
+                print("This is the client side python page", page.client_side_python)
             # TODO: this function should be called hydrate
             # and we should have a function that executes a few lines of code
             # on the server side
@@ -79,8 +81,8 @@ def generate_html_pages(file_routes, project_dir: Path):
             route_name = "index"  # rename to index
         with open(dist_dir / f"{route_name}.html", "w") as html_file:
             html_file.write("<script src='store.js'></script>")
-            html_file.write("<script type='module' src='https://pyscript.net/snapshots/2023.09.1.RC2/core.js'></script>")
-            html_file.write("<script type='mpy' src='./main.py'></script>")
+            html_file.write("<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>")
+            # html_file.write("<script type='mpy' src='./main.py'></script>")
             html_file.write("<script type='mpy' src='./store.py'></script>")
             html_file.write("<script type='mpy' src='./dom_methods.py'></script>")
             # TODO: add pyscript here
