@@ -17,6 +17,7 @@ class Component:
     html: str = ""
     css: str = ""
     js: str = ""
+    client_side_python: str = ""
     original_name: str = ""
     # on any property change, rebuild the tree
 

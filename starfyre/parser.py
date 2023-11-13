@@ -193,18 +193,19 @@ class ComponentParser(HTMLParser):
             if attr[1].startswith("{") and attr[1].endswith("}"):
                 attr_value = attr[1].strip("{").strip("}").strip(" ")
                 if self.is_event_listener(attr[0]):
-                    event_handler = None
-                    if attr_value in self.global_variables:
-                        event_handler = self.global_variables[attr_value]
+                    event_handler = attr[1].strip("{").strip("}").strip(" ")
+                    # if attr_value in self.global_variables:
+                    # event_handler = self.global_variables[attr_value]
 
                     # we are giving the priority to local functions
-                    if attr_value in self.local_variables:
-                        event_handler = self.local_variables[attr_value]
+                    # if attr_value in self.local_variables:
+                    # event_handler = self.local_variables[attr_value]
 
                     if event_handler is None:
-                        print("Event handler not found")
+                        raise Exception("Event handler not found")
 
                     event_listeners[attr[0]] = event_handler
+                    print("This is the event handler", event_handler)
                     # these are functions, so we will replace them with the actual function
                 else:
                     # here we need to check if these are functions
@@ -375,7 +376,7 @@ class ComponentParser(HTMLParser):
                     )
                     if isinstance(eval_result, Component):
                         # TODO: replace with one of the children stack
-                        self.children.append(
+                        self.current_children.append(
                             eval_result
                         )  # TODO: Check with sanskar - this is a bug, we don't have self.children
                         return

@@ -1,16 +1,17 @@
 import os
 import re
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 from starfyre.exceptions import IndexFileConflictError, InitFyreMissingError
 
 DIRECTORIES_TO_IGNORE = ["__pycache__", "build", "dist", "venv", ".git", ".vscode"]
 
+
 def get_fyre_files(project_dir):
     fyre_files = []
     directories = []
-    
+
     def traverse_directory(directory):
         for entry in os.listdir(directory):
             full_path = os.path.join(directory, entry)
@@ -20,13 +21,16 @@ def get_fyre_files(project_dir):
                 if relative_path.lower() == "pages/index.fyre":
                     raise IndexFileConflictError()
                 fyre_files.append(relative_path)
-            elif os.path.isdir(full_path) and relative_path not in DIRECTORIES_TO_IGNORE:
+            elif (
+                os.path.isdir(full_path) and relative_path not in DIRECTORIES_TO_IGNORE
+            ):
                 directories.append(relative_path)
                 traverse_directory(full_path)
 
     traverse_directory(project_dir)
 
     return fyre_files, directories
+
 
 def resolve_css_import(css_file_name, working_directory):
     """Read a css file and save it's content to a list"""
@@ -122,7 +126,7 @@ def parse(fyre_file_name, project_dir):
             elif line.startswith("<script"):
                 current_line_type = "js"
                 continue
-            elif line.startswith("--client"):
+            elif line.startswith("---client"):
                 current_line_type = "client"  # this is a hack
                 continue
             elif css_import_match:
@@ -135,7 +139,7 @@ def parse(fyre_file_name, project_dir):
                 "</style>" in line
                 or "</pyxide>" in line
                 or "</script>" in line
-                or "--" in line
+                or "---" in line
             ):
                 current_line_type = "python"
                 continue
@@ -176,9 +180,8 @@ def python_transpiled_string(
     else:
         root_name = file_name
 
-    if root_name == "app":
-        return f'''
-from starfyre import create_component, render_root
+    return f'''
+from starfyre import create_component
 
 def fx_{root_name}():
     # not nesting the code to preserve the frames
@@ -193,30 +196,9 @@ def fx_{root_name}():
 """,
 component_name="""{root_name}"""
 )
-    return render_root(component)
-
-{root_name}=fx_{root_name}()
-'''
-    else:
-        return f'''
-from starfyre import create_component, render_root
-
-def fx_{root_name}():
-    component = create_component("""
-{pyxide_lines}
-""", css="""
-{css_lines}
-""", js="""
-{js_lines}
-""", client_side_python="""
-{client_side_python}
-""",
-component_name="""{root_name}"""
-)
     return component
 
 {root_name}=fx_{root_name}()
-rendered_{root_name} = render_root({root_name})
 '''
 
 
@@ -230,7 +212,7 @@ def transpile_to_python(
     project_dir,
 ):
     """
-    Transpiles a fyre file into a python file.
+    Transpiles a fyre file into an ( IR ) python file.
 
     This function is responsible for:
     - parsing the fyre file into python, css, pyxide, js and client side python
@@ -258,8 +240,8 @@ def compile(project_dir: Path):
     - finding all fyre files in the project
     - transpiling each fyre file into a python file.
         - "transpiling" is used a bit loosely here. What we're really doing is slicing up the fyre file into different components and then inserting them into a python file.
-        - We have two functions important for us in python files `create_component` and `render_root`.
-        - The `init.py` file will have a component that will render root and the rest of the files will have components that will be rendered inside the root component.
+        - We have two functions important for us in python files `create_component` and `hydrate`.
+        - The `init.py` file will have a component that will hydrate and the rest of the files will have components that will be rendered inside the root component.
     """
 
     build_dir = project_dir / "build"
@@ -267,9 +249,8 @@ def compile(project_dir: Path):
     build_init_file = build_dir / "__init__.py"
     build_init_file.touch(exist_ok=True)
 
-
     fyre_files, directories = get_fyre_files(project_dir)
-    
+
     print("These are the directories", directories)
 
     # build_dir = project_dir / "build" / "pages"  # create build pages dir
@@ -292,14 +273,14 @@ def compile(project_dir: Path):
         if directory != "public" or directory != "__pycache__" or directory != "build":
             build_dir.mkdir(exist_ok=True)
 
-        
-
     # check if pages/__init__.fyre exist else stop compilation
     if "pages/__init__.fyre" not in fyre_files:
         raise InitFyreMissingError()
 
     for fyre_file in fyre_files:
         python_file_name = fyre_file.replace(".fyre", ".py")
+        # TODO: need to fix the parse function
+        # we need to find a way to not automatically color the functions
         python_lines, css_lines, pyxide_lines, js_lines, client_side_python = parse(
             fyre_file_name=project_dir / fyre_file, project_dir=project_dir
         )
