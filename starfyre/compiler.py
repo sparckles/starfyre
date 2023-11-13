@@ -126,7 +126,7 @@ def parse(fyre_file_name, project_dir):
             elif line.startswith("<script"):
                 current_line_type = "js"
                 continue
-            elif line.startswith("--client"):
+            elif line.startswith("---client"):
                 current_line_type = "client"  # this is a hack
                 continue
             elif css_import_match:
@@ -139,7 +139,7 @@ def parse(fyre_file_name, project_dir):
                 "</style>" in line
                 or "</pyxide>" in line
                 or "</script>" in line
-                or "--" in line
+                or "---" in line
             ):
                 current_line_type = "python"
                 continue

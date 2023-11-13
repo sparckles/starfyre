@@ -5,7 +5,7 @@ def mocked_request():
   return "fetched on the server"
 
 
---client
+---client
 # client functions can be async
 import js
 

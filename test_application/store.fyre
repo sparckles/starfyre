@@ -1,4 +1,4 @@
---client 
+---client 
 
 from pyscript import display
 from pyscript import window, document
