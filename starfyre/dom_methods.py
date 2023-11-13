@@ -78,13 +78,6 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
 
         if component.signal:
             print("This is the signal", component.signal)
-            js += f"""
-                component = document.getElementById('{component.uuid}');
-                addDomIdToMap('{component.uuid}', "{ component.signal }");
-                if (component) {{
-//                   component.innerText = `${{{ component.signal }}}`;
-                }}
-            """
 
             
             client_side_python += f"""
