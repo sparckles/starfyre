@@ -1,7 +1,7 @@
+import inspect
 import re
 from functools import partial
 from uuid import uuid4
-import inspect
 
 from .component import Component
 from .transpiler import transpile_to_js

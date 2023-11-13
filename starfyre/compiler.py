@@ -1,7 +1,7 @@
 import os
 import re
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 from starfyre.exceptions import IndexFileConflictError, InitFyreMissingError
 

@@ -1,8 +1,9 @@
 # import uuid
 
-import js
 import math
 import random
+
+import js
 
 # from .dom_methods import render
 
