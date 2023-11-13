@@ -195,11 +195,11 @@ class ComponentParser(HTMLParser):
                 if self.is_event_listener(attr[0]):
                     event_handler = attr[1].strip("{").strip("}").strip(" ")
                     # if attr_value in self.global_variables:
-                        # event_handler = self.global_variables[attr_value]
+                    # event_handler = self.global_variables[attr_value]
 
                     # we are giving the priority to local functions
                     # if attr_value in self.local_variables:
-                        # event_handler = self.local_variables[attr_value]
+                    # event_handler = self.local_variables[attr_value]
 
                     if event_handler is None:
                         raise Exception("Event handler not found")
@@ -394,7 +394,6 @@ class ComponentParser(HTMLParser):
                 if matches:
                     data = data.replace("{", "").replace("}", "")
                 data = data.replace(match, str(current_data))
-
 
         if data == "":
             return

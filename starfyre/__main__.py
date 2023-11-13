@@ -12,7 +12,9 @@ from starfyre.file_router import FileRouter
 
 @click.command()
 @click.option("--path", help="Path to the project. Requires --build.")
-@click.option("--build", is_flag=True, help="Compile and build package. Requires --path.")
+@click.option(
+    "--build", is_flag=True, help="Compile and build package. Requires --path."
+)
 @click.option("--create", help="Create a new project. Requires a project name.")
 @click.option("--serve", is_flag=True, help="Serve the project. Requires --path.")
 def main(path, build, create, serve):
@@ -49,10 +51,14 @@ def main(path, build, create, serve):
         # The main file will be used to generate the HTML output for all routes found by the FileRouter, index route inclusively.
         create_dist(file_routes=file_routes, project_dir_path=absolute_path)
 
-
     if create:
         subprocess.run(
-            ["git", "clone", "git@github.com:sparckles/create-starfyre-app.git", create],
+            [
+                "git",
+                "clone",
+                "git@github.com:sparckles/create-starfyre-app.git",
+                create,
+            ],
             stdout=subprocess.PIPE,
             stderr=None,
         )
@@ -68,8 +74,6 @@ def main(path, build, create, serve):
         )
 
         print(result.stdout.decode("utf-8"))
-        
-
 
 
 if __name__ == "__main__":

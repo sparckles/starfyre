@@ -17,6 +17,7 @@ def write_js_file(path: Path):
     store_path = dist_path / "store.js"
     shutil.copy(str(js_store), str(store_path))
 
+
 def write_python_client_file(path: Path):
     dist_path = Path(path) / "dist"
     dist_path.mkdir(exist_ok=True)
@@ -27,6 +28,7 @@ def write_python_client_file(path: Path):
 
     store_path = dist_path / "store.py"
     shutil.copy(str(store_py), str(store_path))
+
 
 def generate_html_pages(file_routes, project_dir: Path):
     """
@@ -60,9 +62,7 @@ def generate_html_pages(file_routes, project_dir: Path):
 
         try:
             module = importlib.import_module(module_name)
-            page = getattr(
-                module, component_name, f"{component_name} does not exist"
-            )
+            page = getattr(module, component_name, f"{component_name} does not exist")
             print("This is the page", page)
             if page.client_side_python:
                 print("This is the client side python page", page.client_side_python)
@@ -81,13 +81,16 @@ def generate_html_pages(file_routes, project_dir: Path):
             route_name = "index"  # rename to index
         with open(dist_dir / f"{route_name}.html", "w") as html_file:
             html_file.write("<script src='store.js'></script>")
-            html_file.write("<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>")
+            html_file.write(
+                "<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>"
+            )
             # html_file.write("<script type='mpy' src='./main.py'></script>")
             html_file.write("<script type='mpy' src='./store.py'></script>")
             html_file.write("<script type='mpy' src='./dom_methods.py'></script>")
             # TODO: add pyscript here
             # also find a way to add various files
             html_file.write(rendered_page)
+
 
 def copy_public_files(project_dir: Path):
     """
@@ -111,8 +114,6 @@ def copy_public_files(project_dir: Path):
             if destination_path.exists():
                 shutil.rmtree(destination_path)
             shutil.copytree(file, destination_path)
-
-
 
 
 def create_dist(file_routes, project_dir_path):

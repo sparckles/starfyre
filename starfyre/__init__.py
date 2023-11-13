@@ -8,7 +8,9 @@ from .parser import ComponentParser
 from .transpiler import transpile
 
 
-def create_component(pyxide="", css="", js="", client_side_python="", component_name=""):
+def create_component(
+    pyxide="", css="", js="", client_side_python="", component_name=""
+):
     if client_side_python:
         new_js = transpile(client_side_python) + js
         js = new_js

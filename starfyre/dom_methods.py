@@ -19,11 +19,12 @@ element = js.document.getElementById('{id}');
 element.addEventListener('{event_listener_name}', {event_listener});
     """
 
-
     html = f"{event_listener_name}='{event_listener}' "
 
     return html, client_side_python
- # , python_event_listener
+
+
+# , python_event_listener
 
 
 # Add event listeners
@@ -70,7 +71,9 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
                 function = partial(function, component)
                 data = component.data.replace(f"{{{ match }}}", str(function()))
             else:
-                print("No match found for", match, component, "This is the state", state)
+                print(
+                    "No match found for", match, component, "This is the state", state
+                )
 
         component.parentComponent.uuid = component.uuid
         html += f"{data}\n"
@@ -79,7 +82,6 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
         if component.signal:
             print("This is the signal", component.signal)
 
-            
             client_side_python += f"""
 # this is auto generated
 import js
@@ -90,7 +92,6 @@ if (component):
    component.innerText = {component.signal}
             """
             print("This is the client side python", client_side_python)
-
 
         return html, css, js, client_side_python
 
@@ -111,7 +112,9 @@ if (component):
     for name, function in event_listeners.items():
         print("This is the name", name, "This is the function", function)
         if is_listener(name):
-            new_html, new_client_side_python = assign_event_listeners(component.uuid, name, function)
+            new_html, new_client_side_python = assign_event_listeners(
+                component.uuid, name, function
+            )
             html += new_html
             client_side_python += new_client_side_python
 
@@ -139,12 +142,9 @@ if (component):
     return html, css, js, client_side_python
 
 
-
-
 def hydrate(component: Component) -> str:
     html, css, js, client_side_python = render_helper(component)
     print("This is the client side python", client_side_python)
 
     final_html = f"<script type='mpy'>{client_side_python}</script> <style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
     return final_html
-

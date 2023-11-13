@@ -7,10 +7,11 @@ from starfyre.exceptions import IndexFileConflictError, InitFyreMissingError
 
 DIRECTORIES_TO_IGNORE = ["__pycache__", "build", "dist", "venv", ".git", ".vscode"]
 
+
 def get_fyre_files(project_dir):
     fyre_files = []
     directories = []
-    
+
     def traverse_directory(directory):
         for entry in os.listdir(directory):
             full_path = os.path.join(directory, entry)
@@ -20,13 +21,16 @@ def get_fyre_files(project_dir):
                 if relative_path.lower() == "pages/index.fyre":
                     raise IndexFileConflictError()
                 fyre_files.append(relative_path)
-            elif os.path.isdir(full_path) and relative_path not in DIRECTORIES_TO_IGNORE:
+            elif (
+                os.path.isdir(full_path) and relative_path not in DIRECTORIES_TO_IGNORE
+            ):
                 directories.append(relative_path)
                 traverse_directory(full_path)
 
     traverse_directory(project_dir)
 
     return fyre_files, directories
+
 
 def resolve_css_import(css_file_name, working_directory):
     """Read a css file and save it's content to a list"""
@@ -245,9 +249,8 @@ def compile(project_dir: Path):
     build_init_file = build_dir / "__init__.py"
     build_init_file.touch(exist_ok=True)
 
-
     fyre_files, directories = get_fyre_files(project_dir)
-    
+
     print("These are the directories", directories)
 
     # build_dir = project_dir / "build" / "pages"  # create build pages dir
@@ -270,8 +273,6 @@ def compile(project_dir: Path):
         if directory != "public" or directory != "__pycache__" or directory != "build":
             build_dir.mkdir(exist_ok=True)
 
-        
-
     # check if pages/__init__.fyre exist else stop compilation
     if "pages/__init__.fyre" not in fyre_files:
         raise InitFyreMissingError()
@@ -292,4 +293,3 @@ def compile(project_dir: Path):
             python_file_name,
             project_dir,
         )
-

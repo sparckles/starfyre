@@ -9,24 +9,22 @@ import random
 store = {}
 observers = {}
 
-reverse_store = {} # maps dom id: uuid
-# dict[uuid.UUID, list[Component]] = 
+reverse_store = {}  # maps dom id: uuid
+# dict[uuid.UUID, list[Component]] =
 #
 
 
-def render(component, parentElement = None): # this is domElement
-# the best fix will be to serialize the dom tree and then de serialize it
-# on the client
-# and then find from a dict to re render
-#
+def render(component, parentElement=None):  # this is domElement
+    # the best fix will be to serialize the dom tree and then de serialize it
+    # on the client
+    # and then find from a dict to re render
+    #
 
-# but for now, we will just find the id of the component by 
-# document.getElementById
-# and then get the current state
-# put it as a inner text and then re render the children
-#
-
-
+    # but for now, we will just find the id of the component by
+    # document.getElementById
+    # and then get the current state
+    # put it as a inner text and then re render the children
+    #
 
     if parentElement is None:
         parentElement = js.document.getElementById("root")
@@ -35,21 +33,18 @@ def render(component, parentElement = None): # this is domElement
             parentElement.id = "root"
             js.document.body.appendChild(parentElement)
 
-
-
     if component:
         # find all the names in "{}" and print them
         # need to sort this again
         # matches = re.findall(r"{(.*?)}", data)
         # for match in matches:
-            # if match in state:
-                # function = state[match]
-                # function = partial(function, component)
-                # data = component.data.replace(f"{{{ match }}}", str(function()))
+        # if match in state:
+        # function = state[match]
+        # function = partial(function, component)
+        # data = component.data.replace(f"{{{ match }}}", str(function()))
         # dom = js.document.createTextNode(data)
-        
-        dom_id = component.id
 
+        dom_id = component.id
 
         parentElement.appendChild(component)
         # print("Text Node", component)
@@ -65,9 +60,9 @@ def render(component, parentElement = None): # this is domElement
                 component.innerText = state
     # Add event listeners
     # def isListener(name):
-        # return name.startswith("on")
+    # return name.startswith("on")
     # def isAttribute(name):
-        # return not isListener(name) and name != "children"
+    # return not isListener(name) and name != "children"
 
     # set attributes
 
@@ -79,25 +74,27 @@ def render(component, parentElement = None): # this is domElement
     # children = component.children
     # childElements.forEach(childElement => render(childElement, dom));
     # for childElement in children:
-        # childElement.parentDom = dom
-        # render(childElement)
+    # childElement.parentDom = dom
+    # render(childElement)
 
     # // Append to parent
     # need to apply batch updates here
     # also create a tree of dom nodes in the first place
     # if parentElement.contains(dom):
-        # parentElement.replaceChild(dom, parentElement.childNodes[0])
+    # parentElement.replaceChild(dom, parentElement.childNodes[0])
     # else:
-        # parentElement.appendChild(dom)
+    # parentElement.appendChild(dom)
+
 
 # the render is the wrong implementation
+
 
 def create_signal(initial_state=None):
     """Create a signal to be used in a component."""
     global store, reverse_store
     id = random.randint(0, 100000)
 
-    def use_signal(element=None): # this will be the dom id
+    def use_signal(element=None):  # this will be the dom id
         """Get the state and manage observers."""
         nonlocal id
         if element:
@@ -119,15 +116,19 @@ def create_signal(initial_state=None):
         store[id] = state
         for component_id in observers.get(id, []):
             component = js.document.getElementById(component_id)
-            js.console.log("This is the component", component, str(dir(component)), component.children)
+            js.console.log(
+                "This is the component",
+                component,
+                str(dir(component)),
+                component.children,
+            )
 
             # if component and component.parentElement:
-                # parentDom = component.parentElement
-                # parentDom.removeChild(component)
+            # parentDom = component.parentElement
+            # parentDom.removeChild(component)
             # else:
-                # parentDom = js.document.getElementById("root")
-                # parentDom.innerHTML = ""
-            
+            # parentDom = js.document.getElementById("root")
+            # parentDom.innerHTML = ""
 
             render(component, component.parentElement)
 
@@ -137,6 +138,3 @@ def create_signal(initial_state=None):
         return store.get(id, initial_state)
 
     return [use_signal, set_signal, get_signal]
-
-
-

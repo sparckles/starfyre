@@ -31,4 +31,3 @@ class Component:
 
     def __repr__(self):
         return f"<{self.tag}> {self.data} {self.children} </{self.tag}>"
-
