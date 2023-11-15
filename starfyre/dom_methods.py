@@ -81,9 +81,6 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
             print("This is the signal", component.signal)
 
             client_side_python += f"""
-# this is auto generated
-import js
-
 component = js.document.getElementById('{component.uuid}');
 js.addDomIdToMap('{component.uuid}', "{component.signal}");
 if (component):

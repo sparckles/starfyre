@@ -1,7 +1,7 @@
 import requests
 import "../styles/css_file_test.css"
 
-from .store import store
+from @.store import store
 
 
 def ssr_request():

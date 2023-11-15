@@ -132,7 +132,10 @@ def create_signal(initial_state=None):
 
             render(component, component.parentElement)
 
-    def get_signal():
+    def get_signal(*args, **kwargs):
+        # args and kwargs are not used but a hack as the ids are being
+        # passed as arguments currently
+        # will be fixed once the serialization and deserialization is done
         """Get the current state without affecting the observer list."""
         nonlocal id
         return store.get(id, initial_state)
