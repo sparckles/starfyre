@@ -1,10 +1,8 @@
-import inspect
 import re
 from functools import partial
 from uuid import uuid4
 
 from .component import Component
-from .transpiler import transpile_to_js
 
 
 def assign_event_listeners(id, event_listener_name, event_listener):

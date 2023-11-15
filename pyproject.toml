@@ -13,7 +13,7 @@ requests = "^2.29.0"
 
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.0.263"
+ruff = "^0.1.4"
 black = "^23.3.0"
 commitizen = "^3.5.3"
 
