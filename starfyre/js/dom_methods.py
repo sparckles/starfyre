@@ -1,9 +1,3 @@
-import re
-from functools import partial
-
-import js
-
-
 def assign_event_listeners(component, event_listeners):
     for event_listener_name, event_listener in event_listeners.items():
         event_type = event_listener_name.lower()[2:]
