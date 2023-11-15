@@ -1,5 +1,5 @@
-from test_application.components.parent import parent
-from ..store import store
+from @.components.parent import parent
+from @.store import store
 
 def mocked_request():
   return "fetched on the server"
@@ -7,8 +7,6 @@ def mocked_request():
 
 ---client
 # client functions can be async
-import js
-
 [use_parent_signal, set_parent_signal, get_parent_signal] = create_signal(1)
 
 def handle_on_click(e):

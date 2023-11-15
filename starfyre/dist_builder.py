@@ -1,4 +1,5 @@
 import importlib
+import os
 import importlib.resources as pkg_resources
 import shutil
 from pathlib import Path
@@ -36,60 +37,65 @@ def generate_html_pages(file_routes, project_dir: Path):
 
     Parameters:
     - file_routes (list): List of file routes
-    - project_dir (str): Path to the project directory.
+    - project_dir (Path): Path to the project directory.
 
     This function generates HTML pages for each route provided in the `file_routes` list.
     It imports the necessary components for each route, renders them using Starfyre,
     and writes the rendered content to corresponding HTML files.
     """
 
-    dist_dir = Path(project_dir / "dist").resolve()
+    dist_dir = project_dir / "dist"
+    dist_dir.mkdir(exist_ok=True)  # Ensure that the dist directory exists
 
     for route_name in file_routes:
-        print(f"route name is = {route_name}")
+        print(f"Generating HTML for route: {route_name}")
 
-        if route_name.lower() == "app":
-            component_name = (
-                "app"  # For the 'app' component in `build/pages/__init__.py`
-            )
-        else:
-            component_name = route_name
-
-        if route_name == "app":
-            module_name = "build.pages"
-        else:
-            module_name = f"build.pages.{route_name}"
+        # Determine the module and component names
+        module_name = (
+            "build.pages"
+            if route_name.lower() == "app"
+            else f"build.pages.{route_name}"
+        )
+        component_name = "app" if route_name.lower() == "app" else route_name
 
         try:
+            # Importing the module and getting the component
             module = importlib.import_module(module_name)
-            page = getattr(module, component_name, f"{component_name} does not exist")
-            print("This is the page", page)
-            if page.client_side_python:
-                print("This is the client side python page", page.client_side_python)
-            # TODO: this function should be called hydrate
-            # and we should have a function that executes a few lines of code
-            # on the server side
+            page = getattr(module, component_name, None)
+            if not page:
+                raise AttributeError(
+                    f"Component '{component_name}' does not exist in '{module_name}'"
+                )
+
+            print("Rendering page:", page)
+
+            # Assuming 'hydrate' is a function that you have defined elsewhere
             rendered_page = hydrate(page)
 
-        except ModuleNotFoundError:
-            raise ImportError(
-                f"Error: Unable to import the module '{module_name}'. Please address your import statements."
-            )
+        except ImportError as e:
+            print(f"Import error: {e}")
+            print("Available modules:", os.listdir("build/pages"))
+            print("Current directory:", os.getcwd())
+            continue
+        except AttributeError as e:
+            print(f"Attribute error: {e}")
+            continue
 
-        # write to component file
-        if route_name == "app":
-            route_name = "index"  # rename to index
-        with open(dist_dir / f"{route_name}.html", "w") as html_file:
+        # Write the rendered content to an HTML file
+        output_file_name = (
+            "index.html" if route_name.lower() == "app" else f"{route_name}.html"
+        )
+        with open(dist_dir / output_file_name, "w") as html_file:
             html_file.write("<script src='store.js'></script>")
             html_file.write(
                 "<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>"
             )
-            # html_file.write("<script type='mpy' src='./main.py'></script>")
             html_file.write("<script type='mpy' src='./store.py'></script>")
             html_file.write("<script type='mpy' src='./dom_methods.py'></script>")
-            # TODO: add pyscript here
-            # also find a way to add various files
             html_file.write(rendered_page)
+
+    # Change back to the original directory
+    os.chdir(project_dir)
 
 
 def copy_public_files(project_dir: Path):

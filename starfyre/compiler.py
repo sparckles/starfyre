@@ -57,31 +57,42 @@ def resolve_css_import(css_file_name, working_directory):
     return css_content
 
 
-def check_import_line(line, project_dir):
+def check_absolute_import_line(line):
     """
-    Check if the given line starts with an fyre import statement from the specified project directory.
+    Check if the given line starts with an absolute fyre import statement from the specified project directory.
+    e.g. from @.pages import index
 
     Args:
         line (str): The line to check.
-        project_dir (str): The project directory name.
 
     Returns:
         bool: True if the line starts with the specified import statement, False otherwise.
     """
-    project_dir_name = str(project_dir).split("/")[-1]
-    pattern = rf"^from\s+{project_dir_name}\."  # checks is we have a line like 'from {project_dir}.'
+    pattern = r"^from\s+@\."
     match = re.match(pattern, line)
     return match is not None
+
+
+def get_line_type(line):
+    line_starts = {
+        "<style": "css",
+        "<pyxide": "pyxide",
+        "<script": "js",
+        "---client": "client",
+    }
+    for start, line_type in line_starts.items():
+        if line.startswith(start):
+            return line_type
+
+    return None
 
 
 def parse(fyre_file_name, project_dir):
     def remove_empty_lines_from_end(lines):
         while lines and lines[-1] == "\n":
             lines.pop()
-
         while lines and lines[0] == "\n":
             lines.pop(0)
-
         if lines == []:
             return [""]
         return lines
@@ -92,30 +103,19 @@ def parse(fyre_file_name, project_dir):
     pyxide_lines = []
     js_lines = []
     client_side_python = []
-
     # regex pattern to match if a line is a css import, e.g. import "style.css"
     css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
-
     with open(fyre_file_name, "r") as fyre_file:
         for line in fyre_file.readlines():
             css_import_match = css_import_pattern.search(line)
 
             # check for fyre import styles
-            has_fyre_import = check_import_line(line=line, project_dir=project_dir)
+            has_fyre_import = check_absolute_import_line(line=line)
 
             # If the line is a fyre import statement, modify it to ensure proper resolution
             if has_fyre_import:
                 # Split the line into module part and imported component
-                module_part, imported_component = line.split(" import ")
-
-                # Extract the file name to import from the module part
-                file_to_import = module_part.split(".")[-1]
-
-                # Get the name of the project directory
-                str(project_dir).split("/")[-1]
-
-                # Modify the line to use the resolved import path
-                line = f"from build.{file_to_import} import {imported_component}"
+                line = line.replace("@", "build")
 
             if line.startswith("<style"):
                 current_line_type = "css"
@@ -143,7 +143,6 @@ def parse(fyre_file_name, project_dir):
             ):
                 current_line_type = "python"
                 continue
-
             if current_line_type == "python":
                 python_lines.append(line)
             elif current_line_type == "css":
@@ -209,8 +208,7 @@ def transpile_to_python(
     js_lines,
     client_side_python,
     output_file_name,
-    project_dir,
-):
+) -> str:
     """
     Transpiles a fyre file into an ( IR ) python file.
 
@@ -226,11 +224,7 @@ def transpile_to_python(
 
     final_python_lines.append(main_content)
 
-    output_file_name = project_dir / "build" / output_file_name
-
-    with open(output_file_name, "w") as output_file:
-        # result of the transpiled
-        output_file.write("".join(final_python_lines))
+    return "".join(final_python_lines)
 
 
 def compile(project_dir: Path):
@@ -251,13 +245,10 @@ def compile(project_dir: Path):
 
     fyre_files, directories = get_fyre_files(project_dir)
 
-    print("These are the directories", directories)
-
     # build_dir = project_dir / "build" / "pages"  # create build pages dir
     # build_dir.mkdir(exist_ok=True)
     for directory in directories:
         build_dir = project_dir / "build" / directory
-        print("This is the build dir", build_dir)
 
         # the styles directory is a special case
         # all the files in the styles directory should be copied to the build directory
@@ -284,12 +275,15 @@ def compile(project_dir: Path):
         python_lines, css_lines, pyxide_lines, js_lines, client_side_python = parse(
             fyre_file_name=project_dir / fyre_file, project_dir=project_dir
         )
-        transpile_to_python(
+        output_file_name = project_dir / "build" / python_file_name
+        python_contents = transpile_to_python(
             python_lines,
             css_lines,
             pyxide_lines,
             js_lines,
             client_side_python,
             python_file_name,
-            project_dir,
         )
+
+        with open(output_file_name, "w") as output_file:
+            output_file.write(python_contents)
