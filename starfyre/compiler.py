@@ -91,24 +91,19 @@ def parse(fyre_file_name, project_dir):
     def remove_empty_lines_from_end(lines):
         while lines and lines[-1] == "\n":
             lines.pop()
-
         while lines and lines[0] == "\n":
             lines.pop(0)
-
         if lines == []:
             return [""]
         return lines
-
     current_line_type = "python"
     python_lines = []
     css_lines = []
     pyxide_lines = []
     js_lines = []
     client_side_python = []
-
     # regex pattern to match if a line is a css import, e.g. import "style.css"
     css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
-
     with open(fyre_file_name, "r") as fyre_file:
         for line in fyre_file.readlines():
             css_import_match = css_import_pattern.search(line)
@@ -120,13 +115,20 @@ def parse(fyre_file_name, project_dir):
             if has_fyre_import:
                 # Split the line into module part and imported component
                 line = line.replace("@", "build")
-                print("This is the modified line", line)
 
-            current_line_type = get_line_type(line)
-            if current_line_type is not None:
+            if line.startswith("<style"):
+                current_line_type = "css"
                 continue
-
-            if css_import_match:
+            elif line.startswith("<pyxide"):
+                current_line_type = "pyxide"
+                continue
+            elif line.startswith("<script"):
+                current_line_type = "js"
+                continue
+            elif line.startswith("---client"):
+                current_line_type = "client"  # this is a hack
+                continue
+            elif css_import_match:
                 css_import = css_import_match.group(1)
                 project_dir = Path(os.path.dirname(fyre_file_name))
                 css_content = resolve_css_import(css_import, project_dir)
@@ -140,7 +142,6 @@ def parse(fyre_file_name, project_dir):
             ):
                 current_line_type = "python"
                 continue
-
             if current_line_type == "python":
                 python_lines.append(line)
             elif current_line_type == "css":
