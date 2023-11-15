@@ -96,6 +96,7 @@ def parse(fyre_file_name, project_dir):
         if lines == []:
             return [""]
         return lines
+
     current_line_type = "python"
     python_lines = []
     css_lines = []

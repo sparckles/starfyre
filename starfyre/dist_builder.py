@@ -47,12 +47,15 @@ def generate_html_pages(file_routes, project_dir: Path):
     dist_dir = project_dir / "dist"
     dist_dir.mkdir(exist_ok=True)  # Ensure that the dist directory exists
 
-
     for route_name in file_routes:
         print(f"Generating HTML for route: {route_name}")
 
         # Determine the module and component names
-        module_name = "build.pages" if route_name.lower() == "app" else f"build.pages.{route_name}"
+        module_name = (
+            "build.pages"
+            if route_name.lower() == "app"
+            else f"build.pages.{route_name}"
+        )
         component_name = "app" if route_name.lower() == "app" else route_name
 
         try:
@@ -60,27 +63,33 @@ def generate_html_pages(file_routes, project_dir: Path):
             module = importlib.import_module(module_name)
             page = getattr(module, component_name, None)
             if not page:
-                raise AttributeError(f"Component '{component_name}' does not exist in '{module_name}'")
+                raise AttributeError(
+                    f"Component '{component_name}' does not exist in '{module_name}'"
+                )
 
             print("Rendering page:", page)
-            
+
             # Assuming 'hydrate' is a function that you have defined elsewhere
             rendered_page = hydrate(page)
 
         except ImportError as e:
             print(f"Import error: {e}")
             print("Available modules:", os.listdir("build/pages"))
-            print("Current directory:", os.getcwd() )
+            print("Current directory:", os.getcwd())
             continue
         except AttributeError as e:
             print(f"Attribute error: {e}")
             continue
 
         # Write the rendered content to an HTML file
-        output_file_name = "index.html" if route_name.lower() == "app" else f"{route_name}.html"
+        output_file_name = (
+            "index.html" if route_name.lower() == "app" else f"{route_name}.html"
+        )
         with open(dist_dir / output_file_name, "w") as html_file:
             html_file.write("<script src='store.js'></script>")
-            html_file.write("<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>")
+            html_file.write(
+                "<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>"
+            )
             html_file.write("<script type='mpy' src='./store.py'></script>")
             html_file.write("<script type='mpy' src='./dom_methods.py'></script>")
             html_file.write(rendered_page)
