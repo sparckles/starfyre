@@ -10,7 +10,10 @@
 
 ## Introduction:
 
-Starfyre is a library that allows you to build reactive frontends using only Python. With Starfyre, you can create interactive, real-time applications with minimal effort. Simply define your frontend as a collection of observables and reactive functions, and let Starfyre handle the rest.
+Starfyre is a library that allows you to build reactive frontends using only Python. With Starfyre, you can create interactive, real-time applications with minimal effort. Simply define your frontend as a collection of observables and reactive functions, and let Starfyre handle the rest. Starfyre is based on Pyscript for client side functions and uses the concept of `pyxides` when structuring code.
+
+- pyxide - translates to a container. Every component is a container. It can contain other components or HTML elements.
+
 
 
 
@@ -30,52 +33,126 @@ To create an application
 python3 -m starfyre --create="my-app"
 ```
 
+It will use the [create-starfyre-app](https://github.com/sparckles/create-starfyre-app) as the template to create a new project.
 
-`my-app/src/__init__.fyre`
+
+### A simple component
+`my-app/pages/__init__.fyre`
+
+```python
+import "../styles/index.css"
+
+def message():
+  return "World"
+
+---client
+import js
+
+def handle_click():
+  js.console.log("Hello World")
+---
+
+<pyxide>
+  <div onclick={handle_click()}>
+    Hello, {message()}
+  </div>
+</pyxide>
+
+```
+
+### Using Components
+<details>
+<summary>Click to expand</summary>
+
+`my-app/pages/__init__.fyre`
+
+```python
+import "../styles/index.css"
+from @.components.custom_component import custom_component
+# @ is the alias for the source directory. e.g. my-app in our case
+
+<pyxide>
+ <custom_component></custom_component>
+</pyxide>
+```
+
+`my-app/src/components/custom_component.fyre`
+
 ```python
 
-from .parent import parent
-from .store import store
+<pyxide>
+  <div> This is a custom component </div>
+</pyxide>
+```
 
-def mocked_request():
-  return "fetched on the server"
 
+<details>
 
-async def handle_on_click(e):
-  alert("click rendered on client")
-  if 1==1:
-    print("Hello world")
+### State Management
 
-  current_value = get_parent_signal()
-  set_parent_signal(current_value + 1)
-  a = await fetch('https://jsonplaceholder.typicode.com/todos/1')
-  print(await a.text())
-  print("handles on click")
-  
+<details>
+<summary>Click to expand</summary>
+
+Signals are super early at this moment. You need to have the word "signal" when declaring a variable. e.g. get_signal, set_signal, use_signal. And use_signal and get_signal can't be evaluated on the client, i.e. can't have `{use_signal()+1}`. This will be fixed with a better serialization.
+
+`my-app/pages/__init__.fyre`
+
+```python
+
+---client
+
+[get_signal, set_signal, use_signal] = create_signal("Hello World")
+
+def handle_click():
+  set_signal("Goodbye World")
+---
+
+<pyxide>
+  <div onclick={handle_click}>
+    {use_signal()}
+  </div>
+</pyxide>
+
+```
+</details>
+
+### Routing
+<details>
+<summary>File based Routing</summary>
+
+Starfyre supports file based routing.
+
+```bash
+my-app
+├── pages
+│   ├── __init__.fyre
+│   ├── about.fyre
+│   └── nav.fyre
+```
+
+</details>
+
+### Styling
+<details>
+<summary>Click to expand</summary>
+
+Starfyre supports CSS and file based css.
+
+```python
+import "../styles/index.css"
 
 <style>
-  body {
-    background-color: red;
-  }
+.component {
+/* CSS here */
+}
+
 </style>
 
 <pyxide>
-  <store>
-    <parent hello='world'>
-        <span onclick={handle_on_click}>
-          {[ mocked_request() for i in range(4)]}
-        </span>
-    </parent>
-  </store>
+  <div class="component"> Hello World </div>
 </pyxide>
-
-
-<script>
-// this is the optional section 
-// for third party scripts and custom js
-</script>
-
 ```
+</details>
 
 
 ## 🚀 Sample CLI usage
