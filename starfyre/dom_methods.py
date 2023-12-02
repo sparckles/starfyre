@@ -138,6 +138,7 @@ if (component):
 
 def serialize_root_component(component: Component) -> str:
     import pickle
+
     return str(pickle.dumps(component))
 
 
