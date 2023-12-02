@@ -4,6 +4,8 @@ from uuid import uuid4
 
 from .component import Component
 
+global_component_map = {}
+
 
 def assign_event_listeners(id, event_listener_name, event_listener):
     # js_event_listener = transpile_to_js(event_listener)
@@ -134,8 +136,16 @@ if (component):
     return html, css, js, client_side_python
 
 
-def hydrate(component: Component) -> str:
-    html, css, js, client_side_python = render_helper(component)
+def serialize_root_component(component: Component) -> str:
+    import pickle
+    return str(pickle.dumps(component))
 
-    final_html = f"<!DOCTYPE html><meta charset='UTF-8'><script type='mpy'>{client_side_python}</script> <style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
+
+def hydrate(page_name: str, component: Component) -> str:
+    html, css, js, client_side_python = render_helper(component)
+    pickled_component = serialize_root_component(component)
+    global_component_map[page_name] = pickled_component
+
+    final_html = f"<!DOCTYPE html><meta charset='UTF-8'><script type='mpy'>{pickled_component}</script> <script type='mpy'>{client_side_python}</script> <style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
+
     return final_html
