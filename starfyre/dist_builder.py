@@ -70,7 +70,7 @@ def generate_html_pages(file_routes, project_dir: Path):
             print("Rendering page:", page)
 
             # Assuming 'hydrate' is a function that you have defined elsewhere
-            rendered_page = hydrate(page)
+            rendered_page = hydrate(route_name, page)
 
         except ImportError as e:
             print(f"Import error: {e}")
