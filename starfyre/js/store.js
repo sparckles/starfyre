@@ -11,7 +11,7 @@ function getPyxideFromDomId(domId) {
 }
 
 function render(domId) {
-  const element = document.getElementById(domId);
+  const element = document.querySelector(`[data-pyxide-id="${domId}"]`);
   const pyxide = getPyxideFromDomId(domId);
   element.innerHTML = `${eval(pyxide)}`;
 }

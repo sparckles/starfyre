@@ -27,7 +27,7 @@ def render(component, parentElement=None):  # this is domElement
     #
 
     if parentElement is None:
-        parentElement = js.document.getElementById("root")
+        parentElement = js.document.querySelector("[data-pyxide-id=root]")
         if parentElement is None:
             parentElement = js.document.createElement("div")
             parentElement.id = "root"
@@ -115,20 +115,13 @@ def create_signal(initial_state=None):
         nonlocal id
         store[id] = state
         for component_id in observers.get(id, []):
-            component = js.document.getElementById(component_id)
+            component = js.document.querySelector(f"[data-pyxide-id='{component_id}']")
             js.console.log(
                 "This is the component",
                 component,
                 str(dir(component)),
                 component.children,
             )
-
-            # if component and component.parentElement:
-            # parentDom = component.parentElement
-            # parentDom.removeChild(component)
-            # else:
-            # parentDom = js.document.getElementById("root")
-            # parentDom.innerHTML = ""
 
             render(component, component.parentElement)
 

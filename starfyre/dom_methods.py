@@ -13,7 +13,7 @@ def assign_event_listeners(id, event_listener_name, event_listener):
     event_listener = event_listener.strip("()")
 
     client_side_python = f"""
-element = js.document.getElementById('{id}');
+element = js.document.querySelector("[data-pyxide-id='{id}']");
 element.addEventListener('{event_listener_name}', {event_listener});
     """
 
@@ -79,7 +79,7 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
 
         if component.signal:
             client_side_python += f"""
-component = js.document.getElementById('{component.uuid}');
+component = js.document.querySelector("[data-pyxide-id='{component.uuid}']");
 js.addDomIdToMap('{component.uuid}', "{component.signal}");
 if (component):
    component.innerText = {component.signal}
@@ -93,7 +93,7 @@ if (component):
     if component.js:
         js += f"{component.js}\n"
 
-    html += f"<{tag} id='{component.uuid}' "
+    html += f"<{tag} data-pyxide-id='{component.uuid}' "
 
     # this is not when the component is a text component
     prop_string = ""
@@ -137,5 +137,5 @@ if (component):
 def hydrate(component: Component) -> str:
     html, css, js, client_side_python = render_helper(component)
 
-    final_html = f"<!DOCTYPE html><meta charset='UTF-8'><script type='mpy'>{client_side_python}</script> <style>{css}</style><div id='root'>{html}</div><script>{js}</script>"
+    final_html = f"<!DOCTYPE html><meta charset='UTF-8'><script type='mpy'>{client_side_python}</script> <style>{css}</style><div data-pyxide-id='root'>{html}</div><script>{js}</script>"
     return final_html
