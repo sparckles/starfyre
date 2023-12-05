@@ -287,3 +287,5 @@ def compile(project_dir: Path):
 
         with open(output_file_name, "w") as output_file:
             output_file.write(python_contents)
+
+    print("Compilation successful")

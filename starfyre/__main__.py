@@ -46,10 +46,12 @@ def main(path, build, create, serve):
         # Basically, get all the file names from the "pages" directory
         file_router = FileRouter(absolute_path / "pages")
         file_routes = file_router.populate_router()
+        print("File routes populated", file_routes)
 
         # We have to create the main file.
         # The main file will be used to generate the HTML output for all routes found by the FileRouter, index route inclusively.
         create_dist(file_routes=file_routes, project_dir_path=absolute_path)
+        print("Dist created")
 
     if create:
         subprocess.run(
