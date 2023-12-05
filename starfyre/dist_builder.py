@@ -13,22 +13,24 @@ This module defines functions to build the distribution package for a Starfyre p
 
 def write_js_file(path: Path):
     dist_path = Path(path) / "dist"
+    print("This is the dist path", dist_path)
     dist_path.mkdir(exist_ok=True)
-    js_store = pkg_resources.path("starfyre.js", "store.js")
-    store_path = dist_path / "store.js"
-    shutil.copy(str(js_store), str(store_path))
+
+    with pkg_resources.path("starfyre.js", "store.js") as js_store:
+        store_path = dist_path / "store.js"
+        shutil.copy(str(js_store), str(store_path))
 
 
 def write_python_client_file(path: Path):
     dist_path = Path(path) / "dist"
     dist_path.mkdir(exist_ok=True)
-    dom_methods = pkg_resources.path("starfyre.js", "dom_methods.py")
-    store_py = pkg_resources.path("starfyre.js", "store.py")
-    dom_methods_path = dist_path / "dom_methods.py"
-    shutil.copy(str(dom_methods), str(dom_methods_path))
-
-    store_path = dist_path / "store.py"
-    shutil.copy(str(store_py), str(store_path))
+    with pkg_resources.path(
+        "starfyre.js", "dom_methods.py"
+    ) as dom_methods, pkg_resources.path("starfyre.js", "store.py") as store_py:
+        dom_methods_path = dist_path / "dom_methods.py"
+        shutil.copy(str(dom_methods), str(dom_methods_path))
+        store_path = dist_path / "store.py"
+        shutil.copy(str(store_py), str(store_path))
 
 
 def generate_html_pages(file_routes, project_dir: Path):
@@ -130,8 +132,12 @@ def create_dist(file_routes, project_dir_path):
     - file_routes (list): List of file base routes.
     - project_dir_path (str): Path to the project directory.
     """
+    print("This is the project dir path", project_dir_path)
+    print("These are the file routes", file_routes)
     write_js_file(project_dir_path)
+    print("JS file written")
     write_python_client_file(project_dir_path)
+    print("Python files written")
 
     # first step is to transfer everything from the public folder to the dist folder
     copy_public_files(project_dir_path)
