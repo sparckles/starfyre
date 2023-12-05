@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starfyre"
-version = "0.19.3"
+version = "0.19.4"
 description = "A Python Framework for writing Reactive web Front-Ends"
 authors = ["Sanskar Jethi <sansyrox@gmail.com>"]
 license = "BSD 2.0"

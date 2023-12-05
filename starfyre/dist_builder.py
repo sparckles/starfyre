@@ -18,6 +18,8 @@ def write_js_file(path: Path):
 
     with pkg_resources.path("starfyre.js", "store.js") as js_store:
         store_path = dist_path / "store.js"
+        print("This is the store path", store_path)
+        print("This is the js store path", js_store)
         shutil.copy(str(js_store), str(store_path))
 
 
