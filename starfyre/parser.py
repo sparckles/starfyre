@@ -184,7 +184,6 @@ class ComponentParser(HTMLParser):
         # logic should be to just create an empty component on start
         # and fill the contents on the end tag
         props = {}
-        state = {}
         event_listeners = {}
         self.current_depth += 1
 
@@ -210,10 +209,9 @@ class ComponentParser(HTMLParser):
                 else:
                     # here we need to check if these are functions
                     # or state objects or just regular text
-                    if attr_value in self.local_variables and self.is_state(
+                    if attr_value in self.local_variables(
                         self.local_variables[attr_value]
                     ):
-                        state[attr[0]] = self.local_variables[attr_value]
                         props[attr[0]] = self.local_variables[attr_value]()
             else:
                 props[attr[0]] = attr[1]
@@ -223,7 +221,6 @@ class ComponentParser(HTMLParser):
             component = self.components[tag]
             component.original_name = tag
             component.props = {**component.props, **props}
-            component.state = {**component.state, **state}
 
             component.event_listeners = {
                 **component.event_listeners,
@@ -247,7 +244,6 @@ class ComponentParser(HTMLParser):
                 props=props,
                 children=[],
                 event_listeners=event_listeners,
-                state=state,
                 js=self.js,
                 css=self.css,
                 uuid=uuid4(),
@@ -260,7 +256,6 @@ class ComponentParser(HTMLParser):
                 props=props,
                 children=[],
                 event_listeners=event_listeners,
-                state=state,
                 js="",
                 css="",
                 uuid=uuid4(),
@@ -333,6 +328,15 @@ class ComponentParser(HTMLParser):
     def inject_uuid(self, signal, uuid):
         return signal.replace("()", f"('{uuid}')")
 
+    def extract_signal(self, str, id):
+        if not str:
+            return False
+        matches = re.match(rf".+\(.+{id}.+\)", str)
+        if not matches:
+            raise Exception("Signal not found. Something went wrong.")
+
+        return matches.group(0)
+
     def handle_data(self, data):
         # this is doing too much
         # lexing
@@ -346,14 +350,13 @@ class ComponentParser(HTMLParser):
         matches = re.findall(r"{(.*?)}", data)
 
         # parsing starts here
-        state = {}
         parent_node = self.stack[-1]
 
         uuid = uuid4()
         component_signal = ""
 
         for match in matches:
-            # match can be a sentece so we will split it
+            # match can be a sentence so we will split it
             current_data = None
             if match in self.local_variables:
                 current_data = self.local_variables[match]
@@ -364,10 +367,12 @@ class ComponentParser(HTMLParser):
                 if self.is_signal(match):
                     new_js = transpile(match)
                     new_js = self.inject_uuid(new_js, uuid)
-                    component_signal = new_js.strip("{").strip("}").strip(";")
-                    print("new js", new_js)
-                    # inject uuid in the signal function call
+                    component_signal = self.extract_signal(new_js, uuid)
+                    # TODO: we need to account for multiple signals e.g. signal1 + signal2 + 1
+                    print("This is the new js", new_js)
+                    print("This is the component signal", component_signal)
 
+                    # inject uuid in the signal function call
                     current_data = new_js
 
                 else:
@@ -394,6 +399,11 @@ class ComponentParser(HTMLParser):
                 if matches:
                     data = data.replace("{", "").replace("}", "")
                 data = data.replace(match, str(current_data))
+            elif self.is_signal(current_data):
+                # we should find the initial state of the signal here
+                # TODO for the future
+                data = current_data
+                print("This is the current data", current_data)
 
         if data == "":
             return
@@ -407,16 +417,14 @@ class ComponentParser(HTMLParser):
         # this should never be in the parent stack
         # a text node is a child node as soon as it is created
 
-        # add a parent component
-        # on the wrapper div component
+        # we are wrapping the text node in a div
 
         wrapper_div_component = Component(
             tag="div",
             props={},
             children=[],
             event_listeners={},
-            state=state,
-            data=data,
+            data="",
             css="",
             js="",
             signal="",
@@ -430,7 +438,6 @@ class ComponentParser(HTMLParser):
                 props={},
                 children=[],
                 event_listeners={},
-                state=state,
                 data=data,
                 css="",
                 js="",
@@ -463,7 +470,6 @@ class ComponentParser(HTMLParser):
             props={},
             children=[],
             event_listeners={},
-            state={},
             data="",
             css=self.css,
             js=self.js,

@@ -12,28 +12,16 @@ This module defines functions to build the distribution package for a Starfyre p
 """
 
 
-def write_js_file(path: Path):
-    dist_path = Path(path) / "dist"
-    print("This is the dist path", dist_path)
-    dist_path.mkdir(exist_ok=True)
-
-    with pkg_resources.path("starfyre.js", "store.js") as js_store:
-        store_path = dist_path / "store.js"
-        print("This is the store path", store_path)
-        print("This is the js store path", js_store)
-        shutil.copy(str(js_store), str(store_path))
-
-
 def write_python_client_file(path: Path):
     dist_path = Path(path) / "dist"
     dist_path.mkdir(exist_ok=True)
-    with pkg_resources.path(
-        "starfyre.js", "dom_methods.py"
-    ) as dom_methods, pkg_resources.path("starfyre.js", "store.py") as store_py:
-        dom_methods_path = dist_path / "dom_methods.py"
-        shutil.copy(str(dom_methods), str(dom_methods_path))
+    with pkg_resources.path("starfyre.js", "store.py") as store_py, pkg_resources.path(
+        "starfyre.js", "dom_helpers.py"
+    ) as dom_helpers:
         store_path = dist_path / "store.py"
         shutil.copy(str(store_py), str(store_path))
+        dom_helpers_path = dist_path / "dom_helpers.py"
+        shutil.copy(str(dom_helpers), str(dom_helpers_path))
 
 
 def generate_html_pages(file_routes, project_dir: Path):
@@ -98,8 +86,11 @@ def generate_html_pages(file_routes, project_dir: Path):
             html_file.write(
                 "<script type='module' src='https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.js'></script>"
             )
+            html_file.write(
+                "<script type='mpy'>GLOBAL_STORE={}; GLOBAL_OBSERVERS={}; GLOBAL_REVERSE_OBSERVERS={}; GLOBAL_CLIENT_DOM_ID_MAP={};</script>"
+            )
+            html_file.write("<script type='mpy'>print(GLOBAL_STORE)</script>")
             html_file.write("<script type='mpy' src='./store.py'></script>")
-            html_file.write("<script type='mpy' src='./dom_methods.py'></script>")
             html_file.write(rendered_page)
 
     # Change back to the original directory
@@ -167,8 +158,6 @@ def create_dist(file_routes, project_dir_path):
     """
     print("This is the project dir path", project_dir_path)
     print("These are the file routes", file_routes)
-    write_js_file(project_dir_path)
-    print("JS file written")
     write_python_client_file(project_dir_path)
     print("Python files written")
 

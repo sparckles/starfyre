@@ -1,6 +1,7 @@
+import json
 import re
 from functools import partial
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from .component import Component
 
@@ -34,7 +35,24 @@ def is_attribute(name):
     return not is_listener(name) and name != "children"
 
 
-def render_helper(component: Component) -> tuple[str, str, str, str]:
+def assign_initial_signal_population(component: Component):
+    return f"""
+component = js.document.querySelector("[data-pyxide-id='{component.uuid}']");
+if (component):
+   component.innerText = {component.data}
+            """
+
+
+def hydration_helper(component: Component) -> tuple[str, str, str, str]:
+    # this should be renamed to hydration_helper
+    # actually instead of rendering here, we should just populate the  html with the initail value
+    # and then the client side python should populate the html with the new value
+    # and attach the event listeners, signal, etc
+    # logically we should have an initial value and then the data part should be attached
+    # as is
+    # on hydration, the inital value should be filled in the html, which we are already doing
+    # and then everything else should be attached on the client side
+
     parentElement = component.parentComponent
     html = "\n"
     css = ""
@@ -47,7 +65,6 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
             props={"id": "root"},
             children=[],
             event_listeners={},
-            state={},
             uuid=uuid4(),
             original_name="div",
         )
@@ -55,36 +72,21 @@ def render_helper(component: Component) -> tuple[str, str, str, str]:
 
     tag = component.tag
     props = component.props
-    state = component.state
     data = component.data
     event_listeners = component.event_listeners
 
     # Create DOM element
     if component.is_text_component:
-        # find all the names in "{}" and print them
-        matches = re.findall(r"{(.*?)}", data)
-        for match in matches:
-            if match in state:
-                function = state[match]
-                function = partial(function, component)
-                data = component.data.replace(f"{{{ match }}}", str(function()))
-            else:
-                print(
-                    "No match found for", match, component, "This is the state", state
-                )
-
         component.parentComponent.uuid = component.uuid
         html += f"{data}\n"
         component.html = html
 
+        # matches = re.findall(r"{(.*?)}", data)
+        # print("This is the matches", matches)
+        # we need to do a better way of managing the signals
         if component.signal:
-            client_side_python += f"""
-component = js.document.querySelector("[data-pyxide-id='{component.uuid}']");
-js.addDomIdToMap('{component.uuid}', "{component.signal}");
-if (component):
-   component.innerText = {component.signal}
-            """
-
+            # TODO: this part should be moved to the client
+            client_side_python += assign_initial_signal_population(component)
         return html, css, js, client_side_python
 
     if component.css:
@@ -121,7 +123,9 @@ if (component):
 
     for childElement in children:
         childElement.parentElement = component
-        new_html, new_css, new_js, new_client_side_python = render_helper(childElement)
+        new_html, new_css, new_js, new_client_side_python = hydration_helper(
+            childElement
+        )
         html += new_html
         css += new_css
         js += new_js
@@ -134,13 +138,27 @@ if (component):
     return html, css, js, client_side_python
 
 
+class ComponentEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Component):
+            return obj.to_json()
+
+        if isinstance(obj, UUID):
+            return str(obj)
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
+
 def hydrate(component: Component) -> str:
-    html, css, js, client_side_python = render_helper(component)
+    html, css, js, client_side_python = hydration_helper(component)
+    tree = json.dumps(component, cls=ComponentEncoder)
 
     final_html = f"""<!DOCTYPE html>
-<meta charset='UTF-8'>
-<script type='mpy' config='pyscript.toml'>{client_side_python}</script>
-<style>{css}</style>
-<div data-pyxide-id='root'>{html}</div>
-<script>{js}</script>"""
+    <meta charset='UTF-8'>
+    <script>window["STARFYRE_ROOT_NODE"]=`{tree}`</script>
+    <script type='mpy' src='./dom_helpers.py'></script>
+    <script type='mpy' config='pyscript.toml'>{client_side_python}</script>
+    <style>{css}</style>
+    <div data-pyxide-id='root'>{html}</div>
+    <script>{js}</script>"""
     return final_html

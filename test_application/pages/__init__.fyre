@@ -10,6 +10,7 @@ def mocked_request():
 [use_parent_signal, set_parent_signal, get_parent_signal] = create_signal(1)
 
 def handle_on_click(e):
+   print("Hello world")
    signal_value = get_parent_signal()
    set_parent_signal(signal_value+1)
 
@@ -18,8 +19,8 @@ from pyscript.js_modules import Fireworks
 from pyscript import document
 
 container = document.querySelector("[data-pyxide-id='root']")
-f = Fireworks.Fireworks.new(container)
-f.start()
+#f = Fireworks.Fireworks.new(container)
+#f.start()
 ---
 
 <style>
