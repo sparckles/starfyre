@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import sys
@@ -17,7 +18,8 @@ from starfyre.file_router import FileRouter
 )
 @click.option("--create", help="Create a new project. Requires a project name.")
 @click.option("--serve", is_flag=True, help="Serve the project. Requires --path.")
-def main(path, build, create, serve):
+@click.option("--add-py-dep", help="Add a Python dependency to the project.")
+def main(path, build, create, serve, add_py_dep):
     """
     Command-line interface to compile and build a Starfyre project.
 
@@ -76,6 +78,21 @@ def main(path, build, create, serve):
         )
 
         print(result.stdout.decode("utf-8"))
+
+    if add_py_dep:
+        # read pyscript.json and add the dependency to the "packages" list
+        # write the updated json back to the file
+        with open("pyscript.json", "r") as f:
+            data = json.load(f)
+            if add_py_dep not in data["packages"]:
+                data["packages"].append(add_py_dep)
+            else:
+                print(f"{add_py_dep} already exists in pyscript.json")
+                return
+
+        with open("pyscript.json", "w") as f:
+            json.dump(data, f, indent=4)
+            print(f"Added {add_py_dep} to pyscript.json")
 
 
 if __name__ == "__main__":

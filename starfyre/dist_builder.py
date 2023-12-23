@@ -126,6 +126,18 @@ def copy_public_files(project_dir: Path):
             shutil.copytree(file, destination_path)
 
 
+def copy_pyscript_config(project_dir: Path):
+    """
+    Copy the pyscript config file to the dist directory.
+
+    Parameters:
+    - project_dir (str): Path to the project directory.
+    """
+    dist_dir = (project_dir / "dist").resolve()
+    pyscript_config_path = (project_dir / "pyscript.json").resolve()
+    shutil.copy(pyscript_config_path, dist_dir)
+
+
 def create_dist(file_routes, project_dir_path):
     """
     create_dist creates the final dist of the project. i.e. the html, css , js and the py(script) files.
@@ -142,5 +154,6 @@ def create_dist(file_routes, project_dir_path):
     print("Python files written")
 
     # first step is to transfer everything from the public folder to the dist folder
+    copy_pyscript_config(project_dir_path)
     copy_public_files(project_dir_path)
     generate_html_pages(file_routes=file_routes, project_dir=project_dir_path)
