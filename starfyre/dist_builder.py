@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 
 from starfyre.dom_methods import hydrate
+import toml
 
 """
 This module defines functions to build the distribution package for a Starfyre project.
@@ -126,16 +127,31 @@ def copy_public_files(project_dir: Path):
             shutil.copytree(file, destination_path)
 
 
-def copy_pyscript_config(project_dir: Path):
+def copy_starfyre_config(project_dir: Path):
     """
     Copy the pyscript config file to the dist directory.
 
     Parameters:
     - project_dir (str): Path to the project directory.
     """
-    dist_dir = (project_dir / "dist").resolve()
-    pyscript_config_path = (project_dir / "pyscript.json").resolve()
-    shutil.copy(pyscript_config_path, dist_dir)
+    dist_dir = (project_dir / "starfyre_config.toml").resolve()
+    # convert pyxide_package to packages= [pyxide_package]
+    # convert js_module to js_modules= [js_module.main]
+    pyscript_config_path = (project_dir / "dist" / "pyscript.toml").resolve()
+
+    with open(dist_dir, "r") as f:
+        data = toml.load(f)
+
+    pyscript_data = {}
+    pyscript_data["packages"] = data["pyxide_packages"]
+    pyscript_data["js_modules.main"] = {}
+    for js_module in data["js_modules"]:
+        pyscript_data["js_modules.main"][js_module] = ""
+    # pyscript["sever_packages"] = data["server_packages"]
+    # server packages need to be installed directly into the project
+
+    with open(pyscript_config_path, "w") as f:
+        toml.dump(pyscript_data, f)
 
 
 def create_dist(file_routes, project_dir_path):
@@ -154,6 +170,6 @@ def create_dist(file_routes, project_dir_path):
     print("Python files written")
 
     # first step is to transfer everything from the public folder to the dist folder
-    copy_pyscript_config(project_dir_path)
+    copy_starfyre_config(project_dir_path)
     copy_public_files(project_dir_path)
     generate_html_pages(file_routes=file_routes, project_dir=project_dir_path)

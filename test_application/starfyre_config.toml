@@ -1,0 +1,6 @@
+pyxide_packages = ["arrr"]
+
+server_packages = ["arrr"]
+
+js_modules = ["is_even"]
+

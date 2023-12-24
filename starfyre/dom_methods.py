@@ -137,5 +137,10 @@ if (component):
 def hydrate(component: Component) -> str:
     html, css, js, client_side_python = render_helper(component)
 
-    final_html = f"<!DOCTYPE html><meta charset='UTF-8'><script type='mpy'>{client_side_python}</script> <style>{css}</style><div data-pyxide-id='root'>{html}</div><script>{js}</script>"
+    final_html = f"""<!DOCTYPE html>
+<meta charset='UTF-8'>
+<script type='mpy' config='pyscript.toml'>{client_side_python}</script>
+<style>{css}</style>
+<div data-pyxide-id='root'>{html}</div>
+<script>{js}</script>"""
     return final_html

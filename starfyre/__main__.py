@@ -1,4 +1,4 @@
-import json
+import toml
 import os
 import subprocess
 import sys
@@ -18,8 +18,10 @@ from starfyre.file_router import FileRouter
 )
 @click.option("--create", help="Create a new project. Requires a project name.")
 @click.option("--serve", is_flag=True, help="Serve the project. Requires --path.")
-@click.option("--add-py-dep", help="Add a Python dependency to the project.")
-def main(path, build, create, serve, add_py_dep):
+@click.option("--add-server-dep", help="Add a Python server dependency to the project.")
+@click.option("--add-pyxide-dep", help="Add a Pyxide dependency to the project.")
+@click.option("--add-js-dep", help="Add a JS dependency to the project.")
+def main(path, build, create, serve, add_server_dep, add_pyxide_dep, add_js_dep):
     """
     Command-line interface to compile and build a Starfyre project.
 
@@ -79,20 +81,50 @@ def main(path, build, create, serve, add_py_dep):
 
         print(result.stdout.decode("utf-8"))
 
-    if add_py_dep:
-        # read pyscript.json and add the dependency to the "packages" list
-        # write the updated json back to the file
-        with open("pyscript.json", "r") as f:
-            data = json.load(f)
-            if add_py_dep not in data["packages"]:
-                data["packages"].append(add_py_dep)
+    if add_server_dep:
+        with open("starfyre_config.toml", "r") as f:
+            # data = json.load(f)
+            data = toml.load(f)
+
+            if add_server_dep not in data["server_packages"]:
+                data["server_packages"].append(add_server_dep)
             else:
-                print(f"{add_py_dep} already exists in pyscript.json")
+                print(f"{add_server_dep} already exists in pyscript.json")
                 return
 
-        with open("pyscript.json", "w") as f:
-            json.dump(data, f, indent=4)
-            print(f"Added {add_py_dep} to pyscript.json")
+        with open("pyscript.toml", "w") as f:
+            toml.dump(data, f)
+            print(f"Added {add_server_dep} to pyscript.json")
+
+    if add_pyxide_dep:
+        with open("starfyre_config.toml", "r") as f:
+            # data = json.load(f)
+            data = toml.load(f)
+
+            if add_pyxide_dep not in data["pyxide_packages"]:
+                data["pyxide_packages"].append(add_pyxide_dep)
+            else:
+                print(f"{add_pyxide_dep} already exists in pyscript.json")
+                return
+
+        with open("pyscript.toml", "w") as f:
+            toml.dump(data, f)
+            print(f"Added {add_pyxide_dep} to pyscript.json")
+
+    if add_js_dep:
+        with open("starfyre_config.toml", "r") as f:
+            # data = json.load(f)
+            data = toml.load(f)
+
+            if add_js_dep not in data["js_packages"]:
+                data["js_packages"].append(add_js_dep)
+            else:
+                print(f"{add_js_dep} already exists in pyscript.json")
+                return
+
+        with open("pyscript.toml", "w") as f:
+            toml.dump(data, f)
+            print(f"Added {add_js_dep} to pyscript.json")
 
 
 if __name__ == "__main__":
