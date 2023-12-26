@@ -145,12 +145,12 @@ def copy_starfyre_config(project_dir: Path):
 
     pyscript_data = {}
     pyscript_data["packages"] = data["pyxide_packages"]
-    
+
     js_modules_main = {}
     for js_module in data["js_modules"]:
         url = data["js_modules"][js_module]
         js_modules_main[url] = js_module
-    
+
     pyscript_data["js_modules"] = {"main": js_modules_main}
 
     with open(pyscript_config_path, "w") as f:

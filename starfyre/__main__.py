@@ -25,6 +25,7 @@ def get_latest_version(package_name):
 def construct_cdn_link(package_name, version):
     return f"https://cdn.jsdelivr.net/npm/{package_name}@{version}/+esm"
 
+
 @click.command()
 @click.option("--path", help="Path to the project. Requires --build.")
 @click.option(
