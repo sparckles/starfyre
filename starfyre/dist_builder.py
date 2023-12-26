@@ -92,8 +92,11 @@ def generate_html_pages(file_routes, project_dir: Path):
         )
         with open(dist_dir / output_file_name, "w") as html_file:
             html_file.write("<script src='store.js'></script>")
+            # html_file.write(
+            #     "<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>"
+            # )
             html_file.write(
-                "<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>"
+                "<script type='module' src='https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.js'></script>"
             )
             html_file.write("<script type='mpy' src='./store.py'></script>")
             html_file.write("<script type='mpy' src='./dom_methods.py'></script>")
@@ -135,8 +138,6 @@ def copy_starfyre_config(project_dir: Path):
     - project_dir (str): Path to the project directory.
     """
     dist_dir = (project_dir / "starfyre_config.toml").resolve()
-    # convert pyxide_package to packages= [pyxide_package]
-    # convert js_module to js_modules= [js_module.main]
     pyscript_config_path = (project_dir / "dist" / "pyscript.toml").resolve()
 
     with open(dist_dir, "r") as f:
@@ -144,11 +145,13 @@ def copy_starfyre_config(project_dir: Path):
 
     pyscript_data = {}
     pyscript_data["packages"] = data["pyxide_packages"]
-    pyscript_data["js_modules.main"] = {}
+    
+    js_modules_main = {}
     for js_module in data["js_modules"]:
-        pyscript_data["js_modules.main"][js_module] = ""
-    # pyscript["sever_packages"] = data["server_packages"]
-    # server packages need to be installed directly into the project
+        url = data["js_modules"][js_module]
+        js_modules_main[url] = js_module
+    
+    pyscript_data["js_modules"] = {"main": js_modules_main}
 
     with open(pyscript_config_path, "w") as f:
         toml.dump(pyscript_data, f)
