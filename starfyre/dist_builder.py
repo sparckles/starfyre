@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 
 from starfyre.dom_methods import hydrate
+import toml
 
 """
 This module defines functions to build the distribution package for a Starfyre project.
@@ -91,8 +92,11 @@ def generate_html_pages(file_routes, project_dir: Path):
         )
         with open(dist_dir / output_file_name, "w") as html_file:
             html_file.write("<script src='store.js'></script>")
+            # html_file.write(
+            #     "<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>"
+            # )
             html_file.write(
-                "<script type='module' src='https://pyscript.net/releases/2023.11.1/core.js'></script>"
+                "<script type='module' src='https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.js'></script>"
             )
             html_file.write("<script type='mpy' src='./store.py'></script>")
             html_file.write("<script type='mpy' src='./dom_methods.py'></script>")
@@ -126,6 +130,33 @@ def copy_public_files(project_dir: Path):
             shutil.copytree(file, destination_path)
 
 
+def copy_starfyre_config(project_dir: Path):
+    """
+    Copy the pyscript config file to the dist directory.
+
+    Parameters:
+    - project_dir (str): Path to the project directory.
+    """
+    dist_dir = (project_dir / "starfyre_config.toml").resolve()
+    pyscript_config_path = (project_dir / "dist" / "pyscript.toml").resolve()
+
+    with open(dist_dir, "r") as f:
+        data = toml.load(f)
+
+    pyscript_data = {}
+    pyscript_data["packages"] = data["pyxide_packages"]
+
+    js_modules_main = {}
+    for js_module in data["js_modules"]:
+        url = data["js_modules"][js_module]
+        js_modules_main[url] = js_module
+
+    pyscript_data["js_modules"] = {"main": js_modules_main}
+
+    with open(pyscript_config_path, "w") as f:
+        toml.dump(pyscript_data, f)
+
+
 def create_dist(file_routes, project_dir_path):
     """
     create_dist creates the final dist of the project. i.e. the html, css , js and the py(script) files.
@@ -142,5 +173,6 @@ def create_dist(file_routes, project_dir_path):
     print("Python files written")
 
     # first step is to transfer everything from the public folder to the dist folder
+    copy_starfyre_config(project_dir_path)
     copy_public_files(project_dir_path)
     generate_html_pages(file_routes=file_routes, project_dir=project_dir_path)

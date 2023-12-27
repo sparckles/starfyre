@@ -1,0 +1,6 @@
+pyxide_packages = []
+server_packages = []
+
+[js_modules]
+is_odd = "https://cdn.jsdelivr.net/npm/is-odd@3.0.1/+esm"
+Fireworks = "https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/+esm"

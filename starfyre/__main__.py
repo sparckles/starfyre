@@ -1,13 +1,29 @@
+import toml
 import os
 import subprocess
 import sys
 from pathlib import Path
+import requests
 
 import click
 
 from starfyre import compile
 from starfyre.dist_builder import create_dist
 from starfyre.file_router import FileRouter
+
+
+def get_latest_version(package_name):
+    url = f"https://registry.npmjs.org/{package_name}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return data["dist-tags"]["latest"]
+    else:
+        return None
+
+
+def construct_cdn_link(package_name, version):
+    return f"https://cdn.jsdelivr.net/npm/{package_name}@{version}/+esm"
 
 
 @click.command()
@@ -17,7 +33,11 @@ from starfyre.file_router import FileRouter
 )
 @click.option("--create", help="Create a new project. Requires a project name.")
 @click.option("--serve", is_flag=True, help="Serve the project. Requires --path.")
-def main(path, build, create, serve):
+@click.option("--add-server-dep", help="Add a Python server dependency to the project.")
+@click.option("--add-pyxide-dep", help="Add a Pyxide dependency to the project.")
+@click.option("--add-js-dep", help="Add a JS dependency to the project.")
+@click.option("--as", "as_", help="Name of the JS dependency.")
+def main(path, build, create, serve, add_server_dep, add_pyxide_dep, add_js_dep, as_):
     """
     Command-line interface to compile and build a Starfyre project.
 
@@ -76,6 +96,55 @@ def main(path, build, create, serve):
         )
 
         print(result.stdout.decode("utf-8"))
+
+    if add_server_dep:
+        with open("starfyre_config.toml", "r") as f:
+            # data = json.load(f)
+            data = toml.load(f)
+
+            if add_server_dep not in data["server_packages"]:
+                data["server_packages"].append(add_server_dep)
+            else:
+                print(f"{add_server_dep} already exists in pyscript.json")
+                return
+
+        with open("starfyre_config.toml", "w") as f:
+            toml.dump(data, f)
+
+    if add_pyxide_dep:
+        with open("starfyre_config.toml", "r") as f:
+            # data = json.load(f)
+            data = toml.load(f)
+
+            if add_pyxide_dep not in data["pyxide_packages"]:
+                data["pyxide_packages"].append(add_pyxide_dep)
+            else:
+                print(f"{add_pyxide_dep} already exists in pyscript.json")
+                return
+
+        with open("starfyre_config.toml", "w") as f:
+            toml.dump(data, f)
+
+    if add_js_dep:
+        with open("starfyre_config.toml", "r") as f:
+            data = toml.load(f)
+
+        if add_js_dep in data["js_modules"]:
+            print(f"{add_js_dep} already exists in starfyre_config.toml")
+            return
+
+        version = get_latest_version(add_js_dep)
+
+        dependency_name = add_js_dep if not as_ else as_
+
+        if version:
+            cdn_link = construct_cdn_link(add_js_dep, version)
+            data["js_modules"][dependency_name] = cdn_link
+            with open("starfyre_config.toml", "w") as f:
+                toml.dump(data, f)
+                print(f"Added {cdn_link} to starfyre_config.toml")
+        else:
+            print("Failed to fetch the latest version for the package.")
 
 
 if __name__ == "__main__":
