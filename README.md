@@ -152,6 +152,28 @@ import "../styles/index.css"
 ```
 </details>
 
+### Dependencies
+
+You need to have a `starfyre_config.toml` file in your project root directory. This file is used to specify the dependencies for your project. The dependencies are specified in the following format:
+
+```toml
+
+pyxide_packages = [] # for client side packages
+server_packages = [] # for server side packages
+
+[js_modules]
+is_odd = "https://cdn.jsdelivr.net/npm/is-odd@3.0.1/+esm"
+Fireworks = "https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/+esm"
+```
+
+You can specify the dependencies using the following commands:
+
+```bash
+python3 -m starfyre --add-pyxide-package="package-name"
+python3 -m starfyre --add-server-package="package-name"
+python3 -m starfyre --add-js-module="module-name" --as="alias"
+```
+
 
 ## 🚀 Sample CLI usage
 

@@ -152,7 +152,7 @@ import "../styles/index.css"
 ```
 </details>
 
-## Dependencies
+### Dependencies
 
 You need to have a `starfyre_config.toml` file in your project root directory. This file is used to specify the dependencies for your project. The dependencies are specified in the following format:
 
