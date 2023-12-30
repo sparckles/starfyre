@@ -9,8 +9,11 @@ def mocked_request():
 # client functions can be async
 [use_parent_signal, set_parent_signal, get_parent_signal] = create_signal(1)
 
+[use_server_signal, set_server_signal, get_server_signal] = server_state()
+
 def handle_on_click(e):
    signal_value = get_parent_signal()
+   set_server_signal(1)
    set_parent_signal(signal_value+1)
 ---
 
