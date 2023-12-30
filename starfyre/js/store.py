@@ -142,6 +142,7 @@ import random
 # Assuming connection is already established
 connection = js.WebSocket.new("ws://localhost:8080/web_socket")
 
+
 def on_message(event):
     print("Message received:", event.data)
     try:
@@ -151,11 +152,12 @@ def on_message(event):
         return
     # Process the data, update local state, notify observers, etc.
 
+
 connection.onmessage = on_message
+
 
 def server_state():
     id = random.randint(0, 100000)
-
 
     def use_server_signal(element=None):
         nonlocal id
@@ -183,5 +185,6 @@ def server_state():
         return None
 
     return [use_server_signal, set_server_signal, get_server_signal]
+
 
 # Handle incoming WebSocket messages
