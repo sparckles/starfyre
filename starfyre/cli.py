@@ -145,5 +145,3 @@ def run(path, build, create, serve, add_server_dep, add_pyxide_dep, add_js_dep, 
                 print(f"Added {cdn_link} to starfyre_config.toml")
         else:
             print("Failed to fetch the latest version for the package.")
-
-
