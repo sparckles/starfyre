@@ -17,6 +17,9 @@ ruff = "^0.1.4"
 black = "^23.3.0"
 commitizen = "^3.5.3"
 
+[tool.poetry.scripts]
+starfyre = "starfyre.cli:run"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
