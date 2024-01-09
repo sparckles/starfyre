@@ -3,10 +3,9 @@
 import random
 
 import js
-import json
 
 
-print("This is the global store",GLOBAL_STORE)
+print("This is the global store", GLOBAL_STORE)
 
 store = GLOBAL_STORE
 observers = GLOBAL_OBSERVERS
@@ -15,6 +14,7 @@ reverse_store = GLOBAL_OBSERVERS  # maps dom id: uuid
 clientDomIdMap = GLOBAL_CLIENT_DOM_ID_MAP
 # dict[uuid.UUID, list[Component]] =
 #
+
 
 def evaluate_data(component, dom_id):
     # we will need to extend this
@@ -50,7 +50,6 @@ def hydrate(component):
         data = evaluate_data(child, id)
         domElement.innerText = data
         hydrate(child)
-
 
 
 def create_signal(initial_state=None):

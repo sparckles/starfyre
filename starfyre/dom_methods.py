@@ -1,6 +1,4 @@
 import json
-import re
-from functools import partial
 from uuid import UUID, uuid4
 
 from .component import Component

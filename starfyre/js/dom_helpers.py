@@ -1,7 +1,4 @@
 import ujson as json
-import re
-from functools import partial
-from pyscript import document
 import js
 
 
