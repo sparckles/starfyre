@@ -12,7 +12,6 @@ reverse_store = GLOBAL_OBSERVERS  # maps dom id: uuid
 clientDomIdMap = GLOBAL_CLIENT_DOM_ID_MAP
 
 
-
 def evaluate_data(component, dom_id):
     # we will need to extend this
     data = component.data
