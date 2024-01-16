@@ -42,14 +42,20 @@ if (component):
 
 
 def hydration_helper(component: Component) -> tuple[str, str, str, str]:
-    # this should be renamed to hydration_helper
-    # actually instead of rendering here, we should just populate the  html with the initail value
-    # and then the client side python should populate the html with the new value
-    # and attach the event listeners, signal, etc
-    # logically we should have an initial value and then the data part should be attached
-    # as is
-    # on hydration, the inital value should be filled in the html, which we are already doing
-    # and then everything else should be attached on the client side
+    """
+    Args:
+        component (Component): The root component
+
+    We are just hyrdating the html here, and then the client side python should populate the html
+    with the new values and attach the event listeners, signal, etc.
+
+    TODO:
+    I want to find a way for signals to be populated with a default value on the server side or
+    something similar for more complex components.
+
+    The inital value should be filled in the html, which we are already doing and then everything
+    else should be attached on the client side.
+    """
 
     parentElement = component.parentComponent
     html = "\n"

@@ -5,15 +5,12 @@ import random
 import js
 
 
-print("This is the global store", GLOBAL_STORE)
-
 store = GLOBAL_STORE
 observers = GLOBAL_OBSERVERS
 
 reverse_store = GLOBAL_OBSERVERS  # maps dom id: uuid
 clientDomIdMap = GLOBAL_CLIENT_DOM_ID_MAP
-# dict[uuid.UUID, list[Component]] =
-#
+
 
 
 def evaluate_data(component, dom_id):
@@ -54,7 +51,6 @@ def hydrate(component):
 
 def create_signal(initial_state=None):
     """Create a signal to be used in a component."""
-    print("Creating a signal with initial state", initial_state)
     global store, reverse_store
     signal_id = random.randint(0, 100000)
 
@@ -62,16 +58,12 @@ def create_signal(initial_state=None):
         """Get the state and manage observers."""
         nonlocal signal_id
         if dom_id:
-            print("This is the element", dom_id)
             observers.setdefault(signal_id, []).append(dom_id)
             reverse_store[dom_id] = signal_id
 
         return store.get(signal_id, initial_state)
 
     def set_signal(initial_state=None):
-        """Set a new state and trigger re-render for observers."""
-        """The render process works in a wrong way at this point but works for now."""
-        """We need to update the value in the state"""
         # need to fix this
         # we need to maintain a global tree indexed by uuids after the hydration process
         # after the hydration process, we need to update the tree with the new state
@@ -96,8 +88,6 @@ def create_signal(initial_state=None):
             component.re_render()
             hydrate(component)
             print("hydration ended")
-
-            # render(component, component.parentComponent)
 
     def get_signal(*args, **kwargs):
         # args and kwargs are not used but a hack as the ids are being
