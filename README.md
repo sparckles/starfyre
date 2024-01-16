@@ -37,6 +37,7 @@ It will use the [create-starfyre-app](https://github.com/sparckles/create-starfy
 
 ## IDE/Editor Plugins
 - [vim-starfyre](https://github.com/sparckles/vim-starfyre) : A Vim plugin for syntax highlighting Starfyre files. 
+- [vscode-starfyre](https://marketplace.visualstudio.com/items?itemName=SanskarJethi.starfyre) : A VSCode extension for syntax highlighting Starfyre files. 
 
 ### A simple component
 `my-app/pages/__init__.fyre`
