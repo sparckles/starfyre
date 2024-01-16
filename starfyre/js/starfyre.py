@@ -1,4 +1,5 @@
-from pyscript import js, document, window, display
+from pyscript import document, window, display
+import js
 
 websocket = js.WebSocket
 

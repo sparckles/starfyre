@@ -17,11 +17,13 @@ def write_python_client_file(path: Path):
     dist_path.mkdir(exist_ok=True)
     with pkg_resources.path("starfyre.js", "store.py") as store_py, pkg_resources.path(
         "starfyre.js", "dom_helpers.py"
-    ) as dom_helpers:
+    ) as dom_helpers, pkg_resources.path("starfyre.js", "starfyre.py") as starfyre:
         store_path = dist_path / "store.py"
         shutil.copy(str(store_py), str(store_path))
         dom_helpers_path = dist_path / "dom_helpers.py"
         shutil.copy(str(dom_helpers), str(dom_helpers_path))
+        starfyre_path = dist_path / "starfyre.py"
+        shutil.copy(str(starfyre), str(starfyre_path))
 
 
 def generate_html_pages(file_routes, project_dir: Path):
@@ -136,6 +138,7 @@ def copy_starfyre_config(project_dir: Path):
 
     pyscript_data = {}
     pyscript_data["packages"] = data["pyxide_packages"]
+    pyscript_data["files"] = {"./starfyre.py": "./starfyre.py"}
 
     js_modules_main = {}
     for js_module in data["js_modules"]:
