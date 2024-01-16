@@ -46,7 +46,7 @@ def message():
   return "World"
 
 ---client
-import js
+from starfyre import js
 
 def handle_click():
   js.console.log("Hello World")
