@@ -31,7 +31,6 @@ def create_component(
             props={},
             children=[],
             event_listeners={},
-            state={},
             uuid="store",
             js=js,
             original_name="div",

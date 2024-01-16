@@ -21,7 +21,7 @@ def ssr_request():
         {ssr_request()}         
       </div>
       <b>      
-        {use_parent_signal()}
+        {use_parent_signal() + 1}
       </b>
       <b>
         {get_parent_signal()}
