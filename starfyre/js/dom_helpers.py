@@ -1,5 +1,5 @@
-import ujson as json
 import js
+import ujson as json
 
 
 def is_listener(name):

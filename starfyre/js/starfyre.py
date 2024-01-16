@@ -1,6 +1,6 @@
-from pyscript import document, window, display
 import js
+from pyscript import display, document, window
 
 websocket = js.WebSocket
 
-__all__ = ['websocket', 'document', 'window', 'js', 'display']
+__all__ = ["websocket", "document", "window", "js", "display"]
