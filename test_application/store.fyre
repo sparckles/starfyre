@@ -1,7 +1,7 @@
 ---client 
 
-from pyscript import display
-from pyscript import window, document
+from starfyre import display
+from starfyre import window, document
 
 
 ---
