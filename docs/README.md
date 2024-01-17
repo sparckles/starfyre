@@ -30,7 +30,7 @@ A sample project is hosted on [GitHub](https://github.com/sansyrox/first-starfyr
 To create an application
 
 ```bash
-python3 -m starfyre --create="my-app"
+starfyre --create="my-app"
 ```
 
 It will use the [create-starfyre-app](https://github.com/sparckles/create-starfyre-app) as the template to create a new project.
@@ -169,9 +169,9 @@ Fireworks = "https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/+esm"
 You can specify the dependencies using the following commands:
 
 ```bash
-python3 -m starfyre --add-pyxide-package="package-name"
-python3 -m starfyre --add-server-package="package-name"
-python3 -m starfyre --add-js-module="module-name" --as="alias"
+starfyre --add-pyxide-package="package-name"
+starfyre --add-server-package="package-name"
+starfyre --add-js-module="module-name" --as="alias"
 ```
 
 

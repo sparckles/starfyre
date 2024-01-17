@@ -10,7 +10,7 @@ The compiler is a core component of Starfyre that facilitates the conversion of 
 
 - **Exception Handling**: The compiler introduces new exception classes to handle specific scenarios, such as the absence of `__init__.fyre` or conflicts due to the use of an `index.fyre` file.
 
-- **Parsing `.fyre` Files**: Each `.fyre` file is parsed to extract `Python`, `CSS`, `PyML`, `JS`, and client-side Python components. These components are then transpiled into intermediate representations.
+- **Parsing `.fyre` Files**: Each `.fyre` file is parsed to extract `Python`, `CSS`, `Pyxide`, `JS`, and client-side Python components. These components are then transpiled into intermediate representations.
 
 - **IR Generation**: The transpiled components are combined to generate an intermediate representation (IR) of the `.fyre` file's content.
 
@@ -19,7 +19,7 @@ The compiler is a core component of Starfyre that facilitates the conversion of 
 ## Transpiler Details
 The transpiler takes the intermediate representation (IR) of `.fyre` files, which are `.py` files that capture the abstracted structure of the original `.fyre` code, and generates executable Python code. It accomplishes this through the following steps:
 
-1) **Extracting IR Components**: The transpiler extracts `Python`, `CSS`, `PyML`, `JS`, and client-side Python components from the IR.
+1) **Extracting IR Components**: The transpiler extracts `Python`, `CSS`, `Pyxide`, `JS`, and client-side Python components from the IR.
 
 2) **Creating Python Code**: Based on the extracted components, the transpiler creates Python code that utilizes the `create_component` and `hydrate` functions appropriately. It also handles the special case of the `__init__.fyre` file.
 
