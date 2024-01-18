@@ -1,5 +1,4 @@
-import js
-import ujson as json
+from starfyre import js
 
 
 def is_listener(name):
