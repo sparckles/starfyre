@@ -1,6 +1,7 @@
 from starfyre import js
 
 
+
 def is_listener(name):
     return name.startswith("on")
 
