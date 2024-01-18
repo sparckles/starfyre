@@ -2,8 +2,7 @@
 
 import random
 
-import js
-
+from starfyre import js
 
 store = GLOBAL_STORE
 observers = GLOBAL_OBSERVERS
