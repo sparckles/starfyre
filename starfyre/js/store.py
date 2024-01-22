@@ -96,3 +96,57 @@ def create_signal(initial_state=None):
         return store.get(signal_id, initial_state)
 
     return [use_signal, set_signal, get_signal]
+
+
+import json
+import random
+
+# Assuming connection is already established
+connection = js.WebSocket.new("ws://localhost:8080/web_socket")
+
+
+def on_message(event):
+    print("Message received:", event.data)
+    try:
+        data = json.loads(event.data)
+    except SyntaxError:
+        print("Invalid JSON")
+        return
+    # Process the data, update local state, notify observers, etc.
+
+
+connection.onmessage = on_message
+
+
+def server_state():
+    id = random.randint(0, 100000)
+
+    def use_server_signal(element=None):
+        nonlocal id
+        if element:
+            # Send a request to register observer
+            message = json.dumps({"action": "register", "id": id, "element": element})
+            connection.send(message)
+
+        # Request current state for this id
+        connection.send(json.dumps({"action": "get_state", "id": id}))
+
+        # Returning initial state or undefined, as actual state will be set on server response
+        return None
+
+    def set_server_signal(state):
+        nonlocal id
+        # Send the updated state to server
+        connection.send(json.dumps({"action": "set_state", "id": id, "state": state}))
+
+    def get_server_signal():
+        nonlocal id
+        # Request current state for this id
+        connection.send(json.dumps({"action": "get_state", "id": id}))
+        # Returning initial state or undefined, as actual state will be set on server response
+        return None
+
+    return [use_server_signal, set_server_signal, get_server_signal]
+
+
+# Handle incoming WebSocket messages
