@@ -17,7 +17,14 @@ Starfyre is a library that allows you to build reactive frontends using only Pyt
 
 
 
-## 📦 Installation:
+## 📦 Development Setup:
+
+### Prerequisites
+
+Install [Rust](https://www.rust-lang.org/tools/install) which includes Cargo package manager.
+
+
+### Installation
 
 ```
 pip install starfyre
