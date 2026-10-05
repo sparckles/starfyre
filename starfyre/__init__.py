@@ -40,9 +40,9 @@ def create_component(
 
 
 __all__ = [
+    "Component",
+    "compile",
     "create_component",
     "hydrate",
-    "compile",
     "transpile",
-    "Component",
 ]
