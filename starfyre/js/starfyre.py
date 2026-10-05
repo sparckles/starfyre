@@ -3,4 +3,4 @@ from pyscript import display, document, window
 
 websocket = js.WebSocket
 
-__all__ = ["websocket", "document", "window", "js", "display"]
+__all__ = ["display", "document", "js", "websocket", "window"]
