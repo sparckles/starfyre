@@ -55,7 +55,6 @@ class Component:
 
     def re_render_helper(self, component):
         # this will rebuild the tree
-        ...
 
         if self == component:
             print("This is the true component", component)
@@ -107,7 +106,7 @@ def rebuild_tree():
     # this is present globally
     # TODO: need to work on this
     # js.window maybe
-    STARFYRE_ROOT_NODE = getattr(js.window, "STARFYRE_ROOT_NODE")
+    STARFYRE_ROOT_NODE = js.window.STARFYRE_ROOT_NODE
     tree_node = STARFYRE_ROOT_NODE
     # print("This is the tree node", tree_node)
     print("This is the tree node", type(tree_node))

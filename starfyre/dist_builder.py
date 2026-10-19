@@ -1,11 +1,12 @@
 import importlib
-import os
 import importlib.resources as pkg_resources
+import os
 import shutil
 from pathlib import Path
 
-from starfyre.dom_methods import hydrate
 import toml
+
+from starfyre.dom_methods import hydrate
 
 """
 This module defines functions to build the distribution package for a Starfyre project.
@@ -15,9 +16,11 @@ This module defines functions to build the distribution package for a Starfyre p
 def write_python_client_file(path: Path):
     dist_path = Path(path) / "dist"
     dist_path.mkdir(exist_ok=True)
-    with pkg_resources.path("starfyre.js", "store.py") as store_py, pkg_resources.path(
-        "starfyre.js", "dom_helpers.py"
-    ) as dom_helpers, pkg_resources.path("starfyre.js", "starfyre.py") as starfyre:
+    with (
+        pkg_resources.path("starfyre.js", "store.py") as store_py,
+        pkg_resources.path("starfyre.js", "dom_helpers.py") as dom_helpers,
+        pkg_resources.path("starfyre.js", "starfyre.py") as starfyre,
+    ):
         store_path = dist_path / "store.py"
         shutil.copy(str(store_py), str(store_path))
         dom_helpers_path = dist_path / "dom_helpers.py"
