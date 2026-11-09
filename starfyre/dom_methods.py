@@ -94,7 +94,7 @@ def hydration_helper(component: Component) -> tuple[str, str, str, str]:
         return html, css, js, client_side_python
 
     if component.css:
-        css += f"{ component.css }\n"
+        css += f"{component.css}\n"
 
     if component.js:
         js += f"{component.js}\n"
