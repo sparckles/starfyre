@@ -51,7 +51,7 @@ def resolve_css_import(css_file_name, working_directory):
         raise Exception("Unable to understand the import path")
 
     with open(import_path, "r") as import_file:
-        for line in import_file.readlines():
+        for line in import_file:
             css_content.append(line)
 
     return css_content
@@ -106,7 +106,7 @@ def parse(fyre_file_name, project_dir):
     # regex pattern to match if a line is a css import, e.g. import "style.css"
     css_import_pattern = re.compile(r"^import\s[\"\'](.*?\.css)[\"\']")
     with open(fyre_file_name, "r") as fyre_file:
-        for line in fyre_file.readlines():
+        for line in fyre_file:
             css_import_match = css_import_pattern.search(line)
 
             # check for fyre import styles
