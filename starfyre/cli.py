@@ -1,11 +1,11 @@
-import toml
 import os
 import subprocess
 import sys
 from pathlib import Path
-import requests
 
 import click
+import requests
+import toml
 
 from starfyre import compile
 from starfyre.dist_builder import create_dist

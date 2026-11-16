@@ -20,8 +20,6 @@ class UnknownTagError(Exception):
          message (str): A description of the error.
     """
 
-    pass
-
 
 class InitFyreMissingError(Exception):
     """

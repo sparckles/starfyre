@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -12,7 +12,7 @@ class Component:
     signal: str = ""
     original_data: str = ""
     data: str = ""
-    parentComponent: Optional[Any] = None
+    parentComponent: Any | None = None
     # html,css, and js are debug properties. Not needed for rendering
     html: str = ""
     # this should not be a part of the rendering
